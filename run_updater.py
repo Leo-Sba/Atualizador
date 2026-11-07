@@ -48,6 +48,15 @@ def run_pipeline():
         from fetch_ibov_composition import calculate_and_save_ibov_pe
         calculate_and_save_ibov_pe()
         logging.info("[OK] Passo 3 concluído.")
+
+        # Atualizacao do IFNC (Indice Financeiro da B3)
+        try:
+            logging.info(">>> Atualizando composicao e metricas do IFNC...")
+            from fetch_ifnc_composition import fetch_and_calculate_ifnc
+            fetch_and_calculate_ifnc()
+            logging.info("[OK] IFNC atualizado com sucesso.")
+        except Exception as e_ifnc:
+            logging.warning(f"[AVISO] Falha ao atualizar IFNC: {e_ifnc}")
     except Exception as e:
         logging.warning(f"[AVISO] Falha ao buscar IBOV (pode estar fora do ar): {e}")
 
