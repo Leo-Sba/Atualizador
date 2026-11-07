@@ -1,0 +1,36 @@
+name: Manutencao e Ajuste de Splits (Domingo)
+
+on:
+  schedule:
+    # Executa todo domingo às 11:00 UTC (08:00 Horário de Brasília)
+    - cron: '0 11 * * 0'
+  workflow_dispatch: # Permite execução manual a qualquer momento
+
+jobs:
+  run-split-adjuster:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Instalar Dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Executar Ajuste Incremental de Splits / Inplits
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          python adjust_splits.py
