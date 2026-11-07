@@ -250,6 +250,21 @@ def calculate_and_save_ibov_pe():
             earnings_yield_all = EXCLUDED.earnings_yield_all,
             total_coverage_pct = EXCLUDED.total_coverage_pct,
             created_at = NOW();
+
+        -- Sincroniza tambem na tabela de serie temporal continua do dashboard
+        CREATE TABLE IF NOT EXISTS ibov_daily_consolidated (
+            reference_date DATE PRIMARY KEY,
+            ibov_close NUMERIC(15, 2),
+            pe_ratio NUMERIC(10, 4) NOT NULL,
+            data_source VARCHAR(50) NOT NULL,
+            is_interpolated BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+        INSERT INTO ibov_daily_consolidated (reference_date, pe_ratio, data_source, is_interpolated)
+        VALUES (%s, %s, 'OUR_METHODOLOGY_DAILY', FALSE)
+        ON CONFLICT (reference_date) DO UPDATE SET
+            pe_ratio = EXCLUDED.pe_ratio,
+            data_source = EXCLUDED.data_source;
     """, (
         portfolio_date,
         weighted_pe,
@@ -258,7 +273,9 @@ def calculate_and_save_ibov_pe():
         len(items),
         round(aggregated_pe, 2),
         round(avg_earnings_yield * 100, 2),
-        round(ey_weight * 100, 2)
+        round(ey_weight * 100, 2),
+        portfolio_date,
+        round(aggregated_pe, 2)
     ))
 
     conn.commit()
