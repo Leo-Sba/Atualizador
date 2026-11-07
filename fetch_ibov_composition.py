@@ -1,8 +1,7 @@
 """
 Script diário para buscar a composição oficial do Índice Bovespa (IBOV) na B3,
-armazenar os pesos de cada ativo e calcular o P/L Médio (ponderado e simples) do índice.
-
-Pode ser executado diretamente ou agendado no cron / GitHub Actions diariamente.
+armazenar os pesos de cada ativo e calcular o P/L Médio (ponderado e simples) do índice,
+salvando o histórico diário contínuo no PostgreSQL (Supabase).
 """
 
 import os
@@ -26,9 +25,6 @@ def get_db_connection():
     )
 
 def fetch_ibov_composition():
-    """
-    Busca a composição oficial da carteira do IBOV direto do endpoint público da B3.
-    """
     payload = {
         "language": "pt-br",
         "pageNumber": 1,
@@ -51,7 +47,6 @@ def fetch_ibov_composition():
         return None, []
 
     header = data.get("header", {})
-    # Data no formato dd/mm/yy ou dd/mm/yyyy
     date_str = header.get("date")
     portfolio_date = None
     if date_str:
@@ -109,7 +104,6 @@ def calculate_and_save_ibov_pe():
 
     tickers = [x["ticker"] for x in items]
 
-    # Busca o P/L mais recente de cada ativo da carteira
     cur.execute("""
         WITH latest_date AS (
             SELECT security_id, MAX(reference_date) as max_date
@@ -129,13 +123,12 @@ def calculate_and_save_ibov_pe():
     covered_weight = 0.0
     valid_pes = []
 
-    # Salva cada ativo da carteira na tabela ibov_portfolio_history
     for it in items:
         tk = it["ticker"]
         pe = db_metrics.get(tk, (None, None))[0]
         it["pe"] = pe
 
-        if pe is not None and 0 < pe < 250:  # Filtra lucros positivos e anomalias extremas
+        if pe is not None and 0 < pe < 250:
             weighted_pe_sum += pe * it["weight"]
             covered_weight += it["weight"]
             valid_pes.append(pe)
@@ -167,6 +160,7 @@ def calculate_and_save_ibov_pe():
     mid = len(valid_pes_sorted) // 2
     median_pe = valid_pes_sorted[mid] if valid_pes_sorted else 0.0
 
+    # 1. Salva na tabela index_metrics_history
     cur.execute("""
         INSERT INTO index_metrics_history (
             index_name, reference_date, weighted_pe, simple_pe, median_pe, total_assets, covered_weight
@@ -186,6 +180,33 @@ def calculate_and_save_ibov_pe():
         covered_weight
     ))
 
+    # 2. Salva explicitamente na tabela ibov_history para histórico contínuo
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS ibov_history (
+            reference_date DATE PRIMARY KEY,
+            weighted_pe NUMERIC(10, 4) NOT NULL,
+            simple_pe NUMERIC(10, 4),
+            covered_weight_pct NUMERIC(6, 2),
+            stocks_count INT,
+            created_at TIMESTAMPTZ DEFAULT NOW()
+        );
+        INSERT INTO ibov_history (
+            reference_date, weighted_pe, simple_pe, covered_weight_pct, stocks_count
+        ) VALUES (%s, %s, %s, %s, %s)
+        ON CONFLICT (reference_date) DO UPDATE SET
+            weighted_pe = EXCLUDED.weighted_pe,
+            simple_pe = EXCLUDED.simple_pe,
+            covered_weight_pct = EXCLUDED.covered_weight_pct,
+            stocks_count = EXCLUDED.stocks_count,
+            created_at = NOW();
+    """, (
+        portfolio_date,
+        weighted_pe,
+        simple_pe,
+        round(covered_weight * 100, 2),
+        len(items)
+    ))
+
     conn.commit()
     conn.close()
 
@@ -199,15 +220,15 @@ def calculate_and_save_ibov_pe():
         "covered_weight_pct": round(covered_weight * 100, 2)
     }
 
-    # Salva um snapshot json para uso fácil no dashboard
     with open("ibov_metric.json", "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
 
-    print(f"\n[SUCESSO] Cálculo do IBOV finalizado:")
+    print(f"\n[SUCESSO] Cálculo do IBOV finalizado e persistido no histórico:")
     print(f" -> Data: {result['date']}")
     print(f" -> P/L Médio Ponderado: {result['weighted_pe']}x")
     print(f" -> P/L Médio Simples: {result['simple_pe']}x")
     print(f" -> Cobertura da carteira: {result['covered_weight_pct']}%")
+    print(f" -> Gravado em: index_metrics_history e ibov_history no Supabase")
 
     return result
 
