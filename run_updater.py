@@ -91,6 +91,16 @@ def run_pipeline():
         logging.error(f"[ERRO] Falha ao calcular Dividend Yield: {e}")
         sys.exit(1)
 
+    # 7. Calendário de Divulgação de Resultados
+    try:
+        logging.info('>>> PASSO 7/7: Atualizando calendário de divulgação de resultados...')
+        from fetch_earnings_calendar import fetch_and_save_earnings_calendar
+        fetch_and_save_earnings_calendar()
+        logging.info('[OK] Passo 7 concluído.')
+    except Exception as e:
+        logging.warning(f'[AVISO] Falha ao atualizar calendário de resultados: {e}')
+
+
     logging.info("=" * 60)
     logging.info("ROTINA DIÁRIA CONCLUÍDA COM SUCESSO!")
     logging.info("=" * 60)
