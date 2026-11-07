@@ -22,7 +22,7 @@ def get_db_connection():
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD"),
         host=os.getenv("DB_HOST"),
-        port=int(os.getenv("DB_PORT") or 5432),
+        port=int(os.getenv("DB_PORT", 5432)),
         connect_timeout=20
     )
 
@@ -108,13 +108,13 @@ def calculate_metrics():
 
             equity_facts = [
                 f for f in known_facts 
-                if 'patrimônio líquido' in f[6].lower()
+                if 'patrim' in f[6].lower() and 'quido' in f[6].lower()
             ]
             latest_equity = float(equity_facts[-1][7]) if equity_facts else None
 
             profit_facts = [
                 f for f in known_facts 
-                if f[5] in ('3.11', '3.09') and ('líquido' in f[6].lower() or 'lucro/prejuízo' in f[6].lower() or 'lucro consolidado' in f[6].lower())
+                if f[5] in ('3.11', '3.09') and any(t in f[6].lower() for t in ['quido', 'preju', 'consolidado'])
             ]
             if not profit_facts:
                 profit_facts = [f for f in known_facts if f[5] in ('3.11', '3.09')]
@@ -125,9 +125,40 @@ def calculate_metrics():
             latest_profit_fact = max(profit_facts, key=lambda x: x[3])
             fin_as_of = latest_profit_fact[3]
 
-            dfp_profits = [f for f in profit_facts if f[0] == 'DFP']
-            latest_dfp = dfp_profits[-1] if dfp_profits else None
-            net_income_ttm = float(latest_dfp[7]) if latest_dfp else float(latest_profit_fact[7])
+            # Clculo robusto do Lucro TTM (Trailing Twelve Months):
+            # Prioridade 1: Soma dos ltimos 4 trimestres consecutivos disponveis
+            quarters = {}
+            cumulatives = {}
+            dfps = {}
+
+            for f in profit_facts:
+                if not f[2] or not f[3]:
+                    continue
+                delta = (f[3] - f[2]).days
+                val = float(f[7])
+                if 80 <= delta <= 100:
+                    quarters[f[3]] = val
+                elif f[0] == 'DFP' and delta > 350:
+                    dfps[f[1]] = (f[3], val)
+                elif f[0] == 'ITR' and delta > 100:
+                    cumulatives[(f[1], f[3])] = val
+
+            # Deriva o 4 trimestre se DFP anual e acumulado de 9M existirem: Q4 = DFP - 9M
+            for yr, (dfp_end, dfp_val) in dfps.items():
+                if dfp_end not in quarters:
+                    import datetime
+                    m9_end = datetime.date(yr, 9, 30)
+                    if (yr, m9_end) in cumulatives:
+                        quarters[dfp_end] = dfp_val - cumulatives[(yr, m9_end)]
+
+            sorted_q = sorted(quarters.keys())
+            if len(sorted_q) >= 4:
+                net_income_ttm = sum(quarters[d] for d in sorted_q[-4:])
+            else:
+                # Prioridade 2: Ultima DFP anual entregue
+                dfp_profits = [f for f in profit_facts if f[0] == 'DFP']
+                latest_dfp = dfp_profits[-1] if dfp_profits else None
+                net_income_ttm = float(latest_dfp[7]) if latest_dfp else float(latest_profit_fact[7])
 
             known_shares = [
                 s for s in shares_history 
