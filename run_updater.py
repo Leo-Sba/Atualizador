@@ -1,109 +1,221 @@
 """
 run_updater.py
-Orquestrador central da rotina diária de atualização fundamentalista.
-Executa em sequência no GitHub Actions:
-  1. Limpeza preventiva de duplicidades (clean_duplicates.py)
-  2. Cotações recentes dos últimos pregões da B3 via Yahoo Finance (import_prices.py)
-  3. Atualização da composição e P/L médio do IBOV via B3 (fetch_ibov_composition.py)
-  4. Proventos e eventos societários recentes (import_distributions.py)
-  5. Recálculo pregão a pregão de P/L, P/VP, ROE, LPA e VPA (calculate_metrics.py)
-  6. Recálculo do Dividend Yield móvel de 12 meses (calculate_dividend_yield.py)
+Orquestrador central em cascata (4 Estágios) da rotina diária fundamentalista (B3 & CVM).
+
+Suporta execução modular por estágio (ideal para jobs encadeados no GitHub Actions)
+ou execução completa sequencial:
+  - python run_updater.py --stage 1  -> Ingestão de Mercado (Limpeza, Cotações B3/Yahoo e Proventos/Splits)
+  - python run_updater.py --stage 2  -> Motor de Cálculo Fundamentalista (P/L, P/VP, ROE, LPA, VPA e DY 12M)
+  - python run_updater.py --stage 3  -> Consolidação de Índices (IBOV, IFNC) e Calendário de Resultados
+  - python run_updater.py --stage 4  -> Auto-Cura (Self-Healing) e Auditoria Contínua de Anomalias
+  - python run_updater.py            -> Executa os 4 estágios em sequência na ordem contábil correta
 """
 
 import sys
+import time
 import logging
+import argparse
 from datetime import datetime, timedelta
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-def run_pipeline():
-    logging.info("=" * 60)
-    logging.info("INICIANDO ROTINA DE ATUALIZAÇÃO FUNDAMENTALISTA (B3 & CVM)")
-    logging.info("=" * 60)
 
-    # 1. Limpeza preventiva de duplicidades
-    try:
-        logging.info(">>> PASSO 1/6: Verificando integridade e removendo duplicidades...")
-        from clean_duplicates import clean_duplicate_securities
-        clean_duplicate_securities()
-        logging.info("[OK] Passo 1 concluído.")
-    except Exception as e:
-        logging.error(f"[AVISO] Falha no passo de limpeza: {e}")
-
-    # 2. Cotações recentes dos últimos pregões
-    try:
-        # Busca últimos 15 dias de cotações para garantir pregões recentes
-        start_date = (datetime.now() - timedelta(days=15)).strftime("%Y-%m-%d")
-        logging.info(f">>> PASSO 2/6: Baixando cotações diárias desde {start_date}...")
-        from import_prices import fetch_and_save_prices
-        fetch_and_save_prices(start_date=start_date)
-        logging.info("[OK] Passo 2 concluído.")
-    except Exception as e:
-        logging.error(f"[ERRO] Falha ao importar preços: {e}")
-        sys.exit(1)
-
-    # 3. Composição e P/L do IBOV
-    try:
-        logging.info(">>> PASSO 3/6: Atualizando composição e métricas do IBOV...")
-        from fetch_ibov_composition import calculate_and_save_ibov_pe
-        calculate_and_save_ibov_pe()
-        logging.info("[OK] Passo 3 concluído.")
-
-        # Atualizacao do IFNC (Indice Financeiro da B3)
+def run_step_with_retry(step_label, func, *args, retries=2, delay_sec=10, critical=False, **kwargs):
+    """
+    Executa uma etapa do pipeline com retentativa automática (backoff) para
+    prevenir falhas transitórias de rede (Yahoo Finance / B3) ou conexão com o Supabase.
+    """
+    total_attempts = retries + 1
+    for attempt in range(1, total_attempts + 1):
         try:
-            logging.info(">>> Atualizando composicao e metricas do IFNC...")
-            from fetch_ifnc_composition import fetch_and_calculate_ifnc
-            fetch_and_calculate_ifnc()
-            logging.info("[OK] IFNC atualizado com sucesso.")
-        except Exception as e_ifnc:
-            logging.warning(f"[AVISO] Falha ao atualizar IFNC: {e_ifnc}")
-    except Exception as e:
-        logging.warning(f"[AVISO] Falha ao buscar IBOV (pode estar fora do ar): {e}")
-
-    # 4. Proventos e Splits recentes
-    try:
-        current_year = datetime.now().year
-        logging.info(f">>> PASSO 4/6: Atualizando proventos e eventos societários ({current_year})...")
-        from import_distributions import import_distributions_and_splits
-        import_distributions_and_splits(current_year)
-        logging.info("[OK] Passo 4 concluído.")
-    except Exception as e:
-        logging.warning(f"[AVISO] Falha ao importar proventos: {e}")
-
-    # 5. Recálculo das Métricas Fundamentalistas
-    try:
-        logging.info(">>> PASSO 5/6: Recalculando métricas fundamentalistas (P/L, P/VP, ROE)...")
-        from calculate_metrics import calculate_metrics
-        calculate_metrics()
-        logging.info("[OK] Passo 5 concluído.")
-    except Exception as e:
-        logging.error(f"[ERRO] Falha ao calcular métricas: {e}")
-        sys.exit(1)
-
-    # 6. Recálculo do Dividend Yield Móvel
-    try:
-        dy_start = (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
-        logging.info(f">>> PASSO 6/6: Recalculando Dividend Yield móvel desde {dy_start}...")
-        from calculate_dividend_yield import calculate_dividend_yield
-        calculate_dividend_yield(start_date=dy_start)
-        logging.info("[OK] Passo 6 concluído.")
-    except Exception as e:
-        logging.error(f"[ERRO] Falha ao calcular Dividend Yield: {e}")
-        sys.exit(1)
-
-    # 7. Calendário de Divulgação de Resultados
-    try:
-        logging.info('>>> PASSO 7/7: Atualizando calendário de divulgação de resultados...')
-        from fetch_earnings_calendar import fetch_and_save_earnings_calendar
-        fetch_and_save_earnings_calendar()
-        logging.info('[OK] Passo 7 concluído.')
-    except Exception as e:
-        logging.warning(f'[AVISO] Falha ao atualizar calendário de resultados: {e}')
+            logging.info(f">>> {step_label} (Tentativa {attempt}/{total_attempts})...")
+            func(*args, **kwargs)
+            logging.info(f"[OK] {step_label} concluído com sucesso.")
+            return True
+        except Exception as e:
+            logging.warning(f"[FALHA] {step_label} na tentativa {attempt}/{total_attempts}: {e}")
+            if attempt < total_attempts:
+                logging.info(f"Aguardando {delay_sec}s para nova tentativa...")
+                time.sleep(delay_sec)
+            else:
+                if critical:
+                    logging.error(f"[ERRO CRÍTICO] {step_label} falhou após {total_attempts} tentativas. Abortando estágio.")
+                    sys.exit(1)
+                else:
+                    logging.warning(f"[AVISO] {step_label} não pôde ser concluído, mas o pipeline prosseguirá.")
+                    return False
 
 
-    logging.info("=" * 60)
-    logging.info("ROTINA DIÁRIA CONCLUÍDA COM SUCESSO!")
-    logging.info("=" * 60)
+def run_stage_1_ingestion():
+    """
+    ESTÁGIO 1: Ingestão de Mercado (Preços, Duplicidades e Proventos/Eventos Societários)
+    """
+    logging.info("=" * 65)
+    logging.info("ESTÁGIO 1/4: INGESTÃO DE MERCADO (LIMPEZA, COTAÇÕES E PROVENTOS)")
+    logging.info("=" * 65)
+
+    # 1.1 Limpeza preventiva de duplicidades
+    from clean_duplicates import clean_duplicate_securities
+    run_step_with_retry(
+        "1.1 Limpeza preventiva de duplicidades (clean_duplicates)",
+        clean_duplicate_securities,
+        retries=1,
+        critical=False,
+    )
+
+    # 1.2 Cotações recentes dos últimos 15 dias de pregão
+    start_date = (datetime.now() - timedelta(days=15)).strftime("%Y-%m-%d")
+    from import_prices import fetch_and_save_prices
+    run_step_with_retry(
+        f"1.2 Download de cotações diárias B3 desde {start_date} (import_prices)",
+        fetch_and_save_prices,
+        start_date=start_date,
+        retries=2,
+        delay_sec=15,
+        critical=True,
+    )
+
+    # 1.3 Proventos e Eventos Societários recentes
+    current_year = datetime.now().year
+    from import_distributions import import_distributions_and_splits
+    run_step_with_retry(
+        f"1.3 Importação de proventos e eventos societários de {current_year} (import_distributions)",
+        import_distributions_and_splits,
+        current_year,
+        retries=2,
+        delay_sec=15,
+        critical=False,
+    )
+
+
+def run_stage_2_metrics():
+    """
+    ESTÁGIO 2: Motor de Cálculo Fundamentalista (Múltiplos Diários e Dividend Yield)
+    """
+    logging.info("=" * 65)
+    logging.info("ESTÁGIO 2/4: MOTOR DE CÁLCULO FUNDAMENTALISTA (P/L, P/VP, ROE, DY)")
+    logging.info("=" * 65)
+
+    # 2.1 Recálculo das Métricas Fundamentalistas (P/L, P/VP, ROE, LPA, VPA, Units)
+    from calculate_metrics import calculate_metrics
+    run_step_with_retry(
+        "2.1 Recálculo de múltiplos fundamentalistas (calculate_metrics)",
+        calculate_metrics,
+        retries=2,
+        delay_sec=10,
+        critical=True,
+    )
+
+    # 2.2 Recálculo do Dividend Yield Móvel (12M)
+    dy_start = (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
+    from calculate_dividend_yield import calculate_dividend_yield
+    run_step_with_retry(
+        f"2.2 Recálculo de Dividend Yield móvel desde {dy_start} (calculate_dividend_yield)",
+        calculate_dividend_yield,
+        start_date=dy_start,
+        retries=2,
+        delay_sec=10,
+        critical=True,
+    )
+
+
+def run_stage_3_indices():
+    """
+    ESTÁGIO 3: Consolidação de Índices (IBOV e IFNC) e Calendário de Resultados
+    Importante: Roda APÓS o Estágio 2 para utilizar os múltiplos recém-calculados do dia!
+    """
+    logging.info("=" * 65)
+    logging.info("ESTÁGIO 3/4: CONSOLIDAÇÃO DE ÍNDICES (IBOV, IFNC) E CALENDÁRIO")
+    logging.info("=" * 65)
+
+    # 3.1 Composição e P/L Consolidado do IBOV
+    from fetch_ibov_composition import calculate_and_save_ibov_pe
+    run_step_with_retry(
+        "3.1 Atualização da carteira e P/L consolidado do IBOV (fetch_ibov_composition)",
+        calculate_and_save_ibov_pe,
+        retries=2,
+        delay_sec=15,
+        critical=False,
+    )
+
+    # 3.2 Composição e Métricas do IFNC (FIND11)
+    from fetch_ifnc_composition import fetch_and_calculate_ifnc
+    run_step_with_retry(
+        "3.2 Atualização da carteira e métricas do IFNC (fetch_ifnc_composition)",
+        fetch_and_calculate_ifnc,
+        retries=2,
+        delay_sec=15,
+        critical=False,
+    )
+
+    # 3.3 Calendário de Divulgação de Resultados
+    from fetch_earnings_calendar import fetch_and_save_earnings_calendar
+    run_step_with_retry(
+        "3.3 Atualização do calendário de resultados (fetch_earnings_calendar)",
+        fetch_and_save_earnings_calendar,
+        retries=1,
+        delay_sec=10,
+        critical=False,
+    )
+
+
+def run_stage_4_audit():
+    """
+    ESTÁGIO 4: Auto-Cura (Self-Healing) e Auditoria Contínua de Anomalias
+    """
+    logging.info("=" * 65)
+    logging.info("ESTÁGIO 4/4: AUTO-CURA (SELF-HEALING) E AUDITORIA DE ANOMALIAS")
+    logging.info("=" * 65)
+
+    # 4.1 Motor de Auto-Cura (SQL Determinístico + Recálculo Seletivo + Fallback Externo)
+    from auto_heal_anomalies import run_self_healing_pipeline
+    run_step_with_retry(
+        "4.1 Motor de Auto-Cura de Anomalias (auto_heal_anomalies)",
+        run_self_healing_pipeline,
+        retries=1,
+        delay_sec=10,
+        critical=False,
+    )
+
+    # 4.2 Detector e Persistência de Logs de Auditoria (audit_anomaly_logs)
+    from detect_anomalies import run_anomaly_detection
+    run_step_with_retry(
+        "4.2 Auditoria Contínua Pós-Cura (detect_anomalies)",
+        run_anomaly_detection,
+        retries=2,
+        delay_sec=10,
+        critical=True,
+    )
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Orquestrador em Cascata B3 & CVM")
+    parser.add_argument(
+        "--stage",
+        choices=["1", "2", "3", "4", "all"],
+        default="all",
+        help="Estágio específico a executar (1=Ingestão, 2=Métricas, 3=Índices, 4=Auditoria, all=Todos)",
+    )
+    args = parser.parse_args()
+
+    if args.stage == "1":
+        run_stage_1_ingestion()
+    elif args.stage == "2":
+        run_stage_2_metrics()
+    elif args.stage == "3":
+        run_stage_3_indices()
+    elif args.stage == "4":
+        run_stage_4_audit()
+    else:
+        run_stage_1_ingestion()
+        run_stage_2_metrics()
+        run_stage_3_indices()
+        run_stage_4_audit()
+
+    logging.info("=" * 65)
+    logging.info(f"EXECUÇÃO FINALIZADA COM SUCESSO! (Modo: --stage {args.stage})")
+    logging.info("=" * 65)
+
 
 if __name__ == "__main__":
-    run_pipeline()
+    main()

@@ -6,15 +6,21 @@ on:
     - cron: '0 11 * * 0'
   workflow_dispatch: # Permite execução manual a qualquer momento
 
+concurrency:
+  group: b3-supabase-pipeline
+  cancel-in-progress: false
+
 jobs:
   run-split-adjuster:
+    name: "Ajuste Incremental de Splits e Inplits"
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout do Repositório
         uses: actions/checkout@v4
 
-      - name: Configurar Python
+      - name: Configurar Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'

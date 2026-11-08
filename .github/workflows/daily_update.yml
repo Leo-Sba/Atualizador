@@ -1,4 +1,4 @@
-name: Atualizacao Diaria B3 & Fundamentalista
+name: Pipeline Diario em Cascata B3 & CVM (4 Estagios)
 
 on:
   schedule:
@@ -6,15 +6,33 @@ on:
     - cron: '30 22 * * 1-5'
   workflow_dispatch: # Permite execução manual a qualquer momento
 
+# Trava global de concorrência: impede que dois workflows ou execuções manuais
+# acessem e sobrecarreguem o banco Supabase simultaneamente.
+concurrency:
+  group: b3-supabase-pipeline
+  cancel-in-progress: false
+
+env:
+  DB_HOST: ${{ secrets.DB_HOST }}
+  DB_PORT: ${{ secrets.DB_PORT }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  DB_USER: ${{ secrets.DB_USER }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
 jobs:
-  run-updater:
+  # =========================================================================
+  # ESTÁGIO 1: Ingestão de Mercado (Limpeza, Cotações Diárias e Proventos)
+  # =========================================================================
+  stage-1-ingestion:
+    name: "1. Ingestao de Mercado (Precos & Proventos)"
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout do Repositório
         uses: actions/checkout@v4
 
-      - name: Configurar Python
+      - name: Configurar Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -25,12 +43,93 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Executar Pipeline de Atualização
-        env:
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      - name: Executar Estágio 1 (Limpeza, Preços e Proventos)
         run: |
-          python run_updater.py
+          python run_updater.py --stage 1
+
+  # =========================================================================
+  # ESTÁGIO 2: Motor de Cálculo Fundamentalista (P/L, P/VP, ROE, LPA, VPA, DY)
+  # =========================================================================
+  stage-2-metrics:
+    name: "2. Calculo Fundamentalista (Multiplos & DY)"
+    needs: stage-1-ingestion
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Instalar Dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Executar Estágio 2 (Métricas e Dividend Yield)
+        run: |
+          sleep 5
+          python run_updater.py --stage 2
+
+  # =========================================================================
+  # ESTÁGIO 3: Consolidação de Índices (IBOV, IFNC) e Calendário de Resultados
+  # =========================================================================
+  stage-3-indices:
+    name: "3. Consolidacao de Indices (IBOV, IFNC & Calendario)"
+    needs: stage-2-metrics
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Instalar Dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Executar Estágio 3 (IBOV, IFNC e Calendário)
+        run: |
+          sleep 5
+          python run_updater.py --stage 3
+
+  # =========================================================================
+  # ESTÁGIO 4: Auto-Cura (Self-Healing) e Auditoria Contínua de Anomalias
+  # =========================================================================
+  stage-4-audit-and-heal:
+    name: "4. Auto-Cura e Auditoria de Anomalias"
+    needs: stage-3-indices
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Instalar Dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Executar Estágio 4 (Auto-Cura e Auditoria Contínua)
+        run: |
+          sleep 5
+          python run_updater.py --stage 4
