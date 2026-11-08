@@ -20,9 +20,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEPLOY_DIR = os.path.join(os.path.dirname(BASE_DIR), "Dashboard_Deploy")
-PUBLIC_DIR = os.path.join(DEPLOY_DIR, "public")
+PUBLIC_DIR = DEPLOY_DIR
 EVENTS_OUT_DIR = os.path.join(BASE_DIR, "events_data")
-DEPLOY_EVENTS_DIR = os.path.join(PUBLIC_DIR, "events")
+DEPLOY_EVENTS_DIR = os.path.join(DEPLOY_DIR, "events")
 
 os.makedirs(EVENTS_OUT_DIR, exist_ok=True)
 if os.path.exists(DEPLOY_DIR):

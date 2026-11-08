@@ -6,12 +6,14 @@ Funcionamento:
 1. Consulta a tabela de controle 'split_adjustment_log' contra a tabela 'corporate_actions'.
 2. Identifica se houve NOVOS splits/inplits pendentes de processamento.
 3. Se houver novos eventos, processa SOMENTE os ativos impactados:
-   - Calcula os fatores retroativos de ajuste para cada pregão histórico em 'daily_prices'.
+   - Calcula os fatores retroativos de ajuste para cada pregão histórico em 'daily_prices'
+     (aplicando o divisor retroativo aos preços nominais B3_COTAHIST e preservando preços YAHOO_FINANCE já ajustados).
    - Atualiza 'close_split_adjusted' daquele ativo específico.
-   - Recalcula as métricas diárias ('daily_metrics' e 'company_daily_metrics') para a empresa afetada.
+   - Recalcula as métricas diárias ('daily_metrics' e 'company_daily_metrics') para a empresa afetada,
+     alinhando também a quantidade histórica de ações (company_share_capital) para a mesma base pós-split.
    - Registra o evento na tabela de controle 'split_adjustment_log'.
 4. Suporta execução por ativo:
-   python adjust_splits.py --ticker BPAC11
+   python adjust_splits.py --ticker SBSP3
    ou forçado para todos os ativos com ações corporativas:
    python adjust_splits.py --all
 """
@@ -118,10 +120,32 @@ def get_pending_actions(conn, ticker=None, force_all=False):
             cur.execute(query)
         return cur.fetchall()
 
+def get_split_multiplier_for_shares(sh_ref_date, raw_total_shares, shares_history, comp_actions):
+    """
+    Converte a quantidade histórica de ações da CVM (em sh_ref_date) para a mesma base
+    acionária pós-split de close_split_adjusted, evitando quedas artificiais de P/L e P/VP
+    após desdobramentos ou grupamentos.
+    """
+    if not comp_actions or not raw_total_shares or raw_total_shares <= 0 or not sh_ref_date:
+        return 1.0
+    mult_factor = 1.0
+    for eff_date, mult in comp_actions:
+        if sh_ref_date < eff_date:
+            post_records = [
+                float(s[4]) for s in shares_history
+                if s[0] and s[0] >= eff_date and s[4] and float(s[4]) > 0
+            ]
+            if post_records:
+                first_post = post_records[0]
+                if abs(mult - 1.0) > 0.15 and abs(raw_total_shares - first_post) / first_post < 0.15:
+                    continue
+            mult_factor *= mult
+    return mult_factor
+
 def recalculate_single_company_metrics(conn, comp_id):
     """
     Recalcula daily_metrics e company_daily_metrics estritamente para a empresa afetada
-    utilizando o close_split_adjusted atualizado.
+    utilizando o close_split_adjusted atualizado e alinhando a base acionária pós-split.
     """
     cur = conn.cursor()
 
@@ -129,12 +153,13 @@ def recalculate_single_company_metrics(conn, comp_id):
         SELECT 
             r.source_type,
             r.fiscal_year,
-            r.period_start,
-            r.period_end,
+            f.period_start,
+            f.period_end,
             r.receipt_date,
             f.account_code,
             f.account_description,
-            f.account_value
+            f.account_value,
+            r.is_consolidated
         FROM financial_facts f
         JOIN financial_reports r ON r.id = f.report_id
         WHERE r.company_id = %s
@@ -142,7 +167,7 @@ def recalculate_single_company_metrics(conn, comp_id):
               f.account_code IN ('3.11', '3.09')
               OR (f.account_code IN ('2.03', '2.07', '2.08') AND f.account_description ILIKE '%%Patrimônio Líquido%%')
           )
-        ORDER BY r.receipt_date ASC, r.period_end ASC;
+        ORDER BY r.receipt_date ASC, f.period_end ASC;
     """, (comp_id,))
     facts = cur.fetchall()
 
@@ -156,6 +181,15 @@ def recalculate_single_company_metrics(conn, comp_id):
         ORDER BY known_date ASC;
     """, (comp_id,))
     shares_history = cur.fetchall()
+
+    cur.execute("""
+        SELECT effective_date, MAX(share_multiplier)
+        FROM corporate_actions
+        WHERE company_id = %s
+        GROUP BY effective_date
+        ORDER BY effective_date ASC;
+    """, (comp_id,))
+    comp_actions = [(r[0], float(r[1])) for r in cur.fetchall() if r[0] and r[1]]
 
     cur.execute("""
         SELECT id, ticker, share_type
@@ -196,6 +230,10 @@ def recalculate_single_company_metrics(conn, comp_id):
 
         if not known_facts:
             continue
+
+        has_cons = any(f[8] is True for f in known_facts)
+        if has_cons:
+            known_facts = [f for f in known_facts if f[8] is True]
 
         equity_facts = [
             f for f in known_facts 
@@ -252,9 +290,14 @@ def recalculate_single_company_metrics(conn, comp_id):
         ]
         if known_shares:
             latest_shares = known_shares[-1]
-            total_shares = float(latest_shares[4])
-            common_shares = float(latest_shares[2])
-            preferred_shares = float(latest_shares[3])
+            sh_ref_date = latest_shares[0]
+            raw_tot = float(latest_shares[4]) if latest_shares[4] is not None else 0.0
+            raw_on = float(latest_shares[2]) if latest_shares[2] is not None else 0.0
+            raw_pn = float(latest_shares[3]) if latest_shares[3] is not None else 0.0
+            sh_mult = get_split_multiplier_for_shares(sh_ref_date, raw_tot, shares_history, comp_actions)
+            total_shares = raw_tot * sh_mult if raw_tot > 0 else None
+            common_shares = raw_on * sh_mult if raw_on > 0 else 0.0
+            preferred_shares = raw_pn * sh_mult if raw_pn > 0 else 0.0
         else:
             total_shares = None
             common_shares = None
@@ -386,7 +429,6 @@ def process_splits(ticker=None, force_all=False):
         conn.close()
         return
 
-    # Agrupar ações por security_id
     actions_by_sec = defaultdict(list)
     sec_info = {}
     for act_id, sec_id, tkr, comp_id, eff_date, mult in pending_actions:
@@ -404,7 +446,21 @@ def process_splits(ticker=None, force_all=False):
             tkr, comp_id = sec_info[sec_id]
             logging.info(f"Processando ajuste de split para {tkr} ({len(actions)} eventos)...")
 
-            # Buscar TODAS as corporate_actions para esse ativo (garantir consistencia sequencial)
+            # Remover pregões fantasmas de feriados brasileiros inseridos pelo Yahoo Finance antes de 2026
+            cur.execute("""
+                DELETE FROM daily_metrics
+                WHERE security_id = %s
+                  AND reference_date < '2026-01-01'
+                  AND reference_date IN (
+                      SELECT price_date FROM daily_prices
+                      WHERE security_id = %s AND price_source = 'YAHOO_FINANCE' AND price_date < '2026-01-01'
+                  );
+            """, (sec_id, sec_id))
+            cur.execute("""
+                DELETE FROM daily_prices
+                WHERE security_id = %s AND price_source = 'YAHOO_FINANCE' AND price_date < '2026-01-01';
+            """, (sec_id,))
+
             cur.execute("""
                 SELECT id, effective_date, share_multiplier
                 FROM corporate_actions
@@ -417,14 +473,12 @@ def process_splits(ticker=None, force_all=False):
             mults = [float(a[2]) for a in all_sec_actions]
             k = len(all_sec_actions)
 
-            # Suffix products para ajuste retroativo
             suffix_products = [1.0] * (k + 1)
             for i in range(k - 1, -1, -1):
                 suffix_products[i] = suffix_products[i + 1] * mults[i]
 
-            # Buscar precos do ativo
             cur.execute("""
-                SELECT price_date, close_price
+                SELECT price_date, close_price, price_source
                 FROM daily_prices
                 WHERE security_id = %s
                 ORDER BY price_date ASC;
@@ -432,13 +486,16 @@ def process_splits(ticker=None, force_all=False):
             prices = cur.fetchall()
 
             updates = []
-            for p_date, c_p in prices:
-                idx = bisect.bisect_right(act_dates, p_date)
-                cum_mult = suffix_products[idx]
-                adj_p = round(float(c_p) / cum_mult, 4)
+            for p_date, c_p, p_src in prices:
+                if p_src == 'YAHOO_FINANCE':
+                    # O Yahoo Finance já entrega o Close retroativamente ajustado por splits/inplits
+                    adj_p = round(float(c_p), 4)
+                else:
+                    idx = bisect.bisect_right(act_dates, p_date)
+                    cum_mult = suffix_products[idx]
+                    adj_p = round(float(c_p) / cum_mult, 4)
                 updates.append((adj_p, sec_id, p_date))
 
-            # Atualizar daily_prices em lote
             update_sql = """
                 UPDATE daily_prices
                 SET close_split_adjusted = %s
@@ -447,11 +504,9 @@ def process_splits(ticker=None, force_all=False):
             execute_batch(cur, update_sql, updates, page_size=1000)
             conn.commit()
 
-            # Recalcular metricas da empresa
             logging.info(f"Recalculando metricas fundamentalistas para {tkr}...")
             recalculate_single_company_metrics(conn, comp_id)
 
-            # Registrar na tabela de controle
             log_entries = []
             for a in all_sec_actions:
                 log_entries.append((sec_id, tkr, a[0], a[1], a[2]))
@@ -470,7 +525,7 @@ def process_splits(ticker=None, force_all=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Ajuste de desdobramentos/grupamentos incremental.")
-    parser.add_argument("--ticker", type=str, help="Ticker especifico para processar (ex: BPAC11)")
+    parser.add_argument("--ticker", type=str, help="Ticker especifico para processar (ex: SBSP3)")
     parser.add_argument("--all", action="store_true", help="Processar todos os ativos com eventos societarios")
     args = parser.parse_args()
 

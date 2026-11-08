@@ -4,12 +4,13 @@ Calcula e popula daily_metrics e company_daily_metrics no Supabase:
  - Lucro TTM (Últimos 12 meses, respeitando receipt_date)
  - Patrimônio Líquido mais recente:
      * Identifica automaticamente a conta oficial de Patrimônio Líquido Consolidado (2.03, 2.07 ou 2.08)
- - Preço/Lucro (P/L) da Empresa e P/L por Ação
+ - Preço/Lucro (P/L) da Empresa e P/L por Ação (usando close_split_adjusted e ações ajustadas pós-split)
  - Preço/Valor Patrimonial (P/VP)
  - Retorno sobre Patrimônio Líquido (ROE TTM)
 """
 
 import os
+import datetime
 import psycopg2
 from psycopg2.extras import execute_batch
 from dotenv import load_dotenv
@@ -38,6 +39,28 @@ def get_db_connection():
         connect_timeout=20
     )
 
+def get_split_multiplier_for_shares(sh_ref_date, raw_total_shares, shares_history, comp_actions):
+    """
+    Converte a quantidade histórica de ações da CVM (em sh_ref_date) para a mesma base
+    acionária pós-split de close_split_adjusted, evitando quedas artificiais de P/L e P/VP
+    após desdobramentos ou grupamentos.
+    """
+    if not comp_actions or not raw_total_shares or raw_total_shares <= 0 or not sh_ref_date:
+        return 1.0
+    mult_factor = 1.0
+    for eff_date, mult in comp_actions:
+        if sh_ref_date < eff_date:
+            post_records = [
+                float(s[4]) for s in shares_history
+                if s[0] and s[0] >= eff_date and s[4] and float(s[4]) > 0
+            ]
+            if post_records:
+                first_post = post_records[0]
+                if abs(mult - 1.0) > 0.15 and abs(raw_total_shares - first_post) / first_post < 0.15:
+                    continue
+            mult_factor *= mult
+    return mult_factor
+
 def calculate_metrics():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -55,7 +78,8 @@ def calculate_metrics():
                 r.receipt_date,
                 f.account_code,
                 f.account_description,
-                f.account_value
+                f.account_value,
+                r.is_consolidated
             FROM financial_facts f
             JOIN financial_reports r ON r.id = f.report_id
             WHERE r.company_id = %s
@@ -79,6 +103,15 @@ def calculate_metrics():
         shares_history = cur.fetchall()
 
         cur.execute("""
+            SELECT effective_date, MAX(share_multiplier)
+            FROM corporate_actions
+            WHERE company_id = %s
+            GROUP BY effective_date
+            ORDER BY effective_date ASC;
+        """, (comp_id,))
+        comp_actions = [(r[0], float(r[1])) for r in cur.fetchall() if r[0] and r[1]]
+
+        cur.execute("""
             SELECT id, ticker, share_type
             FROM securities
             WHERE company_id = %s;
@@ -87,7 +120,7 @@ def calculate_metrics():
         sec_dict = {s[0]: (s[1], s[2]) for s in securities}
 
         cur.execute("""
-            SELECT p.security_id, p.price_date, p.close_price
+            SELECT p.security_id, p.price_date, COALESCE(p.close_split_adjusted, p.close_price)
             FROM daily_prices p
             JOIN securities s ON s.id = p.security_id
             WHERE s.company_id = %s
@@ -118,6 +151,11 @@ def calculate_metrics():
             if not known_facts:
                 continue
 
+            # Priorizar demonstrativos consolidados se disponíveis
+            has_cons = any(f[8] is True for f in known_facts)
+            if has_cons:
+                known_facts = [f for f in known_facts if f[8] is True]
+
             equity_facts = [
                 f for f in known_facts 
                 if 'patrim' in f[6].lower() and 'quido' in f[6].lower()
@@ -137,8 +175,8 @@ def calculate_metrics():
             latest_profit_fact = max(profit_facts, key=lambda x: x[3])
             fin_as_of = latest_profit_fact[3]
 
-            # Clculo robusto do Lucro TTM (Trailing Twelve Months):
-            # Prioridade 1: Soma dos ltimos 4 trimestres consecutivos disponveis
+            # Cálculo robusto do Lucro TTM (Trailing Twelve Months):
+            # Prioridade 1: Soma dos últimos 4 trimestres consecutivos disponíveis
             quarters = {}
             cumulatives = {}
             dfps = {}
@@ -155,10 +193,9 @@ def calculate_metrics():
                 elif f[0] == 'ITR' and delta > 100:
                     cumulatives[(f[1], f[3])] = val
 
-            # Deriva o 4 trimestre se DFP anual e acumulado de 9M existirem: Q4 = DFP - 9M
+            # Deriva o 4º trimestre se DFP anual e acumulado de 9M existirem: Q4 = DFP - 9M
             for yr, (dfp_end, dfp_val) in dfps.items():
                 if dfp_end not in quarters:
-                    import datetime
                     m9_end = datetime.date(yr, 9, 30)
                     if (yr, m9_end) in cumulatives:
                         quarters[dfp_end] = dfp_val - cumulatives[(yr, m9_end)]
@@ -167,7 +204,7 @@ def calculate_metrics():
             if len(sorted_q) >= 4:
                 net_income_ttm = sum(quarters[d] for d in sorted_q[-4:])
             else:
-                # Prioridade 2: Ultima DFP anual entregue
+                # Prioridade 2: Última DFP anual entregue
                 dfp_profits = [f for f in profit_facts if f[0] == 'DFP']
                 latest_dfp = dfp_profits[-1] if dfp_profits else None
                 net_income_ttm = float(latest_dfp[7]) if latest_dfp else float(latest_profit_fact[7])
@@ -178,9 +215,14 @@ def calculate_metrics():
             ]
             if known_shares:
                 latest_shares = known_shares[-1]
-                total_shares = float(latest_shares[4])
-                common_shares = float(latest_shares[2])
-                preferred_shares = float(latest_shares[3])
+                sh_ref_date = latest_shares[0]
+                raw_tot = float(latest_shares[4]) if latest_shares[4] is not None else 0.0
+                raw_on = float(latest_shares[2]) if latest_shares[2] is not None else 0.0
+                raw_pn = float(latest_shares[3]) if latest_shares[3] is not None else 0.0
+                sh_mult = get_split_multiplier_for_shares(sh_ref_date, raw_tot, shares_history, comp_actions)
+                total_shares = raw_tot * sh_mult if raw_tot > 0 else None
+                common_shares = raw_on * sh_mult if raw_on > 0 else 0.0
+                preferred_shares = raw_pn * sh_mult if raw_pn > 0 else 0.0
             else:
                 total_shares = None
                 common_shares = None
@@ -224,7 +266,7 @@ def calculate_metrics():
                 ticker_code, stype = sec_dict[sec_id]
                 unit_ratio = UNIT_SHARES_RATIO.get(ticker_code, 1.0)
 
-                # Ajuste de LPA e VPA caso seja Unit (multiplica pela quantidade de acoes do pacote)
+                # Ajuste de LPA e VPA caso seja Unit (multiplica pela quantidade de ações do pacote)
                 sec_lpa = (base_lpa * unit_ratio) if base_lpa else None
                 sec_vpa = (base_vpa * unit_ratio) if base_vpa else None
 
