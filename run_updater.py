@@ -87,6 +87,16 @@ def run_stage_1_ingestion():
         critical=False,
     )
 
+    # 1.4 Histórico Oficial de Eventos Societários B3 (Splits, Inplits, Bonificações e Cisões)
+    from fetch_b3_events import run_b3_events_extraction
+    run_step_with_retry(
+        "1.4 Sincronização de eventos societários oficiais B3 (fetch_b3_events)",
+        run_b3_events_extraction,
+        retries=1,
+        delay_sec=10,
+        critical=False,
+    )
+
 
 def run_stage_2_metrics():
     """

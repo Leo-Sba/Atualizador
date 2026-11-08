@@ -25,7 +25,8 @@ EVENTS_OUT_DIR = os.path.join(BASE_DIR, "events_data")
 DEPLOY_EVENTS_DIR = os.path.join(PUBLIC_DIR, "events")
 
 os.makedirs(EVENTS_OUT_DIR, exist_ok=True)
-os.makedirs(DEPLOY_EVENTS_DIR, exist_ok=True)
+if os.path.exists(DEPLOY_DIR):
+    os.makedirs(DEPLOY_EVENTS_DIR, exist_ok=True)
 
 def create_session():
     session = requests.Session()
@@ -245,17 +246,112 @@ def fetch_ticker_events(ticker, trading_name, session):
         "dividends": divs_list
     }
 
+def sync_events_to_supabase(consolidated_data):
+    """
+    Sincroniza o histórico oficial de eventos societários da B3 (Splits, Inplits, Bonificações e Cisões)
+    na tabela 'b3_corporate_events_cache' do Supabase para alimentar a estrutura em cascata.
+    """
+    try:
+        import psycopg2
+        from psycopg2.extras import execute_batch
+        from dotenv import load_dotenv
+        load_dotenv()
+
+        db_host = os.getenv("DB_HOST")
+        if not db_host:
+            return
+
+        conn = psycopg2.connect(
+            host=db_host,
+            port=os.getenv("DB_PORT", 5432),
+            dbname=os.getenv("DB_NAME", "postgres"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            connect_timeout=20
+        )
+        cur = conn.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS b3_corporate_events_cache (
+                ticker TEXT PRIMARY KEY,
+                company TEXT,
+                splits JSONB DEFAULT '[]'::jsonb,
+                inplits JSONB DEFAULT '[]'::jsonb,
+                bonuses JSONB DEFAULT '[]'::jsonb,
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            );
+        """)
+        records = []
+        for ticker, ev in consolidated_data.items():
+            records.append((
+                ticker,
+                ev.get("company") or ticker,
+                json.dumps(ev.get("splits", []), ensure_ascii=False),
+                json.dumps(ev.get("inplits", []), ensure_ascii=False),
+                json.dumps(ev.get("bonuses", []), ensure_ascii=False),
+            ))
+        if records:
+            execute_batch(cur, """
+                INSERT INTO b3_corporate_events_cache (ticker, company, splits, inplits, bonuses, updated_at)
+                VALUES (%s, %s, %s::jsonb, %s::jsonb, %s::jsonb, NOW())
+                ON CONFLICT (ticker) DO UPDATE SET
+                    company = EXCLUDED.company,
+                    splits = EXCLUDED.splits,
+                    inplits = EXCLUDED.inplits,
+                    bonuses = EXCLUDED.bonuses,
+                    updated_at = NOW();
+            """, records, page_size=100)
+        conn.commit()
+        conn.close()
+        logging.info(f"[OK] {len(records)} ativos sincronizados na tabela 'b3_corporate_events_cache' (Supabase).")
+    except Exception as e:
+        logging.warning(f"Aviso ao sincronizar eventos B3 com Supabase: {e}")
+
+
+def load_tickers_from_db_or_local():
+    dash_data_path = os.path.join(BASE_DIR, "dashboard_data.json")
+    if os.path.exists(dash_data_path):
+        with open(dash_data_path, "r", encoding="utf-8") as f:
+            dash_data = json.load(f)
+        tickers = {
+            t: dash_data[t].get("company", t)
+            for t in dash_data.keys()
+            if t not in ["IBOV", "IFNC", "SEGUROS"]
+        }
+        return tickers
+
+    # Fallback para o banco de dados Supabase (usado no GitHub Actions / Atualizador)
+    import psycopg2
+    from dotenv import load_dotenv
+    load_dotenv()
+    conn = psycopg2.connect(
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT", 5432),
+        dbname=os.getenv("DB_NAME", "postgres"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        connect_timeout=20
+    )
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT s.ticker, c.trading_name
+        FROM securities s
+        JOIN companies c ON c.id = s.company_id
+        ORDER BY s.ticker;
+    """)
+    tickers = {row[0]: (row[1] or row[0]) for row in cur.fetchall() if row[0] not in ["IBOV", "IFNC", "SEGUROS"]}
+    conn.close()
+    return tickers
+
+
 def run_b3_events_extraction():
     logging.info("Carregando lista de ativos...")
-    dash_data_path = os.path.join(BASE_DIR, "dashboard_data.json")
-    if not os.path.exists(dash_data_path):
-        logging.error("dashboard_data.json não encontrado!")
+    try:
+        tickers_map = load_tickers_from_db_or_local()
+    except Exception as e:
+        logging.error(f"Não foi possível carregar a lista de ativos: {e}")
         return
 
-    with open(dash_data_path, "r", encoding="utf-8") as f:
-        dash_data = json.load(f)
-
-    tickers = [t for t in dash_data.keys() if t not in ["IBOV", "IFNC", "SEGUROS"]]
+    tickers = list(tickers_map.keys())
     logging.info(f"Total de ações para processar: {len(tickers)}")
 
     # Carregar nomes de pregão
@@ -270,13 +366,14 @@ def run_b3_events_extraction():
 
     def worker(t):
         tn = mapping.get(t, [None])[0]
-        if not tn and t in dash_data:
-            tn = dash_data[t].get("company")
+        if not tn:
+            tn = tickers_map.get(t, t)
         res = fetch_ticker_events(t, tn, session)
         return t, res
 
     logging.info("Consultando API oficial da B3 via multithreading...")
     completed = 0
+    has_deploy_dir = os.path.exists(DEPLOY_DIR)
     with ThreadPoolExecutor(max_workers=8) as executor:
         futures = {executor.submit(worker, t): t for t in tickers}
         for future in as_completed(futures):
@@ -290,10 +387,11 @@ def run_b3_events_extraction():
                 with open(ind_file, "w", encoding="utf-8") as f:
                     json.dump(res, f, ensure_ascii=False)
 
-                # Salvar na pasta public do deploy
-                dep_file = os.path.join(DEPLOY_EVENTS_DIR, f"{ticker}.json")
-                with open(dep_file, "w", encoding="utf-8") as f:
-                    json.dump(res, f, ensure_ascii=False)
+                # Salvar na pasta public do deploy (se existir localmente)
+                if has_deploy_dir:
+                    dep_file = os.path.join(DEPLOY_EVENTS_DIR, f"{ticker}.json")
+                    with open(dep_file, "w", encoding="utf-8") as f:
+                        json.dump(res, f, ensure_ascii=False)
 
                 completed += 1
                 if completed % 25 == 0 or completed == len(tickers):
@@ -306,12 +404,15 @@ def run_b3_events_extraction():
     with open(cons_file, "w", encoding="utf-8") as f:
         json.dump(consolidated_data, f, ensure_ascii=False)
 
-    deploy_cons_file = os.path.join(PUBLIC_DIR, "events_data.json")
-    with open(deploy_cons_file, "w", encoding="utf-8") as f:
-        json.dump(consolidated_data, f, ensure_ascii=False)
+    if has_deploy_dir:
+        deploy_cons_file = os.path.join(PUBLIC_DIR, "events_data.json")
+        with open(deploy_cons_file, "w", encoding="utf-8") as f:
+            json.dump(consolidated_data, f, ensure_ascii=False)
+
+    # Sincronizar com Supabase para a estrutura em cascata
+    sync_events_to_supabase(consolidated_data)
 
     logging.info(f"[OK] Extração finalizada com sucesso! Total de ativos consolidados: {len(consolidated_data)}")
-    logging.info(f"Arquivo consolidado gerado: {cons_file} e {deploy_cons_file}")
 
 if __name__ == "__main__":
     run_b3_events_extraction()
