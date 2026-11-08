@@ -308,6 +308,7 @@ def sync_events_to_supabase(consolidated_data):
 
 
 def load_tickers_from_db_or_local():
+    from clean_duplicates import IGNORED_INACTIVE_TICKERS
     dash_data_path = os.path.join(BASE_DIR, "dashboard_data.json")
     if os.path.exists(dash_data_path):
         with open(dash_data_path, "r", encoding="utf-8") as f:
@@ -315,7 +316,7 @@ def load_tickers_from_db_or_local():
         tickers = {
             t: dash_data[t].get("company", t)
             for t in dash_data.keys()
-            if t not in ["IBOV", "IFNC", "SEGUROS"]
+            if t not in ["IBOV", "IFNC", "SEGUROS"] and t not in IGNORED_INACTIVE_TICKERS
         }
         return tickers
 
@@ -338,7 +339,11 @@ def load_tickers_from_db_or_local():
         JOIN companies c ON c.id = s.company_id
         ORDER BY s.ticker;
     """)
-    tickers = {row[0]: (row[1] or row[0]) for row in cur.fetchall() if row[0] not in ["IBOV", "IFNC", "SEGUROS"]}
+    tickers = {
+        row[0]: (row[1] or row[0])
+        for row in cur.fetchall()
+        if row[0] not in ["IBOV", "IFNC", "SEGUROS"] and row[0] not in IGNORED_INACTIVE_TICKERS
+    }
     conn.close()
     return tickers
 

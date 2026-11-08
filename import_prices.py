@@ -15,13 +15,15 @@ from datetime import datetime
 # Carregar variáveis do .env
 load_dotenv()
 
+from clean_duplicates import IGNORED_INACTIVE_TICKERS
+
 def get_db_connection():
     return psycopg2.connect(
         dbname=os.getenv("DB_NAME", "postgres"),
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD"),
         host=os.getenv("DB_HOST"),
-        port=int(os.getenv("DB_PORT") or 5432),
+        port=int(os.getenv("DB_PORT", 5432)),
         connect_timeout=15
     )
 
@@ -37,6 +39,8 @@ def fetch_and_save_prices(start_date="2023-01-01"):
     total_records = 0
 
     for sec_id, ticker in securities:
+        if ticker in IGNORED_INACTIVE_TICKERS:
+            continue
         yf_symbol = f"{ticker}.SA"
         print(f"\nBaixando histórico de {ticker} ({yf_symbol}) desde {start_date}...")
 

@@ -14,13 +14,15 @@ import pandas as pd
 
 load_dotenv()
 
+from clean_duplicates import IGNORED_INACTIVE_TICKERS
+
 def get_db_connection():
     return psycopg2.connect(
         dbname=os.getenv("DB_NAME", "postgres"),
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD"),
         host=os.getenv("DB_HOST"),
-        port=int(os.getenv("DB_PORT") or 5432),
+        port=int(os.getenv("DB_PORT", 5432)),
         connect_timeout=20
     )
 
@@ -40,6 +42,8 @@ def import_distributions_and_splits(start_year=2023):
     total_splits = 0
 
     for sec_id, ticker, comp_id, comp_name in securities:
+        if ticker in IGNORED_INACTIVE_TICKERS:
+            continue
         yf_symbol = f"{ticker}.SA"
         print(f"\nBuscando eventos para {ticker} ({yf_symbol})...")
 
