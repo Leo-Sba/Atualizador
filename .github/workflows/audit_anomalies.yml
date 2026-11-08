@@ -1,0 +1,47 @@
+name: Auditoria Continua e Auto-Cura de Anomalias B3 & CVM
+
+on:
+  schedule:
+    # Executa de segunda a sexta-feira às 23:30 UTC (20:30 Horário de Brasília)
+    # Executado 1 hora após a atualização principal das 19:30 BRT (22:30 UTC)
+    - cron: '30 23 * * 1-5'
+  workflow_dispatch: # Permite disparo manual imediato
+
+jobs:
+  audit-and-heal:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Instalar Dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 1. Executar Motor de Auto-Cura e Fallback Externo (Self-Healing)
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          python auto_heal_anomalies.py
+
+      - name: 2. Executar Auditoria Contínua Pós-Cura e Persistir Logs
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          python detect_anomalies.py

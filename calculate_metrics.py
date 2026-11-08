@@ -16,6 +16,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Proporção oficial de ações agrupadas em cada Unit (UNT) negociada na B3:
+UNIT_SHARES_RATIO = {
+    'BPAC11': 3.0,  # 1 ON + 2 PN
+    'KLBN11': 5.0,  # 1 ON + 4 PN
+    'SANB11': 2.0,  # 1 ON + 1 PN
+    'TAEE11': 3.0,  # 1 ON + 2 PN
+    'ALUP11': 3.0,  # 1 ON + 2 PN
+    'ENGI11': 5.0,  # 1 ON + 4 PN
+    'SAPR11': 5.0,  # 1 ON + 4 PN
+    'IGTI11': 3.0   # 1 ON + 2 PN
+}
+
 def get_db_connection():
     return psycopg2.connect(
         dbname=os.getenv("DB_NAME", "postgres"),
@@ -38,8 +50,8 @@ def calculate_metrics():
             SELECT 
                 r.source_type,
                 r.fiscal_year,
-                r.period_start,
-                r.period_end,
+                f.period_start,
+                f.period_end,
                 r.receipt_date,
                 f.account_code,
                 f.account_description,
@@ -51,7 +63,7 @@ def calculate_metrics():
                   f.account_code IN ('3.11', '3.09')
                   OR (f.account_code IN ('2.03', '2.07', '2.08') AND f.account_description ILIKE '%%Patrimônio Líquido%%')
               )
-            ORDER BY r.receipt_date ASC, r.period_end ASC;
+            ORDER BY r.receipt_date ASC, f.period_end ASC;
         """, (comp_id,))
         facts = cur.fetchall()
 
@@ -205,16 +217,29 @@ def calculate_metrics():
                 1
             ))
 
-            lpa_ttm = (net_income_ttm / total_shares) if (net_income_ttm and total_shares and total_shares > 0) else None
-            vpa = (latest_equity / total_shares) if (latest_equity and total_shares and total_shares > 0) else None
+            base_lpa = (net_income_ttm / total_shares) if (net_income_ttm and total_shares and total_shares > 0) else None
+            base_vpa = (latest_equity / total_shares) if (latest_equity and total_shares and total_shares > 0) else None
 
             for sec_id, close_p in day_prices.items():
-                stype = sec_dict[sec_id][1]
-                sec_shares = common_shares if stype == 'ON' else (preferred_shares if stype == 'PN' else total_shares)
-                sec_market_cap = (close_p * sec_shares) if sec_shares else None
+                ticker_code, stype = sec_dict[sec_id]
+                unit_ratio = UNIT_SHARES_RATIO.get(ticker_code, 1.0)
 
-                stock_pe = (close_p / lpa_ttm) if (lpa_ttm and lpa_ttm > 0) else None
-                stock_pvp = (close_p / vpa) if (vpa and vpa > 0) else None
+                # Ajuste de LPA e VPA caso seja Unit (multiplica pela quantidade de acoes do pacote)
+                sec_lpa = (base_lpa * unit_ratio) if base_lpa else None
+                sec_vpa = (base_vpa * unit_ratio) if base_vpa else None
+
+                if stype == 'ON':
+                    sec_shares = common_shares
+                elif stype == 'PN':
+                    sec_shares = preferred_shares
+                elif unit_ratio > 1.0 and total_shares:
+                    sec_shares = total_shares / unit_ratio
+                else:
+                    sec_shares = total_shares
+
+                sec_market_cap = (close_p * sec_shares) if sec_shares else None
+                stock_pe = (close_p / sec_lpa) if (sec_lpa and sec_lpa > 0) else None
+                stock_pvp = (close_p / sec_vpa) if (sec_vpa and sec_vpa > 0) else None
 
                 daily_metrics_to_insert.append((
                     sec_id,
@@ -222,9 +247,9 @@ def calculate_metrics():
                     fin_as_of,
                     close_p,
                     net_income_ttm,
-                    lpa_ttm,
+                    sec_lpa,
                     stock_pe,
-                    vpa,
+                    sec_vpa,
                     stock_pvp,
                     roe_ttm,
                     sec_shares,
