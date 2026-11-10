@@ -181,16 +181,13 @@ jobs:
       - name: Publicar em Produção na Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           if [ -n "$VERCEL_TOKEN" ]; then
             echo "Iniciando deploy em producao na Vercel..."
-            ORG_ID="${VERCEL_ORG_ID:-team_Vq8xybWYkCQy4ZCfUg2rDEfv}"
-            PROJECT_ID="${VERCEL_PROJECT_ID:-prj_iTbDA9V8SZyxoUIxuNzbpV2SIQoB}"
-            mkdir -p deploy_dist/.vercel
-            echo "{\"projectId\":\"$PROJECT_ID\",\"orgId\":\"$ORG_ID\",\"projectName\":\"dashboard-ibov-preco-lucro\"}" > deploy_dist/.vercel/project.json
-            npx vercel --prod --token="$VERCEL_TOKEN" --yes deploy_dist
+            cd deploy_dist
+            mkdir -p .vercel
+            echo '{"projectId":"prj_iTbDA9V8SZyxoUIxuNzbpV2SIQoB","orgId":"team_Vq8xybWYkCQy4ZCfUg2rDEfv","projectName":"dashboard-ibov-preco-lucro"}' > .vercel/project.json
+            npx vercel --prod --token="$VERCEL_TOKEN" --scope="preco-lucro" --yes
           else
             echo "::warning::Secret VERCEL_TOKEN nao configurado no repositorio. O deploy automatico na Vercel foi pulado."
           fi
