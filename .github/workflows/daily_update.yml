@@ -133,3 +133,64 @@ jobs:
         run: |
           sleep 5
           python run_updater.py --stage 4
+
+  # =========================================================================
+  # ESTÁGIO 5: Compilação do Dashboard e Deploy em Produção (Vercel)
+  # =========================================================================
+  stage-5-deploy:
+    name: "5. Compilacao do Dashboard & Deploy Vercel"
+    needs: stage-4-audit-and-heal
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Configurar Node.js (Vercel CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar Dependências Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Executar Estágio 5 (Exportar Dados e Compilar dashboard.html)
+        run: |
+          sleep 5
+          python run_updater.py --stage 5
+
+      - name: Preparar Diretório de Deploy
+        run: |
+          mkdir -p deploy_dist
+          cp dashboard.html deploy_dist/index.html
+          [ -f anomalias.html ] && cp anomalias.html deploy_dist/
+          [ -f anomalies_data.json ] && cp anomalies_data.json deploy_dist/
+          [ -f events_data.json ] && cp events_data.json deploy_dist/
+          [ -d events ] && cp -r events deploy_dist/
+          [ -f vercel.json ] && cp vercel.json deploy_dist/
+
+      - name: Publicar em Produção na Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -n "$VERCEL_TOKEN" ]; then
+            echo "Iniciando deploy em producao na Vercel..."
+            ORG_ID="${VERCEL_ORG_ID:-team_Vq8xybWYkCQy4ZCfUg2rDEfv}"
+            PROJECT_ID="${VERCEL_PROJECT_ID:-prj_iTbDA9V8SZyxoUIxuNzbpV2SIQoB}"
+            mkdir -p deploy_dist/.vercel
+            echo "{\"projectId\":\"$PROJECT_ID\",\"orgId\":\"$ORG_ID\",\"projectName\":\"dashboard-ibov-preco-lucro\"}" > deploy_dist/.vercel/project.json
+            npx vercel --prod --token="$VERCEL_TOKEN" --yes deploy_dist
+          else
+            echo "::warning::Secret VERCEL_TOKEN nao configurado no repositorio. O deploy automatico na Vercel foi pulado."
+          fi

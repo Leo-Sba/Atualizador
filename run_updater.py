@@ -198,13 +198,31 @@ def run_stage_4_audit():
     )
 
 
+def run_stage_5_export():
+    """
+    ESTÁGIO 5: Compilação e Geração do Dashboard Estático (dashboard_data.json e dashboard.html)
+    """
+    logging.info("=" * 65)
+    logging.info("ESTÁGIO 5/5: COMPILAÇÃO DO DASHBOARD (EXPORTAÇÃO DE DADOS & HTML)")
+    logging.info("=" * 65)
+
+    from export_dashboard_data import export_dashboard_data
+    run_step_with_retry(
+        "5.1 Exportação de dados e compilação do dashboard.html (export_dashboard_data)",
+        export_dashboard_data,
+        retries=2,
+        delay_sec=10,
+        critical=True,
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description="Orquestrador em Cascata B3 & CVM")
     parser.add_argument(
         "--stage",
-        choices=["1", "2", "3", "4", "all"],
+        choices=["1", "2", "3", "4", "5", "all"],
         default="all",
-        help="Estágio específico a executar (1=Ingestão, 2=Métricas, 3=Índices, 4=Auditoria, all=Todos)",
+        help="Estágio específico a executar (1=Ingestão, 2=Métricas, 3=Índices, 4=Auditoria, 5=Dashboard, all=Todos)",
     )
     args = parser.parse_args()
 
@@ -216,11 +234,14 @@ def main():
         run_stage_3_indices()
     elif args.stage == "4":
         run_stage_4_audit()
+    elif args.stage == "5":
+        run_stage_5_export()
     else:
         run_stage_1_ingestion()
         run_stage_2_metrics()
         run_stage_3_indices()
         run_stage_4_audit()
+        run_stage_5_export()
 
     logging.info("=" * 65)
     logging.info(f"EXECUÇÃO FINALIZADA COM SUCESSO! (Modo: --stage {args.stage})")
