@@ -59,11 +59,13 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           if [ -n "$VERCEL_TOKEN" ]; then
-            echo "Iniciando deploy em producao na Vercel..."
+            echo "Diagnosticando autenticação Vercel..."
+            npx vercel whoami --token="$VERCEL_TOKEN"
+            npx vercel teams ls --token="$VERCEL_TOKEN"
             cd deploy_dist
             mkdir -p .vercel
             echo '{"projectId":"prj_iTbDA9V8SZyxoUIxuNzbpV2SIQoB","orgId":"team_Vq8xybWYkCQy4ZCfUg2rDEfv","projectName":"dashboard-ibov-preco-lucro"}' > .vercel/project.json
-            npx vercel --prod --token="$VERCEL_TOKEN" --scope="preco-lucro" --yes
+            npx vercel --prod --token="$VERCEL_TOKEN" --yes
           else
             echo "::error::Secret VERCEL_TOKEN nao encontrado!"
             exit 1
