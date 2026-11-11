@@ -2251,7 +2251,7 @@ body.theme-light {
 * { font-family: var(--font-sans); box-sizing: border-box; }
 html, body {
     background: var(--bg);
-    overflow-x: hidden;
+    overflow-x: clip;
     max-width: 100vw;
 }
 body {
