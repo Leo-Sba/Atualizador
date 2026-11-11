@@ -40,9 +40,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Executar Estágio 5 (Exportar Dados e Compilar dashboard.html)
+      - name: Executar Estágio 6 (Exportar Dados e Compilar dashboard.html)
         run: |
-          python run_updater.py --stage 5
+          python run_updater.py --stage 6
 
       - name: Preparar Diretório de Deploy
         run: |

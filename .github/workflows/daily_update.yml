@@ -1,4 +1,4 @@
-name: Pipeline Diario em Cascata B3 & CVM (4 Estagios)
+name: Pipeline Diario em Cascata B3 & CVM (6 Estagios)
 
 on:
   schedule:
@@ -135,11 +135,41 @@ jobs:
           python run_updater.py --stage 4
 
   # =========================================================================
-  # ESTÁGIO 5: Compilação do Dashboard e Deploy em Produção (Vercel)
+  # ESTÁGIO 5 (FIM DA FILA DE DADOS): Coleta Macro & Curva de Juros (BCB/Tesouro)
   # =========================================================================
-  stage-5-deploy:
-    name: "5. Compilacao do Dashboard & Deploy Vercel"
+  stage-5-macro:
+    name: "5. Macro & Curva de Juros (Fim da Fila)"
     needs: stage-4-audit-and-heal
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Instalar Dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Executar Estágio 5 (Coleta Macro & Curva Tesouro)
+        continue-on-error: true
+        run: |
+          sleep 5
+          python run_updater.py --stage 5
+
+  # =========================================================================
+  # ESTÁGIO 6 (FINAL ABSOLUTO): Compilação do Dashboard e Deploy em Produção (Vercel)
+  # =========================================================================
+  stage-6-deploy:
+    name: "6. Compilacao do Dashboard & Deploy Vercel"
+    needs: stage-5-macro
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -163,10 +193,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Executar Estágio 5 (Exportar Dados e Compilar dashboard.html)
+      - name: Executar Estágio 6 (Exportar Dados e Compilar dashboard.html)
         run: |
           sleep 5
-          python run_updater.py --stage 5
+          python run_updater.py --stage 6
 
       - name: Preparar Diretório de Deploy
         run: |
@@ -187,7 +217,7 @@ jobs:
             cd deploy_dist
             mkdir -p .vercel
             echo '{"projectId":"prj_iTbDA9V8SZyxoUIxuNzbpV2SIQoB","orgId":"team_Vq8xybWYkCQy4ZCfUg2rDEfv","projectName":"dashboard-ibov-preco-lucro"}' > .vercel/project.json
-            npx vercel --prod --token="$VERCEL_TOKEN" --scope="preco-lucro" --yes
+            npx vercel --prod --token="$VERCEL_TOKEN" --yes
           else
             echo "::warning::Secret VERCEL_TOKEN nao configurado no repositorio. O deploy automatico na Vercel foi pulado."
           fi

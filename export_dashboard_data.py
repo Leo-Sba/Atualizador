@@ -233,6 +233,30 @@ def export_dashboard_data():
     except Exception as e:
         logging.warning(f"Aviso ao sincronizar b3_corporate_events_cache: {e}")
 
+    # 2.6 Sincronizar Snapshot Macro & Juros (Copom, Focus, Curva Tesouro Direto) do Supabase
+    try:
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS macro_data_cache (
+                cache_key TEXT PRIMARY KEY,
+                payload JSONB NOT NULL,
+                payload_hash TEXT,
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            );
+        """)
+        conn.commit()
+        cur.execute("SELECT payload FROM macro_data_cache WHERE cache_key = 'macro_snapshot';")
+        macro_row = cur.fetchone()
+        if macro_row and isinstance(macro_row[0], dict):
+            with open("macro_data.json", "w", encoding="utf-8") as f:
+                json.dump(macro_row[0], f, ensure_ascii=False, separators=(",", ":"))
+            logging.info("[OK] macro_data.json sincronizado do Supabase (macro_data_cache).")
+        elif not os.path.exists("macro_data.json"):
+            logging.info("macro_data_cache vazio; executando coleta inicial via fetch_macro_data...")
+            from fetch_macro_data import run_macro_collection
+            run_macro_collection()
+    except Exception as e:
+        logging.warning(f"Aviso ao sincronizar macro_data_cache: {e}")
+
     conn.close()
 
     # 3. Gerar Índice SEGUROS Sintético

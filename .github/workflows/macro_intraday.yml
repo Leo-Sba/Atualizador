@@ -1,0 +1,79 @@
+name: Macro & Curva Intradiaria (Fim da Fila)
+
+on:
+  schedule:
+    # Seg a Sex: 10h23, 13h23, 16h23 e 18h45 BRT (13h23, 16h23, 19h23 e 21h45 UTC)
+    # Executa fora da janela noturna do pipeline principal (19h30 BRT / 22h30 UTC)
+    - cron: '23 13,16,19 * * 1-5'
+    - cron: '45 21 * * 1-5'
+  workflow_dispatch:
+
+concurrency:
+  group: b3-supabase-pipeline
+  cancel-in-progress: false
+
+env:
+  DB_HOST: ${{ secrets.DB_HOST }}
+  DB_PORT: ${{ secrets.DB_PORT }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  DB_USER: ${{ secrets.DB_USER }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+jobs:
+  macro-intraday-sync:
+    name: "Atualizacao Intradiaria Macro & Curva (Fim da Fila)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Instalar Dependências Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Coletar Dados Macro, Focus & Curva Tesouro
+        id: collect
+        run: |
+          python fetch_macro_data.py --check-change
+          CHANGED=$(cat macro_changed.flag 2>/dev/null || echo "0")
+          echo "changed=$CHANGED" >> "$GITHUB_OUTPUT"
+
+      - name: Configurar Node.js (Vercel CLI)
+        if: steps.collect.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Compilar Dashboard Atualizado (Estágio 6)
+        if: steps.collect.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
+        run: |
+          python run_updater.py --stage 6
+
+      - name: Publicar em Produção na Vercel
+        if: steps.collect.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -n "$VERCEL_TOKEN" ]; then
+            mkdir -p deploy_dist/.vercel
+            cp dashboard.html deploy_dist/index.html
+            [ -f anomalias.html ] && cp anomalias.html deploy_dist/
+            [ -f anomalies_data.json ] && cp anomalies_data.json deploy_dist/
+            [ -f events_data.json ] && cp events_data.json deploy_dist/
+            [ -d events ] && cp -r events deploy_dist/
+            [ -f vercel.json ] && cp vercel.json deploy_dist/
+            cd deploy_dist
+            echo '{"projectId":"prj_iTbDA9V8SZyxoUIxuNzbpV2SIQoB","orgId":"team_Vq8xybWYkCQy4ZCfUg2rDEfv","projectName":"dashboard-ibov-preco-lucro"}' > .vercel/project.json
+            npx vercel --prod --token="$VERCEL_TOKEN" --yes
+          else
+            echo "::warning::Secret VERCEL_TOKEN nao configurado."
+          fi

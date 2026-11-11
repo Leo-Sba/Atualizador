@@ -52,6 +52,14 @@ if os.path.exists("ibov_metric.json"):
 
         pass
 
+macro_snapshot = {}
+if os.path.exists("macro_data.json"):
+    try:
+        with open("macro_data.json", "r", encoding="utf-8") as f:
+            macro_snapshot = json.load(f)
+    except Exception:
+        pass
+
 
 
 template = """<!DOCTYPE html>
@@ -2358,8 +2366,8 @@ body.theme-light::after {
     position: sticky;
     top: 10px;
     z-index: 900;
-    gap: 6px;
-    padding: 6px;
+    gap: 4px;
+    padding: 5px;
     margin-bottom: 20px;
     flex-wrap: wrap;
     background: var(--glass-bg);
@@ -2378,14 +2386,14 @@ body.theme-light .app-tab-nav { box-shadow: 0 10px 30px -14px rgba(9, 9, 11, 0.1
 .brand {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 2px 10px 2px 4px;
+    gap: 8px;
+    padding: 2px 6px 2px 3px;
     user-select: none;
 }
 .brand-mark {
-    width: 30px;
-    height: 30px;
-    border-radius: 9px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
     display: inline-grid;
     place-items: center;
     font-size: 11px;
@@ -2396,17 +2404,18 @@ body.theme-light .app-tab-nav { box-shadow: 0 10px 30px -14px rgba(9, 9, 11, 0.1
     box-shadow: 0 4px 14px -4px rgba(99, 102, 241, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
-.brand-text strong { font-size: 13.5px; font-weight: 700; letter-spacing: -0.01em; color: var(--text-main); }
-.brand-text small { font-size: 10.5px; font-weight: 500; color: var(--text-faint); letter-spacing: 0.04em; }
-.app-tab-divider { width: 1px; height: 22px; background: var(--border); margin: 0 4px; }
+.brand-text strong { font-size: 13px; font-weight: 700; letter-spacing: -0.01em; color: var(--text-main); }
+.brand-text small { font-size: 10px; font-weight: 500; color: var(--text-faint); letter-spacing: 0.04em; }
+.app-tab-divider { width: 1px; height: 22px; background: var(--border); margin: 0 2px; }
 .app-tab-btn {
-    padding: 8px 14px;
-    font-size: 13px;
+    padding: 7px 10px;
+    font-size: 12.5px;
     font-weight: 500;
     color: var(--text-muted);
     background: transparent;
     border: 1px solid transparent;
     border-radius: 10px;
+    white-space: nowrap;
     transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 .app-tab-btn:hover { color: var(--text-main); background: var(--hover-bg); border-color: transparent; }
@@ -2425,9 +2434,9 @@ body.theme-light .app-tab-btn.active {
     box-shadow: 0 1px 3px rgba(9, 9, 11, 0.08);
 }
 .app-tab-btn .sector-count-badge {
-    font-size: 10.5px;
+    font-size: 10px;
     font-weight: 600;
-    padding: 1px 7px;
+    padding: 1px 6px;
     border: 1px solid var(--border);
     background: rgba(255, 255, 255, 0.04);
     font-variant-numeric: tabular-nums;
@@ -3173,6 +3182,10 @@ body.theme-light .event-tile-date {
                 🔄 <span>Splits, Inplits & Eventos</span>
                 <span class="sector-count-badge" id="badgeTotalEventsTab">233 Eventos</span>
             </button>
+            <button class="app-tab-btn" id="btnTabMacro" onclick="switchAppTab('macro')">
+                🏛️ <span>Macro & Juros</span>
+                <span class="sector-count-badge" id="badgeMacroSelic">--%</span>
+            </button>
 
             <!-- Alternador Global de Tema (🌙 Escuro / ☀️ Claro) -->
             <div class="app-tab-theme-toggle">
@@ -3768,6 +3781,253 @@ body.theme-light .event-tile-date {
             </div>
         </div>
 
+        <!-- Aba 4: Macro & Juros (Copom, Focus, Curva de Juros Tesouro Direto, Regimes & E se?) -->
+        <div id="tabMacroContent">
+            <!-- Hero Macro & KPIs em Tempo Real -->
+            <div class="macro-hero-card macro-section">
+                <div class="macro-hero-top">
+                    <div>
+                        <span class="macro-kicker">POLÍTICA MONETÁRIA · EXPECTATIVAS · CENÁRIOS</span>
+                        <h2 class="macro-hero-title">Macro &amp; Juros (Brasil &amp; Global)</h2>
+                        <p class="macro-hero-sub">O porquê por trás do preço das ações e índices: ciclo da Selic (Copom), expectativas do Boletim Focus ao vivo, curva de juros do Tesouro Direto com inflação implícita (breakeven), regimes de risco e mapa de transmissão para o mercado brasileiro.</p>
+                    </div>
+                    <div class="macro-live-pill" id="mcLiveStatusPill" title="Dados pré-carregados via Supabase + atualização automática ao vivo nas APIs do Banco Central">
+                        <span class="macro-live-dot"></span>
+                        <span id="mcLiveStatusText">Snapshot BCB/Tesouro</span>
+                    </div>
+                </div>
+
+                <div class="macro-kpi-strip">
+                    <div class="macro-kpi-chip highlight">
+                        <span class="lbl">Selic Meta</span>
+                        <strong id="mcKpiSelic">--%</strong>
+                        <small id="mcKpiSelicSrc">BCB · SGS 432</small>
+                    </div>
+                    <div class="macro-kpi-chip">
+                        <span class="lbl">CDI Efetivo</span>
+                        <strong id="mcKpiCdi">--%</strong>
+                        <small id="mcKpiCdiSrc">BCB · SGS 4389</small>
+                    </div>
+                    <div class="macro-kpi-chip">
+                        <span class="lbl">IPCA 12M</span>
+                        <strong id="mcKpiIpca12">--%</strong>
+                        <small id="mcKpiIpcaSrc">IBGE · SGS 13522</small>
+                    </div>
+                    <div class="macro-kpi-chip">
+                        <span class="lbl">Juro Real Ex-Post</span>
+                        <strong id="mcKpiReal">--%</strong>
+                        <small>Selic descontada pelo IPCA 12M</small>
+                    </div>
+                    <div class="macro-kpi-chip copom">
+                        <span class="lbl">Próximo Copom</span>
+                        <strong id="mcKpiNextCopom">--</strong>
+                        <small id="mcKpiNextCopomSub">Contagem em dias úteis B3</small>
+                    </div>
+                </div>
+
+                <div class="macro-subnav">
+                    <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecJuros')">🏦 Copom &amp; Focus</button>
+                    <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecCurva')">📈 Vértices DI1 &amp; Curva de Juros</button>
+                    <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecRegimes')">🧭 Regimes de Risco</button>
+                    <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecEse')">🔀 Mapa "E se…?"</button>
+                </div>
+            </div>
+
+            <!-- Bloco 1: Ciclo Copom + Boletim Focus -->
+            <div id="macroSecJuros" class="macro-grid-2 macro-section">
+                <div class="macro-panel">
+                    <div class="macro-panel-head">
+                        <div>
+                            <span class="macro-kicker orange" id="mcCopomKicker">DECISÕES DO COPOM</span>
+                            <h3>Trajetória da Taxa Selic</h3>
+                        </div>
+                        <div class="period-selector" style="padding: 2px;" id="mcCopomYearTabs">
+                            <button type="button" class="period-btn active" onclick="MacroModule.setCopomYear(2026, this)">2026</button>
+                            <button type="button" class="period-btn" onclick="MacroModule.setCopomYear(2027, this)">2027</button>
+                        </div>
+                    </div>
+                    <div id="mcCopomChart" class="macro-svg-box"></div>
+                    <p class="macro-note" id="mcCopomDesc">
+                        Cada decisão do Copom impacta diretamente a ponta curta da curva DI, o CDI da renda fixa e o custo de capital das empresas domésticas na B3 (especialmente varejo, construção e endividadas).
+                    </p>
+                </div>
+
+                <div class="macro-panel">
+                    <div class="macro-panel-head">
+                        <div>
+                            <span class="macro-kicker">API OLINDA / BANCO CENTRAL</span>
+                            <h3>Boletim Focus — Mediana do Mercado</h3>
+                        </div>
+                        <span class="macro-src-badge" id="mcFocusDate">carregando…</span>
+                    </div>
+                    <div class="macro-table-wrap">
+                        <table class="macro-table">
+                            <thead>
+                                <tr>
+                                    <th>Indicador</th>
+                                    <th data-mc-focus-y="0">--</th>
+                                    <th data-mc-focus-y="1">--</th>
+                                    <th data-mc-focus-y="2">--</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mcFocusBody"></tbody>
+                        </table>
+                    </div>
+                    <p class="macro-note">
+                        Setas comparam com a pesquisa anterior (▲ subiu, ▼ caiu, = estável). Publicado às segundas-feiras pelo BCB reunindo projeções de mais de 100 instituições.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Bloco 2: Vértices DI1 + Curva do Tesouro Direto & Breakeven -->
+            <div id="macroSecCurva" class="macro-section">
+                <div class="macro-panel" style="margin-bottom: 18px;">
+                    <div class="macro-grid-12">
+                        <div>
+                            <span class="macro-kicker">ESTRUTURA A TERMO (DI1)</span>
+                            <h3 style="margin: 4px 0 8px 0; font-size: 17px;">Como ler a curva de juros futuros</h3>
+                            <p class="macro-note" style="margin-top: 0;">
+                                Os contratos DI1 de janeiro são os vértices mais líquidos. A diferença entre a Selic atual e os vértices curtos mostra quanto corte (ou alta) o mercado já precifica. Vértices longos (F31, F33) refletem prêmio fiscal e inflação de prazo.
+                            </p>
+                            <ul style="margin: 12px 0 0 18px; padding: 0; font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+                                <li><strong class="macro-pos">Curva fechando</strong> (taxas caindo) ➔ alívio de valuation para bolsa, varejo e small caps.</li>
+                                <li><strong class="macro-neg">Curva abrindo</strong> (taxas subindo) ➔ maior taxa de desconto, pressão nos múltiplos P/L.</li>
+                                <li><strong style="color: var(--accent-orange);">Inclinação</strong> (longo − curto) ➔ termômetro de risco fiscal e prêmio de longo prazo.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div style="margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                <span class="macro-kicker" style="margin: 0;">VÉRTICES DI1 VIGENTES (CONTAGEM DU ANBIMA)</span>
+                            </div>
+                            <div id="mcDiVertices" class="macro-di-grid"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Painel Curva do Tesouro Direto -->
+                <div class="macro-panel" id="mcCurveWrap">
+                    <div class="macro-panel-head">
+                        <div>
+                            <span class="macro-kicker green">CURVA PÚBLICA · TESOURO TRANSPARENTE</span>
+                            <h3 id="mcCurveTitle">A curva de juros abriu ou fechou?</h3>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+                            <div class="period-selector" style="padding: 2px;">
+                                <button type="button" class="period-btn active" data-mc-ck="pre" onclick="MacroModule.setCurveKind('pre', this)">Prefixada</button>
+                                <button type="button" class="period-btn" data-mc-ck="ipca" onclick="MacroModule.setCurveKind('ipca', this)">IPCA+ (real)</button>
+                            </div>
+                            <div class="period-selector" style="padding: 2px;">
+                                <button type="button" class="period-btn active" data-mc-cc="1" onclick="MacroModule.setCurveBack(1, this)">vs ontem</button>
+                                <button type="button" class="period-btn" data-mc-cc="5" onclick="MacroModule.setCurveBack(5, this)">1 sem.</button>
+                                <button type="button" class="period-btn" data-mc-cc="21" onclick="MacroModule.setCurveBack(21, this)">1 mês</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="macro-grid-8-4">
+                        <div id="mcCurveChart" class="macro-svg-box"></div>
+                        <div>
+                            <div id="mcCurveKpis" class="macro-curve-kpis"></div>
+                            <span class="macro-kicker" style="margin-bottom: 6px;">Variação por vencimento</span>
+                            <div id="mcCurveBars" style="margin-bottom: 10px;"></div>
+                            <p id="mcCurveRead" class="macro-note"></p>
+                        </div>
+                    </div>
+
+                    <!-- Bloco Inflação Implícita (Breakeven) -->
+                    <div id="mcBeWrap" style="margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); display: none;">
+                        <div class="macro-panel-head">
+                            <div>
+                                <span class="macro-kicker orange">INFLAÇÃO IMPLÍCITA (BREAKEVEN)</span>
+                                <h3 id="mcBeTitle">Quanta inflação o mercado está precificando?</h3>
+                            </div>
+                            <span class="macro-src-badge">Prefixado ÷ IPCA+ · média anual até o vencimento</span>
+                        </div>
+                        <div class="macro-grid-8-4">
+                            <div id="mcBeBars"></div>
+                            <div>
+                                <div id="mcBeFocus" style="padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); font-family: var(--font-mono); font-size: 11px;"></div>
+                                <p id="mcBeRead" class="macro-note"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="macro-note" id="mcCurveSrc" style="font-family: var(--font-mono); font-size: 10.5px; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border);"></p>
+                </div>
+            </div>
+
+            <!-- Bloco 3: Regimes de Risco (Intermercados) -->
+            <div id="macroSecRegimes" class="macro-panel macro-section">
+                <div class="macro-panel-head" style="padding-bottom: 12px; border-bottom: 1px solid var(--border);">
+                    <div>
+                        <span class="macro-kicker">GUIA DE LEITURA · INTERMERCADOS</span>
+                        <h3>Como os ativos costumam reagir em cada regime de risco</h3>
+                    </div>
+                    <div class="period-selector" style="padding: 2px;" id="mcRegimeBtns"></div>
+                </div>
+                <h4 id="mcRegimeTitle" style="margin: 12px 0 6px 0; font-size: 17px; font-weight: 700; color: var(--text-main);"></h4>
+                <p id="mcRegimeDesc" class="macro-note" style="margin-top: 0;"></p>
+                <div class="macro-risk-scale">
+                    <div id="mcRegimeMarker" class="macro-risk-marker" style="left: 50%;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); text-transform: uppercase;">
+                    <span>Aversão (dólar, ouro, Treasuries)</span>
+                    <span>Neutro</span>
+                    <span>Apetite (Ibovespa, emergentes)</span>
+                </div>
+                <div id="mcRegimeGrid" class="macro-regime-grid"></div>
+                <p class="macro-note" style="font-size: 11px;">Padrões históricos frequentes, não regras absolutas. Correlações mudam em cenários eleitorais ou choques fiscais.</p>
+            </div>
+
+            <!-- Bloco 4: "E se…?" Mapa de Reações & Conexão com Ações B3 -->
+            <div id="macroSecEse" class="macro-section">
+                <div class="macro-panel" style="margin-bottom: 16px;">
+                    <div class="macro-panel-head">
+                        <div>
+                            <span class="macro-kicker">E SE…? · MAPA DE TRANSMISSÃO MACRO</span>
+                            <h3>Como cada choque macro chega aos ativos da B3</h3>
+                        </div>
+                        <span class="macro-src-badge">REAÇÃO TÍPICA EDUCACIONAL</span>
+                    </div>
+
+                    <div class="macro-grid-tx">
+                        <div id="mcTxEvents" class="macro-tx-list"></div>
+                        <div style="border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: rgba(255,255,255,0.02);">
+                            <div id="mcTxHead" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid var(--border);"></div>
+                            <div id="mcTxFlow"></div>
+                            <div class="macro-grid-2" style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);">
+                                <div>
+                                    <span class="macro-kicker">👁️ O QUE OBSERVAR</span>
+                                    <ul id="mcTxWatch" style="margin: 6px 0 0 16px; padding: 0; font-size: 12px; color: var(--text-muted); line-height: 1.55;"></ul>
+                                </div>
+                                <div>
+                                    <span class="macro-kicker orange">⚠️ QUANDO A REGRA FALHA</span>
+                                    <p id="mcTxFail" class="macro-note" style="margin-top: 6px;"></p>
+                                </div>
+                            </div>
+                            <div class="macro-ticker-links" id="mcTxTickerLinks"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="macro-panel">
+                    <div class="macro-panel-head">
+                        <div>
+                            <span class="macro-kicker">TABELA-RESUMO · CLIQUE NUMA LINHA PARA SIMULAR</span>
+                            <h3>Matriz Rápida de Sensibilidade</h3>
+                        </div>
+                        <span class="macro-src-badge">▲ sobe · ▼ cai · ● ambíguo</span>
+                    </div>
+                    <div class="macro-table-wrap">
+                        <table class="macro-table" style="min-width: 660px;">
+                            <thead id="mcTxThead"></thead>
+                            <tbody id="mcTxTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Rodapé Minimalista com Status de Atualização -->
         <footer style="margin-top: 35px; margin-bottom: 25px; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--text-muted); opacity: 0.95;">
@@ -3853,11 +4113,507 @@ body.theme-light .event-tile-date {
     }
     </style>
 
+    <style>
+    /* =====================================================================
+       ABA 4: MACRO & JUROS (Copom, Focus, Curva DI / Tesouro, Regimes & E se?)
+       ===================================================================== */
+    #tabMacroContent {
+        display: none;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        animation: fadeInTab 0.3s ease;
+    }
+    .macro-section {
+        margin-bottom: 18px;
+    }
+    .macro-hero-card,
+    .macro-panel {
+        background: var(--card-bg);
+        -webkit-backdrop-filter: var(--surface-blur);
+        backdrop-filter: var(--surface-blur);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--surface-highlight), var(--shadow-sm);
+        padding: 18px 20px;
+    }
+    body.theme-light .macro-hero-card,
+    body.theme-light .macro-panel {
+        box-shadow: var(--surface-highlight), 0 1px 3px rgba(9, 9, 11, 0.05), 0 8px 24px -12px rgba(9, 9, 11, 0.08);
+    }
+    .macro-kicker {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent-blue);
+        display: inline-block;
+        margin-bottom: 4px;
+    }
+    .macro-kicker.orange { color: var(--accent-orange); }
+    .macro-kicker.green { color: var(--accent-green); }
+    .macro-hero-top {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .macro-hero-title {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        color: var(--text-main);
+        margin: 0 0 6px 0;
+    }
+    .macro-hero-sub {
+        font-size: 13px;
+        color: var(--text-muted);
+        max-width: 780px;
+        line-height: 1.5;
+        margin: 0;
+    }
+    .macro-live-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 600;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        color: #34d399;
+        white-space: nowrap;
+    }
+    body.theme-light .macro-live-pill {
+        background: rgba(21, 128, 61, 0.08);
+        border-color: rgba(21, 128, 61, 0.3);
+        color: #15803d;
+    }
+    .macro-live-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+        animation: pulseGreen 2.2s infinite ease-in-out;
+    }
+    .macro-kpi-strip {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+    }
+    .macro-kpi-chip {
+        padding: 11px 13px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+    body.theme-light .macro-kpi-chip {
+        background: #f8fafc;
+    }
+    .macro-kpi-chip.highlight {
+        border-color: rgba(56, 189, 248, 0.45);
+        background: rgba(56, 189, 248, 0.08);
+    }
+    body.theme-light .macro-kpi-chip.highlight {
+        border-color: rgba(2, 132, 199, 0.35);
+        background: rgba(2, 132, 199, 0.06);
+    }
+    .macro-kpi-chip.copom {
+        border-color: rgba(245, 158, 11, 0.45);
+        background: rgba(245, 158, 11, 0.08);
+    }
+    .macro-kpi-chip span.lbl {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+    .macro-kpi-chip strong {
+        font-family: var(--font-mono);
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--text-main);
+        font-variant-numeric: tabular-nums;
+    }
+    .macro-kpi-chip small {
+        font-size: 10.5px;
+        color: var(--text-faint, var(--text-muted));
+    }
+    .macro-subnav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+    }
+    .macro-subnav-btn {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .macro-subnav-btn:hover {
+        border-color: var(--accent-blue);
+        color: var(--text-main);
+    }
+    body.theme-light .macro-subnav-btn {
+        background: #f1f5f9;
+        color: #334155;
+    }
+    .macro-grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        align-items: start;
+    }
+    .macro-grid-12 {
+        display: grid;
+        grid-template-columns: 5fr 7fr;
+        gap: 18px;
+        align-items: center;
+    }
+    .macro-grid-8-4 {
+        display: grid;
+        grid-template-columns: 8fr 4fr;
+        gap: 18px;
+        align-items: start;
+    }
+    .macro-grid-tx {
+        display: grid;
+        grid-template-columns: 4fr 8fr;
+        gap: 16px;
+        align-items: start;
+    }
+    .macro-panel-head {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+    .macro-panel-head h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+    .macro-src-badge {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--text-muted);
+        padding: 3px 8px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+    }
+    .macro-svg-box {
+        background: rgba(9, 10, 15, 0.45);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px;
+        overflow: hidden;
+    }
+    body.theme-light .macro-svg-box {
+        background: #f8fafc;
+    }
+    .macro-svg-box svg {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    .macro-note {
+        font-size: 12px;
+        color: var(--text-muted);
+        line-height: 1.55;
+        margin: 10px 0 0 0;
+    }
+    .macro-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+    }
+    .macro-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+    }
+    .macro-table th {
+        text-align: left;
+        padding: 10px 12px;
+        font-size: 10.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.04);
+        border-bottom: 1px solid var(--border);
+    }
+    body.theme-light .macro-table th {
+        background: #f1f5f9;
+    }
+    .macro-table td {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-main);
+    }
+    .macro-table tr:last-child td { border-bottom: none; }
+    .macro-table tr.clickable-row { cursor: pointer; transition: background 0.15s ease; }
+    .macro-table tr.clickable-row:hover { background: rgba(56, 189, 248, 0.08); }
+    .macro-table tr.active-row { background: rgba(56, 189, 248, 0.14); }
+    .macro-pos { color: #34d399; font-weight: 700; }
+    .macro-neg { color: #f87171; font-weight: 700; }
+    .macro-neu { color: var(--text-muted); font-weight: 600; }
+    body.theme-light .macro-pos { color: #15803d; }
+    body.theme-light .macro-neg { color: #b91c1c; }
+
+    .macro-di-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+    }
+    .macro-di-card {
+        padding: 10px 12px;
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        font-family: var(--font-mono);
+    }
+    body.theme-light .macro-di-card { background: #f8fafc; }
+    .macro-di-card strong { display: block; font-size: 13px; color: var(--text-main); }
+    .macro-di-card span.dt { display: block; font-size: 10.5px; color: var(--text-muted); margin-top: 2px; }
+    .macro-di-card span.du { display: block; font-size: 11px; font-weight: 700; color: var(--accent-blue); margin-top: 3px; }
+
+    .macro-curve-kpis {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+    .macro-curve-kpi {
+        padding: 10px 12px;
+        border-radius: 9px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+        font-family: var(--font-mono);
+    }
+    body.theme-light .macro-curve-kpi { background: #f8fafc; }
+    .macro-curve-kpi span.lbl { display: block; font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+    .macro-curve-kpi strong { display: block; font-size: 18px; margin: 2px 0; color: var(--text-main); }
+    .macro-curve-kpi small { font-size: 10.5px; color: var(--text-muted); }
+
+    .macro-bar-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+    }
+    .macro-bar-track {
+        position: relative;
+        flex: 1;
+        height: 10px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.06);
+        overflow: hidden;
+    }
+    body.theme-light .macro-bar-track { background: #e2e8f0; }
+
+    .macro-be-bar-wrap { margin-bottom: 10px; }
+    .macro-be-bar-head {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        margin-bottom: 4px;
+    }
+    .macro-be-track {
+        position: relative;
+        height: 14px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        overflow: hidden;
+    }
+    body.theme-light .macro-be-track { background: #e2e8f0; }
+
+    .macro-risk-scale {
+        position: relative;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+        margin: 12px 0 6px 0;
+    }
+    .macro-risk-marker {
+        position: absolute;
+        top: -4px;
+        width: 6px;
+        height: 18px;
+        border-radius: 3px;
+        background: #ffffff;
+        border: 2px solid #0f172a;
+        transform: translateX(-50%);
+        transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .macro-regime-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+    }
+    .macro-tx-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .macro-tx-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        border-left: 4px solid transparent;
+        text-align: left;
+        cursor: pointer;
+        color: var(--text-main);
+        transition: all 0.15s ease;
+    }
+    body.theme-light .macro-tx-btn { background: #f8fafc; }
+    .macro-tx-btn:hover { border-color: var(--border-strong); }
+    .macro-tx-btn.active {
+        background: rgba(56, 189, 248, 0.12);
+        border-color: rgba(56, 189, 248, 0.45);
+        border-left-color: #f59e0b;
+    }
+    body.theme-light .macro-tx-btn.active {
+        background: #0f172a;
+        color: #ffffff;
+    }
+    .macro-tx-btn .tx-tag {
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        font-weight: 700;
+        color: var(--accent-blue);
+        letter-spacing: 0.05em;
+    }
+    .macro-tx-btn.active .tx-tag { color: #fbbf24; }
+    .macro-tx-btn .tx-title {
+        display: block;
+        font-size: 12.5px;
+        font-weight: 700;
+        line-height: 1.25;
+    }
+    .macro-flow-steps {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+    }
+    .macro-flow-step {
+        padding: 11px 12px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+    }
+    body.theme-light .macro-flow-step { background: #f8fafc; }
+    .macro-flow-step.first { border-left: 3px solid #f59e0b; }
+    .macro-flow-chips {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 12px;
+    }
+    .macro-asset-chip {
+        padding: 8px 6px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        text-align: center;
+        font-family: var(--font-mono);
+    }
+    .macro-asset-chip.up {
+        border-color: rgba(34, 197, 94, 0.45);
+        background: rgba(34, 197, 94, 0.1);
+    }
+    .macro-asset-chip.dn {
+        border-color: rgba(239, 68, 68, 0.45);
+        background: rgba(239, 68, 68, 0.1);
+    }
+    .macro-ticker-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+        align-items: center;
+    }
+    .macro-ticker-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        background: rgba(56, 189, 248, 0.1);
+        color: var(--accent-blue);
+        transition: all 0.15s ease;
+    }
+    .macro-ticker-pill:hover {
+        transform: translateY(-1px);
+        background: rgba(56, 189, 248, 0.22);
+    }
+    @media (max-width: 980px) {
+        .macro-grid-2,
+        .macro-grid-12,
+        .macro-grid-8-4,
+        .macro-grid-tx {
+            grid-template-columns: 1fr;
+        }
+        .macro-flow-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .macro-flow-chips { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+        .macro-hero-card, .macro-panel { padding: 14px 12px; }
+        .macro-hero-title { font-size: 20px; }
+        .macro-di-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .macro-regime-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .macro-flow-steps { grid-template-columns: 1fr; }
+        .macro-flow-chips { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .macro-tx-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    </style>
+
     <script>
 
         const DATA = __DATA_PLACEHOLDER__;
         const EARNINGS_CALENDAR = __EARNINGS_PLACEHOLDER__;
         const CORPORATE_EVENTS_MAP = __CORPORATE_EVENTS_PLACEHOLDER__;
+        const MACRO_DATA = __MACRO_PLACEHOLDER__;
 
         // Glass Pro: tipografia e tooltips flutuantes dos gráficos alinhados ao design system (zinc-900/80 + border-zinc-800)
         function applyGlassChartTheme() {
@@ -5583,6 +6339,7 @@ body.theme-light .event-tile-date {
 
             setTimeout(() => {
                 if (typeof renderCharts === 'function') renderCharts();
+                if (typeof MacroModule !== 'undefined' && MacroModule.onThemeChange) MacroModule.onThemeChange();
             }, 50);
         }
 
@@ -5801,16 +6558,20 @@ body.theme-light .event-tile-date {
             const btnDetail = document.getElementById('btnTabDetail');
             const btnHeatmap = document.getElementById('btnTabHeatmap');
             const btnEvents = document.getElementById('btnTabEvents');
+            const btnMacro = document.getElementById('btnTabMacro');
             const secDetail = document.getElementById('tabDetailContent');
             const secHeatmap = document.getElementById('tabHeatmapContent');
             const secEvents = document.getElementById('tabEventsContent');
+            const secMacro = document.getElementById('tabMacroContent');
 
             if (btnDetail) btnDetail.classList.remove('active');
             if (btnHeatmap) btnHeatmap.classList.remove('active');
             if (btnEvents) btnEvents.classList.remove('active');
+            if (btnMacro) btnMacro.classList.remove('active');
             if (secDetail) secDetail.style.display = 'none';
             if (secHeatmap) secHeatmap.style.display = 'none';
             if (secEvents) secEvents.style.display = 'none';
+            if (secMacro) secMacro.style.display = 'none';
 
             if (tab === 'detail') {
                 if (btnDetail) btnDetail.classList.add('active');
@@ -5827,6 +6588,10 @@ body.theme-light .event-tile-date {
                 if (btnTl) btnTl.classList.add('active');
                 if (btnSec) btnSec.classList.remove('active');
                 renderEventsHeatmap();
+            } else if (tab === 'macro') {
+                if (btnMacro) btnMacro.classList.add('active');
+                if (secMacro) secMacro.style.display = 'block';
+                if (typeof MacroModule !== 'undefined') MacroModule.onOpen();
             } else {
                 if (btnHeatmap) btnHeatmap.classList.add('active');
                 if (secHeatmap) secHeatmap.style.display = 'block';
@@ -6413,6 +7178,1048 @@ body.theme-light .event-tile-date {
                 });
         })();
 
+        const MacroModule = (function () {
+            'use strict';
+
+            let initialized = false;
+            let liveLoaded = false;
+            let copomYear = 2026;
+            let curveKind = 'pre';
+            let curveBack = 1;
+            let txSelected = 0;
+            let regimeSelected = 'base';
+
+            const DEFAULT_COPOM = {
+                2026: [
+                    { date: '2026-01-28', rate: 15.0, label: '15,00% (manutenção)' },
+                    { date: '2026-03-18', rate: 14.75, label: '14,75% (−0,25)' },
+                    { date: '2026-04-29', rate: 14.5, label: '14,50% (−0,25)' },
+                    { date: '2026-06-17', rate: 14.25, label: '14,25% (−0,25)' },
+                    { date: '2026-08-05', rate: 14.0, label: '14,00% (−0,25)' },
+                    { date: '2026-09-16', rate: 13.75, label: '13,75% (−0,25)' },
+                    { date: '2026-11-04', rate: 13.75, label: '13,75% (manutenção)' },
+                    { date: '2026-12-09', rate: null, label: null }
+                ],
+                2027: [
+                    { date: '2027-01-27', rate: null, label: null },
+                    { date: '2027-03-17', rate: null, label: null },
+                    { date: '2027-04-28', rate: null, label: null },
+                    { date: '2027-06-16', rate: null, label: null },
+                    { date: '2027-08-04', rate: null, label: null },
+                    { date: '2027-09-22', rate: null, label: null },
+                    { date: '2027-10-27', rate: null, label: null },
+                    { date: '2027-12-08', rate: null, label: null }
+                ]
+            };
+
+            const DEFAULT_FOMC = [
+                '2026-01-28', '2026-03-18', '2026-04-29', '2026-06-17',
+                '2026-07-29', '2026-09-16', '2026-10-28', '2026-12-09',
+                '2027-01-27', '2027-03-17', '2027-04-28', '2027-06-09',
+                '2027-07-28', '2027-09-15', '2027-10-27', '2027-12-08'
+            ];
+
+            const state = {
+                indicators: (MACRO_DATA && MACRO_DATA.indicators) ? JSON.parse(JSON.stringify(MACRO_DATA.indicators)) : {},
+                copom_meetings: (MACRO_DATA && MACRO_DATA.copom_meetings) ? JSON.parse(JSON.stringify(MACRO_DATA.copom_meetings)) : JSON.parse(JSON.stringify(DEFAULT_COPOM)),
+                fomc_dates: (MACRO_DATA && MACRO_DATA.fomc_dates && MACRO_DATA.fomc_dates.length) ? MACRO_DATA.fomc_dates : DEFAULT_FOMC,
+                focus: (MACRO_DATA && MACRO_DATA.focus) ? JSON.parse(JSON.stringify(MACRO_DATA.focus)) : {},
+                curva: (MACRO_DATA && MACRO_DATA.curva) ? MACRO_DATA.curva : { historico: {} },
+                atualizado_em: (MACRO_DATA && MACRO_DATA.atualizado_em) ? MACRO_DATA.atualizado_em : ''
+            };
+
+            const MONTH_NAMES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+            const WEEKDAYS = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+            const esc = s => String(s == null ? '' : s)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+            const pad2 = n => String(n).padStart(2, '0');
+            const fmtNum = (v, d = 2) => (v == null || isNaN(v)) ? '—' : Number(v).toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d });
+            const fmtPct = (v, d = 2) => (v == null || isNaN(v)) ? '—' : fmtNum(v, d) + '%';
+            const isLight = () => document.body.classList.contains('theme-light');
+
+            function nowBRT() {
+                try {
+                    const parts = new Intl.DateTimeFormat('en-CA', {
+                        timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit',
+                        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+                    }).formatToParts(new Date()).reduce((acc, p) => { acc[p.type] = p.value; return acc; }, {});
+                    return new Date(+parts.year, +parts.month - 1, +parts.day, +parts.hour % 24, +parts.minute, +parts.second);
+                } catch (_) {
+                    return new Date();
+                }
+            }
+            function todayBRT() {
+                const n = nowBRT();
+                return new Date(n.getFullYear(), n.getMonth(), n.getDate());
+            }
+            function parseISO(s) {
+                const p = String(s || '').split('-').map(Number);
+                return new Date(p[0], (p[1] || 1) - 1, p[2] || 1);
+            }
+            function toISO(d) { return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; }
+            function toBR(d) { return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}`; }
+            function toBRShort(d) { return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}`; }
+            function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+
+            const holidayCache = {};
+            function easter(y) {
+                const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4;
+                const f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+                const i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7;
+                const m = Math.floor((a + 11 * h + 22 * l) / 451);
+                const month = Math.floor((h + l - 7 * m + 114) / 31);
+                const day = ((h + l - 7 * m + 114) % 31) + 1;
+                return new Date(y, month - 1, day);
+            }
+            function b3Holidays(y, includeYearEnd = true) {
+                const cacheKey = (includeYearEnd ? 'b' : 'n') + y;
+                if (holidayCache[cacheKey]) return holidayCache[cacheKey];
+                const e = easter(y);
+                const s = new Set([
+                    toISO(new Date(y, 0, 1)), toISO(addDays(e, -48)), toISO(addDays(e, -47)),
+                    toISO(addDays(e, -2)), toISO(new Date(y, 3, 21)), toISO(new Date(y, 4, 1)),
+                    toISO(addDays(e, 60)), toISO(new Date(y, 8, 7)), toISO(new Date(y, 9, 12)),
+                    toISO(new Date(y, 10, 2)), toISO(new Date(y, 10, 15)), toISO(new Date(y, 11, 25))
+                ]);
+                if (y >= 2024) s.add(toISO(new Date(y, 10, 20)));
+                if (includeYearEnd) {
+                    s.add(`${y}-12-24`);
+                    s.add(`${y}-12-31`);
+                }
+                holidayCache[cacheKey] = s;
+                return s;
+            }
+            function isBusinessDay(d, b3 = true) {
+                const wd = d.getDay();
+                if (wd === 0 || wd === 6) return false;
+                return !b3Holidays(d.getFullYear(), b3).has(toISO(d));
+            }
+            function nextBusinessDay(d, b3 = true) {
+                let x = new Date(d);
+                while (!isBusinessDay(x, b3)) x = addDays(x, 1);
+                return x;
+            }
+            function businessDaysBetween(from, to, b3 = false) {
+                let n = 0, d = addDays(from, 1);
+                while (d <= to) {
+                    if (isBusinessDay(d, b3)) n++;
+                    d = addDays(d, 1);
+                }
+                return n;
+            }
+            function getDiJanuaryVertices(count = 8) {
+                const today = todayBRT(), out = [];
+                for (let y = today.getFullYear() + 1; out.length < count; y++) {
+                    const exp = nextBusinessDay(new Date(y, 0, 1), true);
+                    if (exp < today) continue;
+                    out.push({ code: `DI1F${String(y).slice(2)}`, expiry: exp, du: businessDaysBetween(today, exp, false) });
+                }
+                return out;
+            }
+            function allCopomDatesFlat() {
+                const out = [];
+                Object.keys(state.copom_meetings || {}).sort().forEach(yr => {
+                    (state.copom_meetings[yr] || []).forEach(item => { if (item && item.date) out.push(item.date); });
+                });
+                return out;
+            }
+
+            function renderTopBadgeAndKPIs() {
+                const ind = state.indicators || {};
+                const selicV = ind.selic ? ind.selic.value : null;
+                const cdiV = ind.cdi ? ind.cdi.value : null;
+                const ipcaV = ind.ipca12m ? ind.ipca12m.value : null;
+                const realV = (selicV != null && ipcaV != null) ? (((1 + selicV / 100) / (1 + ipcaV / 100) - 1) * 100) : ind.realRate;
+
+                const topBadge = document.getElementById('badgeMacroSelic');
+                if (topBadge && selicV != null) topBadge.textContent = `Selic ${fmtPct(selicV)}`;
+
+                const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+                setTxt('mcKpiSelic', fmtPct(selicV));
+                setTxt('mcKpiSelicSrc', ind.selic ? `${ind.selic.src || 'BCB'} · ${ind.selic.date || '--'}` : 'BCB · SGS 432');
+                setTxt('mcKpiCdi', fmtPct(cdiV));
+                setTxt('mcKpiCdiSrc', ind.cdi ? `${ind.cdi.src || 'BCB'} · ${ind.cdi.date || '--'}` : 'BCB · SGS 4389');
+                setTxt('mcKpiIpca12', fmtPct(ipcaV));
+                setTxt('mcKpiIpcaSrc', ind.ipca12m ? `${ind.ipca12m.src || 'IBGE'} · ${ind.ipca12m.date || '--'}` : 'IBGE · SGS 13522');
+                setTxt('mcKpiReal', fmtPct(realV));
+
+                const td = todayBRT();
+                const nextDt = allCopomDatesFlat().map(parseISO).find(d => d >= td);
+                if (nextDt) {
+                    const du = businessDaysBetween(td, nextDt, true);
+                    setTxt('mcKpiNextCopom', `${WEEKDAYS[nextDt.getDay()]} ${toBRShort(nextDt)}`);
+                    setTxt('mcKpiNextCopomSub', `${du} dias úteis até a decisão`);
+                } else {
+                    setTxt('mcKpiNextCopom', 'A definir');
+                }
+            }
+
+            function renderCopomChart() {
+                const container = document.getElementById('mcCopomChart');
+                if (!container) return;
+
+                const curYear = todayBRT().getFullYear();
+                const yearsAvail = Object.keys(state.copom_meetings || {}).map(Number).filter(Boolean).sort();
+                if (!yearsAvail.includes(copomYear)) copomYear = yearsAvail.includes(curYear) ? curYear : (yearsAvail[0] || 2026);
+
+                const meetings = (state.copom_meetings[String(copomYear)] || DEFAULT_COPOM[copomYear] || []);
+                const kicker = document.getElementById('mcCopomKicker');
+                if (kicker) kicker.textContent = `DECISÕES DO COPOM EM ${copomYear}`;
+
+                const done = meetings.filter(m => m.rate != null && !isNaN(m.rate)).map(m => ({ d: parseISO(m.date), v: Number(m.rate), label: m.label || '' }));
+                const pending = meetings.filter(m => m.rate == null || isNaN(m.rate)).map(m => ({ d: parseISO(m.date) }));
+                const n = Math.max(1, done.length + pending.length);
+
+                const vals = done.map(p => p.v);
+                const minV = vals.length ? Math.floor((Math.min(...vals) - 0.75) * 2) / 2 : 12.5;
+                const maxV = vals.length ? Math.ceil((Math.max(...vals) + 0.5) * 2) / 2 : 15.5;
+                const span = Math.max(1.0, maxV - minV);
+
+                const W = 640, H = 228, L = 48, R = 14, T = 20, B = 44;
+                const x = i => L + (i + 0.5) * (W - L - R) / n;
+                const y = v => T + (maxV - v) / span * (H - T - B);
+                const light = isLight();
+                const mutedColor = light ? '#475569' : '#94a3b8';
+                const barBase = light ? '#0f172a' : '#1e3a5f';
+                const accentBar = light ? '#0284c7' : '#00d2ff';
+                const pendingClr = light ? '#c2410c' : '#ff9100';
+
+                let s = `<svg viewBox="0 0 ${W} ${H}" style="font-family: var(--font-mono);" role="img" aria-label="Trajetória da Selic em ${copomYear}">`;
+                const step = span > 3 ? 1.0 : 0.5;
+                for (let g = Math.ceil(minV / step) * step; g <= maxV + 0.001; g += step) {
+                    const yy = y(g).toFixed(1);
+                    s += `<line x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}" stroke="${mutedColor}" stroke-opacity="0.22" stroke-dasharray="3 3"/>`;
+                    s += `<text x="4" y="${Number(yy) + 3}" font-size="9.5" fill="${mutedColor}">${fmtNum(g, 2)}%</text>`;
+                }
+
+                const bw = Math.min(44, (W - L - R) / n * 0.56);
+                done.forEach((p, i) => {
+                    const isLast = (i === done.length - 1);
+                    const topY = y(p.v);
+                    const hBar = Math.max(2, (H - B) - topY);
+                    s += `<rect x="${(x(i) - bw / 2).toFixed(1)}" y="${topY.toFixed(1)}" width="${bw.toFixed(1)}" height="${hBar.toFixed(1)}" rx="4" fill="${isLast ? accentBar : barBase}" opacity="${isLast ? '0.95' : '0.82'}"><title>${toBR(p.d)} · ${esc(p.label || fmtPct(p.v))}</title></rect>`;
+                    s += `<text x="${x(i).toFixed(1)}" y="${(topY - 6).toFixed(1)}" font-size="10" font-weight="700" text-anchor="middle" fill="${isLast ? accentBar : mutedColor}">${fmtNum(p.v, 2)}</text>`;
+                    s += `<text x="${x(i).toFixed(1)}" y="${H - 25}" font-size="9.5" text-anchor="middle" fill="${mutedColor}">${MONTH_NAMES[p.d.getMonth()]}</text>`;
+                });
+
+                pending.forEach((p, j) => {
+                    const i = done.length + j;
+                    s += `<rect x="${(x(i) - bw / 2).toFixed(1)}" y="${T + 10}" width="${bw.toFixed(1)}" height="${H - B - T - 10}" rx="4" fill="none" stroke="${pendingClr}" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+                    s += `<text x="${x(i).toFixed(1)}" y="${((H - B + T) / 2 + 4).toFixed(1)}" font-size="11" text-anchor="middle" fill="${pendingClr}" font-weight="700">?</text>`;
+                    s += `<text x="${x(i).toFixed(1)}" y="${H - 25}" font-size="9.5" text-anchor="middle" fill="${pendingClr}">${toBRShort(p.d)}</text>`;
+                });
+
+                s += `<text x="${W - R}" y="${H - 5}" font-size="9" text-anchor="end" fill="${mutedColor}">Meta Selic (% a.a.) · BCB SGS 432 · tracejado = próximas reuniões</text></svg>`;
+                container.innerHTML = s;
+
+                const descEl = document.getElementById('mcCopomDesc');
+                if (descEl) {
+                    if (done.length) {
+                        const lastM = done[done.length - 1];
+                        const firstM = done[0];
+                        descEl.innerHTML = `Em <strong>${copomYear}</strong>, o Copom iniciou em <strong>${fmtPct(firstM.v)}</strong> e encontra-se em <strong>${esc(lastM.label || fmtPct(lastM.v))}</strong> (reunião de <strong>${toBR(lastM.d)}</strong>). Cortes na Selic tendem a fechar a ponta curta da curva DI e reduzir a taxa de desconto das ações domésticas na B3.`;
+                    } else {
+                        descEl.textContent = `Calendário oficial do Copom para ${copomYear}: todas as 8 reuniões ainda estão programadas; os valores serão preenchidos automaticamente após cada comunicado via série SGS 432.`;
+                    }
+                }
+            }
+
+            function renderFocusTable() {
+                const tbody = document.getElementById('mcFocusBody');
+                if (!tbody) return;
+                const y0 = todayBRT().getFullYear();
+                const years = [y0, y0 + 1, y0 + 2];
+                document.querySelectorAll('[data-mc-focus-y]').forEach(th => {
+                    th.textContent = years[+th.dataset.mcFocusY] || '';
+                });
+
+                const ROWS = [
+                    ['IPCA', 'IPCA (%)', 2],
+                    ['Selic', 'Selic fim de ano (%)', 2],
+                    ['PIB Total', 'PIB (% cresc.)', 2],
+                    ['Câmbio', 'Câmbio (R$/US$)', 2],
+                    ['IGP-M', 'IGP-M (%)', 2]
+                ];
+
+                tbody.innerHTML = ROWS.map(([k, label, dec]) => {
+                    const entry = (state.focus || {})[k];
+                    const tds = years.map(yr => {
+                        const yrStr = String(yr);
+                        const v = entry && entry.byYear ? entry.byYear[yrStr] : null;
+                        const p = entry && entry.prevByYear ? entry.prevByYear[yrStr] : null;
+                        if (v == null || isNaN(v)) return `<td class="macro-neu">—</td>`;
+                        let arrow = '<span class="macro-neu">=</span>';
+                        if (p != null && !isNaN(p) && Math.abs(v - p) >= 1e-6) {
+                            arrow = v > p ? '<span class="macro-neg" title="Subiu vs semana anterior">▲</span>' : '<span class="macro-pos" title="Caiu vs semana anterior">▼</span>';
+                        }
+                        return `<td>${fmtNum(v, dec)} ${arrow}</td>`;
+                    }).join('');
+                    return `<tr><td style="font-weight: 700;">${esc(label)}</td>${tds}</tr>`;
+                }).join('');
+
+                const dates = Object.values(state.focus || {}).map(r => r && r.date).filter(Boolean).sort();
+                const dateBadge = document.getElementById('mcFocusDate');
+                if (dateBadge) {
+                    const latest = dates.length ? dates[dates.length - 1] : null;
+                    dateBadge.textContent = latest ? `PESQUISA DE ${latest.split('-').reverse().join('/')}` : 'SNAPSHOT BCB';
+                }
+            }
+
+            function renderDiVertices() {
+                const el = document.getElementById('mcDiVertices');
+                if (!el) return;
+                el.innerHTML = getDiJanuaryVertices(8).map(v => `
+                    <div class="macro-di-card">
+                        <strong>${esc(v.code)}</strong>
+                        <span class="dt">Vence ${toBR(v.expiry)}</span>
+                        <span class="du">${v.du.toLocaleString('pt-BR')} DU</span>
+                    </div>
+                `).join('');
+            }
+
+            const bpStr = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(Math.round(v * 100)) + ' bps';
+            function interpRealRate(pts, anos) {
+                if (!pts || !pts.length) return null;
+                if (anos < pts[0].anos) return (pts[0].anos - anos <= 0.6) ? pts[0].taxa : null;
+                if (anos > pts[pts.length - 1].anos) return (anos - pts[pts.length - 1].anos <= 0.6) ? pts[pts.length - 1].taxa : null;
+                for (let i = 1; i < pts.length; i++) {
+                    if (anos <= pts[i].anos) {
+                        const p = pts[i - 1], q = pts[i];
+                        const denom = q.anos - p.anos;
+                        if (Math.abs(denom) < 1e-6) return p.taxa;
+                        return p.taxa + (q.taxa - p.taxa) * (anos - p.anos) / denom;
+                    }
+                }
+                return null;
+            }
+            function calcBreakeven(dateKey) {
+                const hist = (state.curva && state.curva.historico) ? state.curva.historico : {};
+                const foto = hist[dateKey];
+                if (!foto || !(foto.pre || []).length || !(foto.ipca || []).length) return [];
+                return foto.pre.map(p => {
+                    const real = interpRealRate(foto.ipca, p.anos);
+                    if (real == null || (1 + real / 100) <= 0) return null;
+                    return { venc: p.venc, anos: p.anos, v: ((1 + p.taxa / 100) / (1 + real / 100) - 1) * 100 };
+                }).filter(Boolean);
+            }
+
+            function renderCurveSection() {
+                const wrap = document.getElementById('mcCurveWrap');
+                const chartEl = document.getElementById('mcCurveChart');
+                if (!wrap || !chartEl) return;
+
+                const hist = (state.curva && state.curva.historico) ? state.curva.historico : {};
+                const datas = Object.keys(hist).filter(d => ((hist[d] && hist[d][curveKind]) || []).length > 0).sort();
+                if (!datas.length) {
+                    chartEl.innerHTML = `<div style="padding: 30px; text-align: center; color: var(--text-muted); font-size: 13px;">Curva do Tesouro Direto ainda sem histórico suficiente no cache.</div>`;
+                    return;
+                }
+
+                const dH = datas[datas.length - 1];
+                const dA = datas[Math.max(0, datas.length - 1 - curveBack)];
+                const H = hist[dH][curveKind] || [];
+                const A = (dA !== dH && hist[dA]) ? (hist[dA][curveKind] || []) : [];
+                const mapA = Object.fromEntries(A.map(p => [p.venc, p]));
+                const pares = H.map(p => ({ ...p, ant: mapA[p.venc] ? mapA[p.venc].taxa : p.taxa }));
+
+                document.querySelectorAll('[data-mc-cc]').forEach(btn => {
+                    const ok = datas.length > +btn.dataset.mcCc;
+                    btn.disabled = !ok;
+                    btn.style.opacity = ok ? '1' : '0.4';
+                    btn.style.cursor = ok ? 'pointer' : 'not-allowed';
+                });
+
+                const narrow = (chartEl.clientWidth || 640) < 520;
+                const W = narrow ? 360 : 640, Hh = narrow ? 250 : 295, L = 44, R = 14, T = 20, B = 34;
+                const selicVal = (curveKind === 'pre' && state.indicators && state.indicators.selic) ? Number(state.indicators.selic.value) : null;
+                const ys = H.map(p => p.taxa).concat(A.map(p => p.taxa)).concat(selicVal ? [selicVal] : []);
+                const minRaw = ys.length ? Math.min(...ys) : 5;
+                const maxRaw = ys.length ? Math.max(...ys) : 15;
+                const y0 = Math.floor(minRaw * 2) / 2 - 0.25;
+                const y1 = Math.max(y0 + 1.0, Math.ceil(maxRaw * 2) / 2 + 0.25);
+                const x1 = Math.max(1, Math.ceil(Math.max(...H.map(p => p.anos), ...(A.length ? A.map(p => p.anos) : [1]))));
+
+                const X = a => L + (a / x1) * (W - L - R);
+                const Y = v => T + ((y1 - v) / (y1 - y0)) * (Hh - T - B);
+                const pathOf = pts => pts.map((p, i) => (i ? 'L' : 'M') + X(p.anos).toFixed(1) + ' ' + Y(p.taxa).toFixed(1)).join(' ');
+
+                const light = isLight();
+                const mutedClr = light ? '#64748b' : '#94a3b8';
+                const gridClr = light ? 'rgba(15,23,42,0.1)' : 'rgba(255,255,255,0.08)';
+                const mainLine = light ? '#0284c7' : '#00d2ff';
+                const prevLine = light ? '#94a3b8' : '#64748b';
+                const dotText = light ? '#0f172a' : '#f1f5f9';
+                const selicClr = light ? '#c2410c' : '#ff9100';
+
+                let grid = '';
+                const step = (y1 - y0) > 3 ? 1.0 : 0.5;
+                for (let v = Math.ceil(y0 / step) * step; v <= y1 + 0.001; v += step) {
+                    grid += `<line x1="${L}" x2="${W - R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" stroke="${gridClr}" stroke-width="1"/>`;
+                    grid += `<text x="${L - 6}" y="${(Y(v) + 3).toFixed(1)}" text-anchor="end" fill="${mutedClr}" font-size="10">${fmtNum(v, step < 1 ? 1 : 0)}%</text>`;
+                }
+                for (let a = 0; a <= x1; a += (x1 > 12 ? 5 : 1)) {
+                    grid += `<text x="${X(a).toFixed(1)}" y="${Hh - B + 16}" text-anchor="middle" fill="${mutedClr}" font-size="10">${a}a</text>`;
+                }
+
+                const lbl = iso => toBRShort(parseISO(iso));
+                const dots = H.map(p => {
+                    const ant = mapA[p.venc];
+                    const d = ant ? p.taxa - ant.taxa : 0;
+                    return `<g><circle cx="${X(p.anos).toFixed(1)}" cy="${Y(p.taxa).toFixed(1)}" r="4.5" fill="${mainLine}"><title>${esc(p.titulo)} · ${fmtNum(p.taxa, 2)}% a.a.${ant ? ' · ' + bpStr(d) + ' vs ' + lbl(dA) : ''}</title></circle><text x="${X(p.anos).toFixed(1)}" y="${(Y(p.taxa) - 9).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="${dotText}">${fmtNum(p.taxa, 2)}</text></g>`;
+                }).join('');
+
+                chartEl.innerHTML = `<svg viewBox="0 0 ${W} ${Hh}" style="font-family: var(--font-mono);" role="img" aria-label="Curva de juros do Tesouro">
+                    ${grid}
+                    ${selicVal ? `<line x1="${L}" x2="${W - R}" y1="${Y(selicVal).toFixed(1)}" y2="${Y(selicVal).toFixed(1)}" stroke="${selicClr}" stroke-dasharray="4 4" stroke-width="1.5"/><text x="${W - R}" y="${(Y(selicVal) - 5).toFixed(1)}" text-anchor="end" fill="${selicClr}" font-size="10" font-weight="700">Selic ${fmtNum(selicVal, 2)}%</text>` : ''}
+                    ${A.length ? `<path d="${pathOf(A)}" fill="none" stroke="${prevLine}" stroke-width="2" stroke-dasharray="5 4"/>` : ''}
+                    <path d="${pathOf(H)}" fill="none" stroke="${mainLine}" stroke-width="2.5"/>
+                    ${dots}
+                    <g font-size="10" transform="translate(${L + 8},${T + 2})">
+                        <line x1="0" x2="18" y1="0" y2="0" stroke="${mainLine}" stroke-width="2.5"/>
+                        <text x="23" y="3" fill="${dotText}">${lbl(dH)}</text>
+                        ${A.length ? `<line x1="72" x2="90" y1="0" y2="0" stroke="${prevLine}" stroke-width="2" stroke-dasharray="5 4"/><text x="95" y="3" fill="${mutedClr}">${lbl(dA)}</text>` : ''}
+                    </g>
+                </svg>`;
+
+                const media = pares.reduce((acc, p) => acc + (p.taxa - p.ant), 0) / (pares.length || 1);
+                const inc = H.length > 1 ? H[H.length - 1].taxa - H[0].taxa : 0;
+                const incA = pares.length > 1 ? pares[pares.length - 1].ant - pares[0].ant : 0;
+                const clsDelta = v => v > 0.005 ? 'macro-neg' : (v < -0.005 ? 'macro-pos' : 'macro-neu');
+
+                const kpisEl = document.getElementById('mcCurveKpis');
+                if (kpisEl) {
+                    kpisEl.innerHTML = `
+                        <div class="macro-curve-kpi">
+                            <span class="lbl">Média</span>
+                            <strong class="${clsDelta(media)}">${bpStr(media)}</strong>
+                            <small>${media > 0.005 ? 'abriu' : (media < -0.005 ? 'fechou' : 'estável')} vs ${lbl(dA)}</small>
+                        </div>
+                        <div class="macro-curve-kpi">
+                            <span class="lbl">Inclinação</span>
+                            <strong>${Math.round(inc * 100)} bps</strong>
+                            <small>longo − curto · ${bpStr(inc - incA)}</small>
+                        </div>
+                    `;
+                }
+
+                const barsEl = document.getElementById('mcCurveBars');
+                if (barsEl) {
+                    const mx = Math.max(0.05, ...pares.map(p => Math.abs(p.taxa - p.ant)));
+                    barsEl.innerHTML = pares.map(p => {
+                        const d = p.taxa - p.ant;
+                        const w = Math.min(50, (Math.abs(d) / mx) * 50);
+                        const barStyle = d >= 0 ? `left: 50%; width: ${w}%; background: #ef4444;` : `right: 50%; width: ${w}%; background: #22c55e;`;
+                        return `<div class="macro-bar-row">
+                            <span style="width: 38px; color: var(--text-muted);">${p.venc.slice(0, 4)}</span>
+                            <div class="macro-bar-track">
+                                <div style="position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: var(--border-strong, #475569);"></div>
+                                <div style="position: absolute; top: 0; bottom: 0; ${barStyle}"></div>
+                            </div>
+                            <span style="width: 58px; text-align: right;" class="${clsDelta(d)}">${bpStr(d)}</span>
+                        </div>`;
+                    }).join('');
+                }
+
+                const titleEl = document.getElementById('mcCurveTitle');
+                if (titleEl) {
+                    titleEl.textContent = Math.abs(media) < 0.02
+                        ? 'Curva praticamente estável no período'
+                        : (media > 0 ? `Curva abriu ${bpStr(media)} em média` : `Curva fechou ${bpStr(Math.abs(media)).replace('+', '')} em média`);
+                }
+
+                const readEl = document.getElementById('mcCurveRead');
+                if (readEl) {
+                    const curto = pares[0], longo = pares[pares.length - 1];
+                    const dc = curto ? curto.taxa - curto.ant : 0;
+                    const dl = longo ? longo.taxa - longo.ant : 0;
+                    const forma = Math.abs(dl - dc) < 0.05
+                        ? (media > 0.02 ? 'a curva subiu de forma paralela' : media < -0.02 ? 'a curva caiu de forma paralela' : 'a curva permaneceu estável')
+                        : (dl > dc
+                            ? (media > 0 ? 'os vértices longos subiram mais que os curtos (maior prêmio fiscal/inflação à frente)' : 'os curtos caíram mais que os longos (mercado precifica mais cortes de Selic)')
+                            : (media > 0 ? 'os juros curtos subiram mais que os longos (curva achatou com Selic mais alta por mais tempo)' : 'os juros longos caíram mais que os curtos (alívio no prêmio de risco)'));
+                    const impacto = curveKind === 'pre'
+                        ? (media > 0.02 ? 'Juros maiores tendem a comprimir múltiplos P/L em ações domésticas, varejo e construção.' : media < -0.02 ? 'Juros menores tendem a aliviar o custo de capital e apoiar ações ligadas à economia local.' : '')
+                        : 'A curva IPCA+ mostra o juro real livre de inflação paga pelo Tesouro.';
+                    readEl.innerHTML = `<strong>Leitura:</strong> desde ${lbl(dA)}, ${forma}. ${impacto}`;
+                }
+
+                const srcEl = document.getElementById('mcCurveSrc');
+                if (srcEl) {
+                    srcEl.textContent = `Fonte: Tesouro Nacional / Tesouro Transparente (taxas oficiais de compra · títulos sem cupom) · Comparando ${lbl(dH)} vs ${lbl(dA)}.`;
+                }
+
+                renderBreakeven(dH, dA, lbl);
+            }
+
+            function renderBreakeven(dH, dA, lbl) {
+                const wrap = document.getElementById('mcBeWrap');
+                const barsEl = document.getElementById('mcBeBars');
+                if (!wrap || !barsEl) return;
+
+                const H = calcBreakeven(dH);
+                const A = Object.fromEntries(calcBreakeven(dA).map(x => [x.venc, x.v]));
+                if (!H.length) {
+                    wrap.style.display = 'none';
+                    return;
+                }
+                wrap.style.display = 'block';
+
+                const maxB = Math.max(7, Math.ceil(Math.max(...H.map(x => x.v)) + 0.5));
+                const pctW = v => Math.max(0, Math.min(100, (v / maxB) * 100));
+                const metaClr = isLight() ? '#0f172a' : '#ffffff';
+
+                barsEl.innerHTML = H.map(x => {
+                    const prevV = A[x.venc];
+                    const diff = prevV != null ? x.v - prevV : null;
+                    const hot = x.v > 4.5;
+                    const barClr = hot ? '#ef4444' : '#f59e0b';
+                    const diffHtml = diff != null
+                        ? ` <span class="${diff > 0.005 ? 'macro-neg' : (diff < -0.005 ? 'macro-pos' : 'macro-neu')}">${diff > 0 ? '+' : diff < 0 ? '−' : ''}${Math.abs(Math.round(diff * 100))} bps</span>`
+                        : '';
+                    return `<div class="macro-be-bar-wrap">
+                        <div class="macro-be-bar-head">
+                            <span style="color: var(--text-muted);">${x.venc.slice(0, 4)} <small>(${fmtNum(x.anos, 1)}a)</small></span>
+                            <span><strong class="${hot ? 'macro-neg' : ''}">${fmtNum(x.v, 2)}% a.a.</strong>${diffHtml}</span>
+                        </div>
+                        <div class="macro-be-track">
+                            <div style="position: absolute; top: 0; bottom: 0; left: ${pctW(1.5)}%; width: ${pctW(4.5) - pctW(1.5)}%; background: rgba(34,197,94,0.22);" title="Intervalo de tolerância da meta (1,5% a 4,5%)"></div>
+                            <div style="position: absolute; top: 3px; bottom: 3px; left: 0; width: ${pctW(x.v)}%; background: ${barClr}; border-radius: 3px;"></div>
+                            <div style="position: absolute; top: 0; bottom: 0; left: ${pctW(3.0)}%; width: 2px; background: ${metaClr};" title="Centro da meta de inflação: 3,0%"></div>
+                            ${prevV != null ? `<div style="position: absolute; top: 0; bottom: 0; left: ${pctW(prevV)}%; width: 2px; background: #94a3b8;" title="${lbl(dA)}: ${fmtNum(prevV, 2)}%"></div>` : ''}
+                        </div>
+                    </div>`;
+                }).join('') + `<div style="display: flex; flex-wrap: wrap; gap: 12px; font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); margin-top: 6px;">
+                    <span><strong style="color: var(--text-main);">|</strong> Meta 3,0%</span>
+                    <span><span style="display:inline-block;width:10px;height:10px;background:rgba(34,197,94,0.35);vertical-align:middle;border-radius:2px;"></span> Tolerância 1,5%–4,5%</span>
+                    <span><strong style="color: #94a3b8;">|</strong> Referência ${lbl(dA)}</span>
+                </div>`;
+
+                const fx = (state.focus || {}).IPCA;
+                const yrs = (fx && fx.byYear) ? Object.keys(fx.byYear).filter(y => fx.byYear[y] != null).sort().slice(0, 4) : [];
+                const beFocusEl = document.getElementById('mcBeFocus');
+                if (beFocusEl) {
+                    beFocusEl.innerHTML = `<span class="macro-kicker" style="margin-bottom: 6px;">FOCUS · IPCA ESPERADO</span>` +
+                        (yrs.length
+                            ? `<div style="display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 6px; text-align: center;">${yrs.map(y => `<div><span style="display:block;font-size:10px;color:var(--text-muted);">${y}</span><strong style="font-size:13px;">${fmtNum(fx.byYear[y], 2)}%</strong></div>`).join('')}</div>`
+                            : `<span style="color: var(--text-muted);">Aguardando Focus BCB…</span>`);
+                }
+
+                const mediaBe = H.reduce((acc, x) => acc + x.v, 0) / H.length;
+                const fmed = yrs.length ? yrs.reduce((acc, y) => acc + Number(fx.byYear[y]), 0) / yrs.length : null;
+                const beTitleEl = document.getElementById('mcBeTitle');
+                if (beTitleEl) beTitleEl.textContent = `Mercado precifica ~${fmtNum(mediaBe, 1)}% de inflação média ao ano`;
+
+                const beReadEl = document.getElementById('mcBeRead');
+                if (beReadEl) {
+                    const statusStr = mediaBe > 4.5
+                        ? 'a inflação implícita está <strong>acima do teto da meta (4,5%)</strong>.'
+                        : (mediaBe > 3.5 ? 'a inflação implícita está acima do centro de 3%, dentro do intervalo de tolerância.' : 'a inflação implícita está próxima da meta de 3% (ancoragem favorável).');
+                    const focusDiff = fmed != null
+                        ? ` O Focus projeta média de ~${fmtNum(fmed, 1)}% ao ano${(mediaBe - fmed > 0.4) ? ' (a diferença extra reflete prêmio de risco exigido na curva).' : ' (mercado alinhado ao consenso).'}`
+                        : '';
+                    beReadEl.innerHTML = `<strong>Leitura:</strong> ${statusStr}${focusDiff}`;
+                }
+            }
+
+            const REGIMES = {
+                base: {
+                    label: 'Base / Neutro',
+                    marker: '50%',
+                    title: 'Regime neutro: fluxo seletivo, juros domésticos guiam a bolsa.',
+                    desc: 'Sem choque global dominante, a B3 responde principalmente a Copom, inflação e agenda fiscal. Setores sensíveis a juros (varejo, construção, small caps) reagem mais ao DI do que ao exterior.',
+                    grid: [['IBOV / WIN', 'Lateral / segue DI', 'macro-neu'], ['Dólar / WDO', 'Ancorado no carry', 'macro-neu'], ['DI curto', 'Segue Copom', 'macro-neu'], ['Ouro', 'Estável', 'macro-neu']]
+                },
+                off: {
+                    label: 'Risk-off (Aversão)',
+                    marker: '15%',
+                    title: 'Aversão a risco: investidores fogem para dólar, Treasuries e ouro.',
+                    desc: 'Choques globais (recessão, conflitos, Fed mais duro) fortalecem o DXY. Mercados emergentes sofrem saída de capital: o dólar sobe, o Ibovespa cai e os vértices longos da curva DI abrem.',
+                    grid: [['IBOV / WIN', 'Queda ▼', 'macro-neg'], ['Dólar / WDO', 'Alta ▲', 'macro-pos'], ['DI longo', 'Abre ▲', 'macro-neg'], ['Ouro', 'Alta ▲', 'macro-pos']]
+                },
+                on: {
+                    label: 'Risk-on (Apetite)',
+                    marker: '85%',
+                    title: 'Apetite a risco: capital estrangeiro busca retorno em emergentes.',
+                    desc: 'Com juros globais em queda e dólar global fraco, o diferencial de juros atrai fluxo para a B3. A bolsa sobe puxada por bancos e commodities, o real se aprecia e a curva DI fecha.',
+                    grid: [['IBOV / WIN', 'Alta ▲', 'macro-pos'], ['Dólar / WDO', 'Queda ▼', 'macro-neg'], ['Curva DI', 'Fecha ▼', 'macro-pos'], ['Commodities', 'Alta ▲', 'macro-pos']]
+                }
+            };
+
+            function setRegime(key) {
+                regimeSelected = REGIMES[key] ? key : 'base';
+                const btnsEl = document.getElementById('mcRegimeBtns');
+                if (btnsEl) {
+                    btnsEl.innerHTML = Object.entries(REGIMES).map(([k, v]) =>
+                        `<button type="button" class="period-btn ${k === regimeSelected ? 'active' : ''}" onclick="MacroModule.setRegime('${k}')">${esc(v.label)}</button>`
+                    ).join('');
+                }
+                const r = REGIMES[regimeSelected];
+                const marker = document.getElementById('mcRegimeMarker');
+                if (marker) marker.style.left = r.marker;
+                const titleEl = document.getElementById('mcRegimeTitle');
+                if (titleEl) titleEl.textContent = r.title;
+                const descEl = document.getElementById('mcRegimeDesc');
+                if (descEl) descEl.textContent = r.desc;
+                const gridEl = document.getElementById('mcRegimeGrid');
+                if (gridEl) {
+                    gridEl.innerHTML = r.grid.map(([a, val, cls]) =>
+                        `<div class="macro-di-card"><span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;">${esc(a)}</span><strong class="${cls}" style="margin-top:4px;font-size:13.5px;">${esc(val)}</strong></div>`
+                    ).join('');
+                }
+            }
+
+            const TX_ASSETS = [
+                ['WIN', 'IBOV / WIN'], ['WDO', 'Dólar'], ['DIc', 'DI curto'],
+                ['DIl', 'DI longo'], ['VAR', 'Varejo'], ['BAN', 'Bancos'], ['CMD', 'VALE · PETR']
+            ];
+            const txNextOf = list => {
+                const tISO = toISO(todayBRT());
+                const found = (list || []).find(x => x >= tISO);
+                return found ? parseISO(found) : null;
+            };
+            const txFirstWeekday = (wd) => {
+                const t = todayBRT();
+                for (let k = 0; k < 2; k++) {
+                    const d = new Date(t.getFullYear(), t.getMonth() + k, 1);
+                    while (d.getDay() !== wd) d.setDate(d.getDate() + 1);
+                    if (d >= t) return d;
+                }
+                return null;
+            };
+            const txNextIPCA = () => {
+                const t = todayBRT();
+                let d = new Date(t.getFullYear(), t.getMonth(), 10);
+                if (d < t) d = new Date(t.getFullYear(), t.getMonth() + 1, 10);
+                return d;
+            };
+
+            const TX_SCENARIOS = [
+                {
+                    icon: '✂️', tag: 'COPOM', title: 'Copom corta mais que o esperado', short: 'Copom mais brando',
+                    when: () => ['Próximo Copom', txNextOf(allCopomDatesFlat())],
+                    steps: [
+                        ['Gatilho', 'Corte maior que o consenso ou sinalização dovish'],
+                        ['Juros', 'DI curto fecha forte; CDI futuro recua'],
+                        ['Câmbio', 'Diferencial de juros encolhe e pressiona o dólar'],
+                        ['Bolsa', 'Custo de capital cai: domésticas e varejo ganham']
+                    ],
+                    m: { WIN: 1, WDO: 1, DIc: -2, DIl: -1, VAR: 1, BAN: 0, CMD: 0 },
+                    watch: ['Reação dos vértices DI1F27/F28 logo após o comunicado (18h30)', 'Se dólar sobe junto por perda de carry ou cai por entrada de fluxo', 'Tom sobre ancoragem de expectativas de inflação'],
+                    fail: 'Se o mercado interpretar o corte como precipitado diante de inflação alta, o DI longo abre, o dólar dispara e a bolsa devolve a alta.',
+                    tickers: ['IBOV', 'IFNC', 'MGLU3', 'CYRE3', 'ITUB4']
+                },
+                {
+                    icon: '🛑', tag: 'COPOM', title: 'Copom mais duro que o esperado', short: 'Copom mais duro',
+                    when: () => ['Próximo Copom', txNextOf(allCopomDatesFlat())],
+                    steps: [
+                        ['Gatilho', 'Pausa nos cortes, alta da Selic ou comunicado duro'],
+                        ['Juros', 'DI curto abre; ponta longa pode achatar por credibilidade'],
+                        ['Câmbio', 'Carry mais atrativo fortalece o real (dólar recua)'],
+                        ['Bolsa', 'Taxa de desconto sobe: múltiplos P/L sofrem pressão']
+                    ],
+                    m: { WIN: -1, WDO: -1, DIc: 2, DIl: 0, VAR: -1, BAN: 0, CMD: 0 },
+                    watch: ['Inclinação da curva (curto subindo e longo caindo = credibilidade)', 'Desempenho de varejo e construtoras na abertura seguinte', 'Revisões de Selic terminal no Boletim Focus'],
+                    fail: 'Se o aperto for visto como insuficiente para conter o fiscal/inflação, o DI longo abre junto e o dólar também sobe.',
+                    tickers: ['IBOV', 'IFNC', 'MGLU3', 'LREN3', 'BBAS3']
+                },
+                {
+                    icon: '🔥', tag: 'INFLAÇÃO', title: 'IPCA acima do consenso', short: 'IPCA acima',
+                    when: () => ['Próximo IPCA (≈ dia 10)', txNextIPCA()],
+                    steps: [
+                        ['Gatilho', 'Inflação mensal acima das projeções de mercado'],
+                        ['Expectativa', 'Menor espaço para cortes ou maior risco de alta na Selic'],
+                        ['Juros', 'DI curto e intermediário abrem às 9h'],
+                        ['Bolsa', 'Setores sensíveis a juros perdem tração']
+                    ],
+                    m: { WIN: -1, WDO: 0, DIc: 1, DIl: 1, VAR: -1, BAN: 0, CMD: 0 },
+                    watch: ['Qualidade da surpresa: núcleo e inflação de serviços pesam mais', 'Magnitude da surpresa (> 0,10 p.p. costuma movimentar o pregão)', 'Reação inicial do DI curto antes da abertura da bolsa'],
+                    fail: 'Quando a alta decorre de itens voláteis (alimentos in natura, energia) com núcleos comportados, o efeito se dissipa rápido.',
+                    tickers: ['IBOV', 'MGLU3', 'CYRE3', 'RADL3']
+                },
+                {
+                    icon: '❄️', tag: 'INFLAÇÃO', title: 'IPCA abaixo do consenso', short: 'IPCA abaixo',
+                    when: () => ['Próximo IPCA (≈ dia 10)', txNextIPCA()],
+                    steps: [
+                        ['Gatilho', 'Inflação mensal abaixo das projeções'],
+                        ['Expectativa', 'Abre espaço para alívio monetário'],
+                        ['Juros', 'Curva DI fecha em toda a estrutura'],
+                        ['Bolsa', 'Varejo, construção e cíclicos domésticos ganham']
+                    ],
+                    m: { WIN: 1, WDO: 0, DIc: -1, DIl: -1, VAR: 1, BAN: 0, CMD: 0 },
+                    watch: ['Desaceleração em serviços subjacentes', 'Se a bolsa acompanha o fechamento do DI ou é travada pelo exterior'],
+                    fail: 'Inflação muito baixa decorrente de recessão forte assusta quanto à revisão de lucros corporativos.',
+                    tickers: ['IBOV', 'IFNC', 'MGLU3', 'CYRE3', 'WEGE3']
+                },
+                {
+                    icon: '🦅', tag: 'EUA', title: 'Fed duro / payroll forte', short: 'Fed duro',
+                    when: () => ['Próximo FOMC', txNextOf(state.fomc_dates), 'Payroll (1ª sexta)', txFirstWeekday(5)],
+                    steps: [
+                        ['Gatilho', 'Juros dos EUA altos por mais tempo ou emprego forte'],
+                        ['Global', 'Treasuries (US10Y) e dólar global (DXY) sobem'],
+                        ['Fluxo', 'Redução de alocação estrangeira em emergentes'],
+                        ['Brasil', 'Dólar sobe, DI longo abre e Ibovespa recua']
+                    ],
+                    m: { WIN: -1, WDO: 1, DIc: 0, DIl: 1, VAR: -1, BAN: 0, CMD: -1 },
+                    watch: ['US10Y e DXY no minuto da divulgação (9h30 ou 10h30 BRT)', 'S&P 500 futuro e moedas pares (MXN/BRL)'],
+                    fail: 'Emprego forte com inflação comportada pode sinalizar pouso suave, impulsionando o S&P 500 e anulando a queda local.',
+                    tickers: ['IBOV', 'VALE3', 'PETR4', 'WEGE3']
+                },
+                {
+                    icon: '🕊️', tag: 'EUA', title: 'Fed brando / payroll fraco', short: 'Fed brando',
+                    when: () => ['Próximo FOMC', txNextOf(state.fomc_dates), 'Payroll (1ª sexta)', txFirstWeekday(5)],
+                    steps: [
+                        ['Gatilho', 'Fed sinaliza cortes ou desaceleração controlada nos EUA'],
+                        ['Global', 'US10Y e DXY recuam; apetite global a risco cresce'],
+                        ['Fluxo', 'Capital externo retorna a emergentes e commodities'],
+                        ['Brasil', 'Dólar recua, DI longo fecha e bolsa avança']
+                    ],
+                    m: { WIN: 1, WDO: -1, DIc: 0, DIl: -1, VAR: 1, BAN: 0, CMD: 1 },
+                    watch: ['Enfraquecimento amplo do DXY', 'Fluxo estrangeiro na B3 e avanço de commodities'],
+                    fail: 'Payroll fraco demais pode acender temores de recessão global, disparando aversão a risco (risk-off).',
+                    tickers: ['IBOV', 'VALE3', 'PETR4', 'ITUB4', 'BBAS3']
+                },
+                {
+                    icon: '⚠️', tag: 'FISCAL', title: 'Risco fiscal no Brasil', short: 'Risco fiscal',
+                    when: () => ['Sem data fixa', null],
+                    steps: [
+                        ['Gatilho', 'Expansão de gastos ou afrouxamento da meta fiscal'],
+                        ['Prêmio', 'Investidores exigem maior prêmio de risco país'],
+                        ['Juros & Câmbio', 'DI longo abre forte e dólar dispara simultaneamente'],
+                        ['Bolsa', 'Estatais, bancos e varejo sofrem compressão de múltiplos']
+                    ],
+                    m: { WIN: -1, WDO: 2, DIc: 1, DIl: 2, VAR: -1, BAN: -1, CMD: 0 },
+                    watch: ['DI longo (DI1F31+) e dólar subindo juntos', 'Resiliência relativa de exportadoras com receita em dólar'],
+                    fail: 'Ambiente externo extremamente benigno (dólar global desabando) pode mascarar o ruído fiscal temporariamente.',
+                    tickers: ['IBOV', 'IFNC', 'PETR4', 'BBAS3', 'WEGE3']
+                },
+                {
+                    icon: '🏭', tag: 'CHINA', title: 'China anuncia estímulos', short: 'China estimula',
+                    when: () => ['Sem data fixa', null],
+                    steps: [
+                        ['Gatilho', 'Pacote de crédito, infraestrutura ou juros na China'],
+                        ['Commodities', 'Minério de ferro, aço e petróleo aceleram alta'],
+                        ['Brasil', 'Mineradoras, siderúrgicas e óleo puxam o Ibovespa'],
+                        ['Câmbio', 'Saldo comercial mais forte valoriza o real']
+                    ],
+                    m: { WIN: 1, WDO: -1, DIc: 0, DIl: 0, VAR: 0, BAN: 0, CMD: 2 },
+                    watch: ['Cotação do minério em Dalian/Singapura durante a madrugada', 'Participação de VALE3 e siderúrgicas no fluxo comprador'],
+                    fail: 'Pacotes abaixo da expectativa sem medidas fiscais concretas costumam devolver a alta já na abertura da B3.',
+                    tickers: ['IBOV', 'VALE3', 'GGBR4', 'CSNA3', 'PRIO3']
+                }
+            ];
+
+            function txArrow(v) {
+                if (v === 2) return '<span class="macro-pos">▲▲</span>';
+                if (v === 1) return '<span class="macro-pos">▲</span>';
+                if (v === -1) return '<span class="macro-neg">▼</span>';
+                if (v === -2) return '<span class="macro-neg">▼▼</span>';
+                return '<span class="macro-neu">●</span>';
+            }
+
+            function renderTxScenario(scrollHead = false) {
+                const listEl = document.getElementById('mcTxEvents');
+                const headEl = document.getElementById('mcTxHead');
+                const flowEl = document.getElementById('mcTxFlow');
+                const watchEl = document.getElementById('mcTxWatch');
+                const failEl = document.getElementById('mcTxFail');
+                const linksEl = document.getElementById('mcTxTickerLinks');
+                const theadEl = document.getElementById('mcTxThead');
+                const tbodyEl = document.getElementById('mcTxTbody');
+                if (!listEl || !headEl || !flowEl) return;
+
+                const e = TX_SCENARIOS[txSelected] || TX_SCENARIOS[0];
+                listEl.innerHTML = TX_SCENARIOS.map((x, idx) => `
+                    <button type="button" class="macro-tx-btn ${idx === txSelected ? 'active' : ''}" onclick="MacroModule.pickTx(${idx})">
+                        <span style="font-size: 18px; flex-shrink: 0;">${x.icon}</span>
+                        <span>
+                            <span class="tx-tag">${esc(x.tag)}</span>
+                            <span class="tx-title">${esc(x.title)}</span>
+                        </span>
+                    </button>
+                `).join('');
+
+                const w = e.when();
+                const dateChips = [];
+                for (let k = 0; k < w.length; k += 2) {
+                    const dt = w[k + 1];
+                    dateChips.push(`<span class="macro-src-badge">📅 ${esc(w[k])}${dt ? `: <strong style="color:var(--text-main);">${WEEKDAYS[dt.getDay()]} ${toBRShort(dt)}</strong>` : ''}</span>`);
+                }
+                headEl.innerHTML = `
+                    <div>
+                        <span class="macro-kicker orange" style="margin-bottom:2px;">CENÁRIO SELECIONADO</span>
+                        <h3 style="margin:0; font-size:17px; color:var(--text-main);">${e.icon} ${esc(e.title)}?</h3>
+                    </div>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px;">${dateChips.join('')}</div>
+                `;
+
+                const stepsHtml = `<div class="macro-flow-steps">${e.steps.map(([stTitle, stDesc], idx) => `
+                    <div class="macro-flow-step ${idx === 0 ? 'first' : ''}">
+                        <span class="macro-kicker" style="font-size:9.5px;">${idx + 1}. ${esc(stTitle)}</span>
+                        <p style="margin: 4px 0 0 0; font-size: 12px; color: var(--text-main); line-height: 1.4;">${esc(stDesc)}</p>
+                    </div>
+                `).join('')}</div>`;
+
+                const chipsHtml = `<div style="margin-top: 14px;">
+                    <span class="macro-kicker" style="margin-bottom: 4px;">📊 IMPACTO TÍPICO NOS ATIVOS</span>
+                    <div class="macro-flow-chips">${TX_ASSETS.map(([k, lbl]) => {
+                        const v = e.m[k];
+                        const cls = v > 0 ? 'up' : (v < 0 ? 'dn' : '');
+                        return `<div class="macro-asset-chip ${cls}"><span style="display:block;font-size:10px;color:var(--text-muted);">${esc(lbl)}</span><span style="font-size:14px;">${txArrow(v)}</span></div>`;
+                    }).join('')}</div>
+                </div>`;
+
+                flowEl.innerHTML = stepsHtml + chipsHtml;
+                if (watchEl) watchEl.innerHTML = e.watch.map(wItem => `<li>${esc(wItem)}</li>`).join('');
+                if (failEl) failEl.textContent = e.fail;
+
+                if (linksEl) {
+                    const available = (e.tickers || []).filter(tk => typeof DATA !== 'undefined' && DATA[tk]);
+                    linksEl.innerHTML = available.length
+                        ? `<span style="font-size:11px;color:var(--text-muted);font-weight:600;">Ver no Dashboard:</span>` +
+                          available.map(tk => `<button type="button" class="macro-ticker-pill" onclick="MacroModule.openTicker('${tk}')">${esc(tk)} ↗</button>`).join('')
+                        : '';
+                }
+
+                if (theadEl) {
+                    theadEl.innerHTML = `<tr><th>Evento</th>${TX_ASSETS.map(a => `<th style="text-align:center;">${esc(a[1])}</th>`).join('')}</tr>`;
+                }
+                if (tbodyEl) {
+                    tbodyEl.innerHTML = TX_SCENARIOS.map((x, idx) => `
+                        <tr class="clickable-row ${idx === txSelected ? 'active-row' : ''}" onclick="MacroModule.pickTx(${idx}, true)">
+                            <td style="font-family: inherit; font-weight: 600; white-space: nowrap;">${x.icon} ${esc(x.short)}</td>
+                            ${TX_ASSETS.map(a => `<td style="text-align: center;">${txArrow(x.m[a[0]])}</td>`).join('')}
+                        </tr>
+                    `).join('');
+                }
+
+                if (scrollHead) headEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            async function getJSONWithTimeout(url, ms = 9000) {
+                const ctl = new AbortController();
+                const timer = setTimeout(() => ctl.abort(), ms);
+                try {
+                    const resp = await fetch(url, { signal: ctl.signal, cache: 'no-store' });
+                    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                    return await resp.json();
+                } finally {
+                    clearTimeout(timer);
+                }
+            }
+
+            async function refreshLiveFromBCB() {
+                const statusEl = document.getElementById('mcLiveStatusText');
+                const CACHE_KEY = 'fundamentalista_macro_live_v1';
+                try {
+                    const cachedRaw = localStorage.getItem(CACHE_KEY);
+                    if (cachedRaw) {
+                        const cached = JSON.parse(cachedRaw);
+                        if (cached && cached.ts && (Date.now() - cached.ts) < 15 * 60 * 1000) {
+                            if (cached.indicators) Object.assign(state.indicators, cached.indicators);
+                            if (cached.focus && Object.keys(cached.focus).length) state.focus = cached.focus;
+                            if (cached.copom_meetings) state.copom_meetings = cached.copom_meetings;
+                            renderAll();
+                            if (statusEl) statusEl.textContent = 'Dados Oficiais BCB (cache 15m)';
+                            return;
+                        }
+                    }
+                } catch (_) {}
+
+                if (statusEl) statusEl.textContent = 'Sincronizando APIs BCB…';
+
+                const td = todayBRT();
+                const endDt = addDays(td, 2);
+                const endBR = `${pad2(endDt.getDate())}/${pad2(endDt.getMonth() + 1)}/${endDt.getFullYear()}`;
+                let anyOk = false;
+
+                try {
+                    const selicRows = await getJSONWithTimeout(
+                        `https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados?formato=json&dataInicial=01/01/2026&dataFinal=${endBR}`,
+                        9000
+                    );
+                    if (Array.isArray(selicRows) && selicRows.length) {
+                        const map432 = {};
+                        const validToday = [];
+                        selicRows.forEach(item => {
+                            const val = parseFloat(String(item.valor).replace(',', '.'));
+                            map432[item.data] = val;
+                            const parts = item.data.split('/');
+                            const dObj = new Date(+parts[2], +parts[1] - 1, +parts[0]);
+                            if (dObj <= td) validToday.push({ d: dObj, v: val });
+                        });
+                        if (validToday.length) {
+                            validToday.sort((a, b) => a.d - b.d);
+                            const last = validToday[validToday.length - 1];
+                            state.indicators.selic = { value: last.v, date: toBR(last.d), src: 'BCB · SGS 432' };
+                        }
+                        // Atualiza dinamicamente decisões do Copom passadas
+                        Object.keys(state.copom_meetings || {}).forEach(yr => {
+                            state.copom_meetings[yr] = (state.copom_meetings[yr] || []).map(m => {
+                                const mDt = parseISO(m.date);
+                                if (mDt > td) return { date: m.date, rate: null, label: null };
+                                const dAfter = toBR(addDays(mDt, 1));
+                                const dSame = toBR(mDt);
+                                if (map432[dAfter] != null) {
+                                    const rAfter = map432[dAfter];
+                                    const rBefore = map432[dSame];
+                                    let lbl = fmtPct(rAfter);
+                                    if (rBefore != null) {
+                                        const diff = Math.round((rAfter - rBefore) * 100) / 100;
+                                        lbl = Math.abs(diff) < 1e-6
+                                            ? `${fmtPct(rAfter)} (manutenção)`
+                                            : `${fmtPct(rAfter)} (${diff > 0 ? '+' : '−'}${fmtNum(Math.abs(diff), 2)})`;
+                                    }
+                                    return { date: m.date, rate: rAfter, label: lbl };
+                                }
+                                return m;
+                            });
+                        });
+                        anyOk = true;
+                    }
+                } catch (_) {}
+
+                const sgsJobs = [
+                    [4389, 'cdi', false, 'BCB · SGS 4389'],
+                    [13522, 'ipca12m', true, 'IBGE via BCB · SGS 13522'],
+                    [433, 'ipcaMes', true, 'IBGE via BCB · SGS 433']
+                ].map(async ([code, key, monthly, src]) => {
+                    const rows = await getJSONWithTimeout(`https://api.bcb.gov.br/dados/serie/bcdata.sgs.${code}/dados/ultimos/1?formato=json`, 8000);
+                    if (Array.isArray(rows) && rows[0]) {
+                        const val = parseFloat(String(rows[0].valor).replace(',', '.'));
+                        const dStr = monthly ? String(rows[0].data).slice(3) : rows[0].data;
+                        state.indicators[key] = { value: val, date: dStr, src: src };
+                        anyOk = true;
+                    }
+                });
+
+                const yrsFocus = [td.getFullYear(), td.getFullYear() + 1, td.getFullYear() + 2, td.getFullYear() + 3];
+                const focusJobs = ['IPCA', 'Selic', 'PIB Total', 'Câmbio', 'IGP-M'].map(async ind => {
+                    const flt = encodeURIComponent(`Indicador eq '${ind}' and baseCalculo eq 0`);
+                    const url = `https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais?$top=50&$filter=${flt}&$orderby=Data%20desc&$format=json&$select=Indicador,IndicadorDetalhe,Data,DataReferencia,Mediana`;
+                    const j = await getJSONWithTimeout(url, 11000);
+                    const rows = (j.value || []).filter(r => !r.IndicadorDetalhe || r.IndicadorDetalhe === 'null');
+                    if (rows.length) {
+                        const entry = { date: rows[0].Data, byYear: {}, prevByYear: {} };
+                        yrsFocus.forEach(y => {
+                            const ys = String(y);
+                            const sameY = rows.filter(r => String(r.DataReferencia) === ys);
+                            if (sameY[0]) entry.byYear[ys] = Number(sameY[0].Mediana);
+                            const prev = sameY.find(r => r.Data < (sameY[0] && sameY[0].Data));
+                            if (prev) entry.prevByYear[ys] = Number(prev.Mediana);
+                        });
+                        state.focus[ind] = entry;
+                        anyOk = true;
+                    }
+                });
+
+                await Promise.allSettled([...sgsJobs, ...focusJobs]);
+
+                if (anyOk) {
+                    try {
+                        localStorage.setItem(CACHE_KEY, JSON.stringify({
+                            ts: Date.now(),
+                            indicators: state.indicators,
+                            copom_meetings: state.copom_meetings,
+                            focus: state.focus
+                        }));
+                    } catch (_) {}
+                    if (statusEl) statusEl.textContent = 'BCB Ao Vivo Conectado';
+                } else if (statusEl) {
+                    statusEl.textContent = 'Snapshot Consolidado (BCB/Tesouro)';
+                }
+                renderAll();
+            }
+
+            function renderAll() {
+                renderTopBadgeAndKPIs();
+                renderCopomChart();
+                renderFocusTable();
+                renderDiVertices();
+                renderCurveSection();
+                setRegime(regimeSelected);
+                renderTxScenario(false);
+            }
+
+            return {
+                initBadgeOnly: function () {
+                    renderTopBadgeAndKPIs();
+                },
+                onOpen: function () {
+                    if (!initialized) {
+                        initialized = true;
+                        renderAll();
+                    } else {
+                        renderCopomChart();
+                        renderCurveSection();
+                    }
+                    if (!liveLoaded) {
+                        liveLoaded = true;
+                        refreshLiveFromBCB();
+                    }
+                },
+                onThemeChange: function () {
+                    if (initialized) {
+                        renderCopomChart();
+                        renderCurveSection();
+                        renderTxScenario(false);
+                    }
+                },
+                onResize: function () {
+                    if (initialized && typeof currentAppTab !== 'undefined' && currentAppTab === 'macro') {
+                        renderCurveSection();
+                    }
+                },
+                setCopomYear: function (yr, btn) {
+                    copomYear = yr;
+                    document.querySelectorAll('#mcCopomYearTabs .period-btn').forEach(b => b.classList.remove('active'));
+                    if (btn) btn.classList.add('active');
+                    renderCopomChart();
+                },
+                setCurveKind: function (kind, btn) {
+                    curveKind = kind;
+                    document.querySelectorAll('[data-mc-ck]').forEach(b => b.classList.remove('active'));
+                    if (btn) btn.classList.add('active');
+                    renderCurveSection();
+                },
+                setCurveBack: function (days, btn) {
+                    curveBack = days;
+                    document.querySelectorAll('[data-mc-cc]').forEach(b => b.classList.remove('active'));
+                    if (btn) btn.classList.add('active');
+                    renderCurveSection();
+                },
+                setRegime: setRegime,
+                pickTx: function (idx, scrollHead = false) {
+                    txSelected = idx;
+                    renderTxScenario(scrollHead);
+                },
+                scrollToSection: function (id) {
+                    const el = document.getElementById(id);
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                },
+                openTicker: function (ticker) {
+                    if (typeof DATA !== 'undefined' && DATA[ticker] && typeof openDetailFromHeatmap === 'function') {
+                        openDetailFromHeatmap(ticker);
+                    }
+                }
+            };
+        })();
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof MacroModule !== 'undefined') MacroModule.initBadgeOnly();
+        });
+
+        let macroResizeTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(macroResizeTimer);
+            macroResizeTimer = setTimeout(() => {
+                if (typeof MacroModule !== 'undefined') MacroModule.onResize();
+            }, 150);
+        });
+
         window.onresize = function() {
 
             renderCharts();
@@ -6434,6 +8241,7 @@ from datetime import datetime
 html_final = template.replace("__DATA_PLACEHOLDER__", raw_data)
 html_final = html_final.replace("__EARNINGS_PLACEHOLDER__", json.dumps(earnings_data, ensure_ascii=False))
 html_final = html_final.replace("__CORPORATE_EVENTS_PLACEHOLDER__", json.dumps(corporate_events_summary, ensure_ascii=False))
+html_final = html_final.replace("__MACRO_PLACEHOLDER__", json.dumps(macro_snapshot, ensure_ascii=False))
 
 ibov_val = ibov_info.get("aggregated_pe_all") or ibov_info.get("weighted_pe", 10.16)
 html_final = html_final.replace("__IBOV_PE__", f"{float(ibov_val):.2f}")
