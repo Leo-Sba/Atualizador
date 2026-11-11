@@ -4104,7 +4104,7 @@ body.theme-light .event-tile-date {
         <footer style="margin-top: 35px; margin-bottom: 25px; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--text-muted); opacity: 0.95;">
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="display: inline-block; width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%; box-shadow: 0 0 8px rgba(34, 197, 94, 0.7); animation: pulseGreen 2.2s infinite ease-in-out;"></span>
-                <span>Última atualização: <strong style="color: var(--text-main); font-weight: 600;">11/11/2026 às 18:41</strong></span>
+                <span>Última atualização: <strong style="color: var(--text-main); font-weight: 600;">11/11/2026 às 19:00</strong></span>
             </div>
             <span style="color: var(--border-color, #222634); opacity: 0.7;">•</span>
             <!-- Botão / Badge Interativo de Auditoria de Anomalias -->
@@ -4961,6 +4961,60 @@ body.theme-light .event-tile-date {
         border-color: #38bdf8 !important;
     }
 
+    /* Animações e Badges de Navegação Bidirecional (Card <-> Gráfico) */
+    @keyframes chartCardPulse {
+        0% {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7);
+        }
+        50% {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 10px rgba(56, 189, 248, 0);
+        }
+        100% {
+            border-color: var(--border);
+            box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+        }
+    }
+
+    .highlight-chart-pulse {
+        animation: chartCardPulse 1.8s ease-out 1 !important;
+        border-color: #38bdf8 !important;
+    }
+
+    @keyframes activePillPulse {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.8); }
+        50% { transform: scale(1.08); box-shadow: 0 0 0 8px rgba(56, 189, 248, 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+    }
+
+    .active-pill-pulse {
+        animation: activePillPulse 1.2s ease-out 2 !important;
+        border-color: #38bdf8 !important;
+    }
+
+    .ifr-goto-chart-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: rgba(56, 189, 248, 0.12);
+        color: #38bdf8;
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+    .ifr-goto-chart-badge:hover {
+        background: rgba(56, 189, 248, 0.25);
+        border-color: #38bdf8;
+        transform: translateY(-1px);
+    }
+
     /* Suporte a Tema Claro */
     body.theme-light .ifr-timeline-scroll::-webkit-scrollbar-thumb {
         background: rgba(0, 0, 0, 0.2);
@@ -4982,6 +5036,12 @@ body.theme-light .event-tile-date {
         background: #fee2e2;
         border-color: #fca5a5;
         color: #b91c1c;
+    }
+
+    body.theme-light .ifr-goto-chart-badge {
+        background: #e0f2fe;
+        color: #0284c7;
+        border-color: #7dd3fc;
     }
 
     /* Barra de Filtros e Controles */
@@ -5105,6 +5165,7 @@ body.theme-light .event-tile-date {
         align-items: center;
         gap: 24px;
         transition: all 0.2s ease;
+        cursor: pointer;
     }
 
     .ifr-trade-card:hover {
@@ -9541,7 +9602,7 @@ body.theme-light .event-tile-date {
                     }
 
                     html += `
-                        <div class="ifr-timeline-pill ${pillClass}" onclick="IfrModule.scrollToTrade('${ev.tradeId}')" title="${ev.data}: ${desc} (Clique para rolar até o trade)">
+                        <div class="ifr-timeline-pill ${pillClass}" data-trade-id="${ev.tradeId}" data-date="${ev.data}" onclick="IfrModule.onTimelinePillClick('${ev.tradeId}', '${ev.data}')" title="${ev.data}: ${desc} (Clique para focar no gráfico e no trade)">
                             <span>${fmtShort(ev.data)}</span>
                             <strong>${desc}</strong>
                             <span style="font-size:11px; opacity:0.85;">↗</span>
@@ -9806,6 +9867,10 @@ body.theme-light .event-tile-date {
                         return p.length === 3 ? `${p[2]}/${p[1]}` : dStr;
                     }
 
+                    // Data da última operação para navegação ao gráfico
+                    const lastEntry = (t.entradas && t.entradas.length > 0) ? t.entradas[t.entradas.length - 1] : null;
+                    const lastOpDate = t.data_encerramento || (lastEntry ? lastEntry.data : t.data_abertura);
+
                     if (currentViewMode === 'comfort') {
                         // Modo Conforto
                         const isFinalizado = (t.status === 'FINALIZADO_GAIN' || t.status === 'FINALIZADO_STOP');
@@ -9850,7 +9915,7 @@ body.theme-light .event-tile-date {
                             col3Html = `
                                 <div class="ifr-summary-row">
                                     <span>Preço Entrada (PM)</span>
-                                    <span>Saída em ${fmtDate(t.data_encerramento)}</span>
+                                    <span onclick="event.stopPropagation(); IfrModule.scrollToChartDate('${t.data_encerramento}', '${t.id}')" title="Ver saída (${fmtDate(t.data_encerramento)}) no gráfico de patrimônio" style="cursor:pointer; text-decoration:underline; color:#38bdf8;">Saída em ${fmtDate(t.data_encerramento)} ↗</span>
                                 </div>
                                 <div class="ifr-summary-row">
                                     <strong>${formatMoney(pm)}</strong>
@@ -9885,16 +9950,17 @@ body.theme-light .event-tile-date {
                         }
 
                         html += `
-                        <div class="ifr-trade-card" id="ifr-trade-${t.id}">
+                        <div class="ifr-trade-card" id="ifr-trade-${t.id}" onclick="IfrModule.onTradeCardClick(event, '${t.id}', '${lastOpDate}')" title="Clique para ver a última operação (${fmtDate(lastOpDate)}) no gráfico de patrimônio">
                             <!-- Coluna 1: Ativo, Preço, P/L e IFR -->
                             <div class="ifr-asset-col">
                                 <div class="ifr-asset-head">
                                     ${getHeaderBrandIconHtml(t.ticker, 36)}
                                     <div>
-                                        <div style="display:flex; align-items:center; gap:8px;">
+                                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                                             <span class="ifr-ticker-title">${t.ticker}</span>
                                             <span class="ifr-sector-badge">${t.setor || 'Geral'}</span>
                                             ${statusBadgeHtml}
+                                            <span class="ifr-goto-chart-badge" title="Ver última operação (${fmtDate(lastOpDate)}) no gráfico de patrimônio" onclick="event.stopPropagation(); IfrModule.scrollToChartDate('${lastOpDate}', '${t.id}')">📈 Gráfico (${fmtDate(lastOpDate)}) ↗</span>
                                         </div>
                                     </div>
                                 </div>
@@ -9908,24 +9974,24 @@ body.theme-light .event-tile-date {
                             <!-- Coluna 2: Progressão das 3 Entradas (E1, E2, E3) -->
                             <div class="ifr-steps-wrap">
                                 <!-- E1 -->
-                                <div class="ifr-step-node done">
-                                    <div class="ifr-step-badge">✓ E1 R$ 3.300</div>
+                                <div class="ifr-step-node done" onclick="event.stopPropagation(); IfrModule.scrollToChartDate('${e1.data}', '${t.id}')" title="Ver Entrada E1 (${fmtDate(e1.data)}) no gráfico" style="cursor:pointer;">
+                                    <div class="ifr-step-badge">✓ E1 R$ 3.300 ↗</div>
                                     <div class="ifr-step-sub">${fmtDate(e1.data)} ${formatMoney(e1.preco)}</div>
                                 </div>
 
                                 <div class="ifr-step-connector ${e2Done ? 'done' : ''}"></div>
 
                                 <!-- E2 -->
-                                <div class="ifr-step-node ${e2Done ? 'done' : 'pending'}">
-                                    <div class="ifr-step-badge">${e2Done ? '✓ ' : ''}E2 R$ 3.300</div>
+                                <div class="ifr-step-node ${e2Done ? 'done' : 'pending'}" ${e2Done && e2 ? `onclick="event.stopPropagation(); IfrModule.scrollToChartDate('${e2.data}', '${t.id}')" title="Ver Aporte E2 (${fmtDate(e2.data)}) no gráfico" style="cursor:pointer;"` : ''}>
+                                    <div class="ifr-step-badge">${e2Done ? '✓ ' : ''}E2 R$ 3.300 ${e2Done ? '↗' : ''}</div>
                                     <div class="ifr-step-sub">${e2SubText}</div>
                                 </div>
 
                                 <div class="ifr-step-connector ${e3Done ? 'done' : ''}"></div>
 
                                 <!-- E3 -->
-                                <div class="ifr-step-node ${e3Done ? 'done' : 'pending'}">
-                                    <div class="ifr-step-badge">${e3Done ? '✓ ' : ''}E3 R$ 3.300</div>
+                                <div class="ifr-step-node ${e3Done ? 'done' : 'pending'}" ${e3Done && e3 ? `onclick="event.stopPropagation(); IfrModule.scrollToChartDate('${e3.data}', '${t.id}')" title="Ver Aporte E3 (${fmtDate(e3.data)}) no gráfico" style="cursor:pointer;"` : ''}>
+                                    <div class="ifr-step-badge">${e3Done ? '✓ ' : ''}E3 R$ 3.300 ${e3Done ? '↗' : ''}</div>
                                     <div class="ifr-step-sub">${e3SubText}</div>
                                 </div>
                             </div>
@@ -9941,12 +10007,13 @@ body.theme-light .event-tile-date {
                         const progressPct = t.etapa_atual === 1 ? 33 : (t.etapa_atual === 2 ? 66 : 100);
 
                         html += `
-                        <div class="ifr-trade-card compact" id="ifr-trade-${t.id}">
+                        <div class="ifr-trade-card compact" id="ifr-trade-${t.id}" onclick="IfrModule.onTradeCardClick(event, '${t.id}', '${lastOpDate}')" title="Clique para ver no gráfico de patrimônio (última data: ${fmtDate(lastOpDate)})">
                             <div class="ifr-asset-col">
                                 <div class="ifr-asset-head">
                                     ${getHeaderBrandIconHtml(t.ticker, 28)}
                                     <span class="ifr-ticker-title" style="font-size:15px;">${t.ticker}</span>
                                     <span class="ifr-sector-badge">${t.setor || 'Geral'}</span>
+                                    <span class="ifr-goto-chart-badge" style="font-size:10px; padding:1px 6px;" title="Ver no gráfico (${fmtDate(lastOpDate)})" onclick="event.stopPropagation(); IfrModule.scrollToChartDate('${lastOpDate}', '${t.id}')">📈 ${fmtDate(lastOpDate)} ↗</span>
                                 </div>
                                 <div class="ifr-asset-metrics">
                                     <span>${formatMoney(currentPrice)}</span>
@@ -10017,6 +10084,99 @@ body.theme-light .event-tile-date {
                 }, 60);
             }
 
+            function scrollToChartDate(targetDate, tradeId) {
+                if (!targetDate) return;
+
+                // 1. Encontrar o índice no gráfico de evolução patrimonial
+                const evoList = ifrData.evolucao || [];
+                let idx = evoList.findIndex(p => p.data === targetDate);
+
+                // Se a data exata não constar, busca a data mais próxima
+                if (idx === -1 && evoList.length > 0) {
+                    let bestDiff = Infinity;
+                    const targetTime = new Date(targetDate).getTime();
+                    evoList.forEach((p, i) => {
+                        const ptTime = new Date(p.data).getTime();
+                        const diff = Math.abs(ptTime - targetTime);
+                        if (diff < bestDiff) {
+                            bestDiff = diff;
+                            idx = i;
+                        }
+                    });
+                }
+
+                // 2. Rolar suavemente até o card do gráfico
+                const chartCard = document.querySelector('.ifr-chart-card');
+                const chartCanvas = document.getElementById('chartIfrEvolucao');
+                const scrollTarget = chartCard || chartCanvas;
+                if (scrollTarget) {
+                    scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (chartCard) {
+                        chartCard.classList.add('highlight-chart-pulse');
+                        setTimeout(() => chartCard.classList.remove('highlight-chart-pulse'), 2500);
+                    }
+                }
+
+                // 3. Ativar e abrir o tooltip da bolinha correspondente no Chart.js
+                if (chartInstance && idx !== -1) {
+                    try {
+                        chartInstance.setActiveElements([{ datasetIndex: 0, index: idx }]);
+                        if (chartInstance.tooltip) {
+                            chartInstance.tooltip.setActiveElements([{ datasetIndex: 0, index: idx }]);
+                        }
+                        chartInstance.update();
+                    } catch (e) {
+                        console.warn('Aviso Chart.js foco:', e);
+                    }
+                }
+
+                // 4. Sincronizar e pulsar a pílula correspondente na Linha do Tempo
+                const pills = document.querySelectorAll('.ifr-timeline-pill');
+                pills.forEach(p => p.classList.remove('active-pill-pulse'));
+
+                let targetPill = null;
+                if (tradeId && targetDate) {
+                    targetPill = document.querySelector(`.ifr-timeline-pill[data-trade-id="${tradeId}"][data-date="${targetDate}"]`);
+                }
+                if (!targetPill && tradeId) {
+                    targetPill = document.querySelector(`.ifr-timeline-pill[data-trade-id="${tradeId}"]`);
+                }
+                if (!targetPill && targetDate) {
+                    targetPill = document.querySelector(`.ifr-timeline-pill[data-date="${targetDate}"]`);
+                }
+
+                if (targetPill) {
+                    targetPill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                    targetPill.classList.add('active-pill-pulse');
+                    setTimeout(() => targetPill.classList.remove('active-pill-pulse'), 3500);
+                }
+            }
+
+            function onTradeCardClick(event, tradeId, lastOpDate) {
+                // Não disparar se o usuário clicou em botão, link ou input interno
+                if (event && event.target && event.target.closest('button, a, input, select')) return;
+                scrollToChartDate(lastOpDate, tradeId);
+            }
+
+            function onTimelinePillClick(tradeId, targetDate) {
+                // Rola até o trade e também ativa a bolinha no gráfico
+                scrollToTrade(tradeId);
+                // Ativar elemento no gráfico
+                if (chartInstance && targetDate) {
+                    const evoList = ifrData.evolucao || [];
+                    const idx = evoList.findIndex(p => p.data === targetDate);
+                    if (idx !== -1) {
+                        try {
+                            chartInstance.setActiveElements([{ datasetIndex: 0, index: idx }]);
+                            if (chartInstance.tooltip) {
+                                chartInstance.tooltip.setActiveElements([{ datasetIndex: 0, index: idx }]);
+                            }
+                            chartInstance.update();
+                        } catch (e) {}
+                    }
+                }
+            }
+
             return {
                 init: function () {
                     initData();
@@ -10054,6 +10214,9 @@ body.theme-light .event-tile-date {
                     renderTrades();
                 },
                 scrollToTrade: scrollToTrade,
+                scrollToChartDate: scrollToChartDate,
+                onTradeCardClick: onTradeCardClick,
+                onTimelinePillClick: onTimelinePillClick,
                 renderTimeline: renderTimeline
             };
         })();
