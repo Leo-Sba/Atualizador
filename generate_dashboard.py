@@ -2457,6 +2457,23 @@ body.theme-light .app-tab-btn.active {
 
 /* ---------- Header ---------- */
 .header { border-bottom: 1px solid var(--border); padding-bottom: 18px; margin-bottom: 20px; }
+
+/* ---------- Cabeçalho do ativo fixo no desktop (congelar painel, estilo Excel) ---------- */
+@media (min-width: 1024px) and (min-height: 640px) {
+    #tabDetailContent > .header {
+        position: sticky;
+        top: calc(var(--nav-h, 64px) + 18px);
+        z-index: 800;
+        margin-top: 0;
+        padding: 12px 16px 12px 16px;
+        background: var(--glass-bg);
+        -webkit-backdrop-filter: var(--glass-blur) saturate(150%);
+        backdrop-filter: var(--glass-blur) saturate(150%);
+        border: 1px solid var(--glass-border);
+        border-radius: 14px;
+        box-shadow: 0 10px 30px -16px rgba(0, 0, 0, 0.6), var(--surface-highlight);
+    }
+}
 .title-area h1 { font-weight: 700; letter-spacing: -0.025em; }
 .badge {
     font-size: 10.5px;
@@ -5821,6 +5838,15 @@ body.theme-light .event-tile-date {
         }
 
 
+
+        // Mede a altura da barra de abas para posicionar o cabeçalho fixo logo abaixo dela
+        function syncStickyNavHeight() {
+            const nav = document.querySelector('.app-tab-nav');
+            if (nav) document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+        }
+        window.addEventListener('resize', syncStickyNavHeight);
+        window.addEventListener('load', syncStickyNavHeight);
+        setTimeout(syncStickyNavHeight, 300);
         let charts = {};
 
         let currentTicker = 'ITUB4';
