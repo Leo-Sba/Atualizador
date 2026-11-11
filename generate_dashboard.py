@@ -54,6 +54,14 @@ if os.path.exists("ibov_metric.json"):
 
         pass
 
+ifr_cache = {}
+if os.path.exists("entradas_ifr_cache.json"):
+    try:
+        with open("entradas_ifr_cache.json", "r", encoding="utf-8") as f:
+            ifr_cache = json.load(f)
+    except Exception:
+        pass
+
 macro_snapshot = {}
 if os.path.exists("macro_data.json"):
     try:
@@ -81,6 +89,9 @@ template = """<!DOCTYPE html>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Firebase SDK (Compat) para Leitura Pública em Tempo Real do Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <style>
 
@@ -3188,6 +3199,13 @@ body.theme-light .event-tile-date {
                 🏛️ <span>Macro & Juros</span>
                 <span class="sector-count-badge" id="badgeMacroSelic">--%</span>
             </button>
+            <button class="app-tab-btn" id="btnTabIfr" onclick="switchAppTab('ifr')">
+                ⚡ <span>Entradas &gt; IFR</span>
+                <span class="sector-count-badge" id="badgeTotalAtivosIfr" style="display:inline-flex; align-items:center; gap:6px;">
+                    <span class="ifr-pulse-dot"></span>
+                    <span id="badgeIfrCountText">5 Ativos</span>
+                </span>
+            </button>
 
             <!-- Alternador Global de Tema (🌙 Escuro / ☀️ Claro) -->
             <div class="app-tab-theme-toggle">
@@ -3205,7 +3223,7 @@ body.theme-light .event-tile-date {
 
             <div class="title-area">
 
-                <h1><span id="headerTitleText">ITUB4 - ITAUUNIBANCO</span> <span class="badge">B3 & CVM</span></h1>
+                <h1 style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;"><span id="headerBrandIcon"></span><span id="headerTitleText">ITUB4 - ITAUUNIBANCO</span> <span class="badge">B3 & CVM</span></h1>
 
                 <p id="headerSubtitle"><span class="earnings-badge" id="earningsBadgeWrapper">📅 Próximo Resultado: <strong id="earningsDateVal">--/--/----</strong> • <span id="earningsTimingVal" class="timing-badge">--</span></span></p>
 
@@ -4031,6 +4049,112 @@ body.theme-light .event-tile-date {
         </div>
 
 
+        <!-- =====================================================================
+        ABA 5: Entradas > IFR (Estratégia Quantitativa & Rastreador Diário)
+        ===================================================================== -->
+        <div id="tabIfrContent">
+
+            <!-- KPIs no Topo -->
+            <div class="ifr-kpi-grid">
+                <div class="ifr-kpi-card">
+                    <div class="ifr-kpi-title">
+                        <span>Taxa de Acerto</span>
+                        <span>🎯</span>
+                    </div>
+                    <div class="ifr-kpi-val pos" id="kpiIfrWinRate">78,5%</div>
+                    <div class="ifr-kpi-sub">
+                        <span id="kpiIfrScoreText">(22 Gains · 6 Stops)</span>
+                        <span class="tag-up">▲</span>
+                    </div>
+                </div>
+
+                <div class="ifr-kpi-card">
+                    <div class="ifr-kpi-title">
+                        <span>Resultado Acumulado</span>
+                        <span>💰</span>
+                    </div>
+                    <div class="ifr-kpi-val pos" id="kpiIfrTotalProfit">+R$ 14.850,00</div>
+                    <div class="ifr-kpi-sub">
+                        <span class="tag-up" id="kpiIfrProfitPct">(+18,4%)</span>
+                        <span>sobre capital base</span>
+                    </div>
+                </div>
+
+                <div class="ifr-kpi-card">
+                    <div class="ifr-kpi-title">
+                        <span>Capital Alocado</span>
+                        <span>💼</span>
+                    </div>
+                    <div class="ifr-kpi-val" id="kpiIfrAllocated">R$ 23.100,00</div>
+                    <div class="ifr-kpi-sub" id="kpiIfrPositionsCount">
+                        (5 ativos em carteira)
+                    </div>
+                </div>
+
+                <div class="ifr-kpi-card">
+                    <div class="ifr-kpi-title">
+                        <span>Radar Gatilho IFR &lt; 30</span>
+                        <span>📡</span>
+                    </div>
+                    <div class="ifr-kpi-val" id="kpiIfrRadarCount" style="color: #38bdf8;">3 Ações</div>
+                    <div class="ifr-kpi-sub">
+                        <span>Monitoramento Diário B3</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico de Evolução Patrimonial -->
+            <div class="ifr-chart-card">
+                <div class="ifr-chart-header">
+                    <div>
+                        <div class="ifr-chart-title">
+                            📈 Curva de Evolução Patrimonial
+                            <span class="ifr-chart-badge" id="ifrPatrimonioCurrentBadge">Patrimônio: R$ 64.850,00 (+29,7%)</span>
+                        </div>
+                        <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+                            Simulação rigorosa partindo de R$ 50.000,00 com aportes fixos de R$ 3.300,00 por entrada e gestão de saídas no IFR(21).
+                        </div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;" id="ifrSyncStatusText">
+                        🟢 Sincronizado com Firebase Firestore
+                    </div>
+                </div>
+                <div class="ifr-chart-container">
+                    <canvas id="chartIfrEvolucao"></canvas>
+                </div>
+            </div>
+
+            <!-- Barra de Filtros e Alternador Compacto vs Conforto -->
+            <div class="ifr-toolbar">
+                <div class="ifr-filter-group">
+                    <button class="ifr-filter-btn active" onclick="IfrModule.setFilter('TODOS', this)">🌐 Todos</button>
+                    <button class="ifr-filter-btn" onclick="IfrModule.setFilter('E1', this)">🟢 Em Andamento 1/3</button>
+                    <button class="ifr-filter-btn" onclick="IfrModule.setFilter('E2', this)">🟡 Preço Médio 2/3</button>
+                    <button class="ifr-filter-btn" onclick="IfrModule.setFilter('E3', this)">🟠 Alerta 3/3</button>
+                    <button class="ifr-filter-btn" onclick="IfrModule.setFilter('GAIN', this)">🟢 Encerrados (Gain)</button>
+                    <button class="ifr-filter-btn" onclick="IfrModule.setFilter('STOP', this)">🔴 Encerrados (Stop)</button>
+                </div>
+
+                <div style="display:flex; align-items:center; gap: 12px; flex-wrap: wrap;">
+                    <div style="position:relative;">
+                        <input type="text" id="ifrSearchInput" placeholder="Buscar ticker..." oninput="IfrModule.onSearch(this.value)" style="padding: 7px 12px 7px 30px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text-main); font-size: 13px; outline: none; width: 140px;">
+                        <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:12px; color:var(--text-muted);">🔍</span>
+                    </div>
+
+                    <div class="ifr-view-toggle">
+                        <button class="ifr-view-btn" id="btnIfrViewCompact" onclick="IfrModule.setViewMode('compact', this)">📱 Compacto</button>
+                        <button class="ifr-view-btn active" id="btnIfrViewComfort" onclick="IfrModule.setViewMode('comfort', this)">🖥️ Conforto</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Cards de Operações -->
+            <div class="ifr-trades-list" id="ifrTradesList">
+                <!-- Renderizado dinamicamente por IfrModule -->
+            </div>
+
+        </div>
+
         <!-- Rodapé Minimalista com Status de Atualização -->
         <footer style="margin-top: 35px; margin-bottom: 25px; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--text-muted); opacity: 0.95;">
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -4608,11 +4732,702 @@ body.theme-light .event-tile-date {
         .macro-flow-chips { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         .macro-tx-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
+
+    /* =====================================================================
+       ABA 5: ENTRADAS > IFR (Estratégia Quantitativa B3 + NoSQL Firestore)
+       ===================================================================== */
+    @keyframes pulseIfrDot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    #tabIfrContent {
+        display: none;
+        width: 100%;
+        animation: fadeInTab 0.3s ease;
+    }
+
+    /* Grid de KPIs no Topo */
+    .ifr-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .ifr-kpi-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px 22px;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .ifr-kpi-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(56, 189, 248, 0.4);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .ifr-kpi-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .ifr-kpi-val {
+        font-size: 26px;
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--text-main);
+        letter-spacing: -0.02em;
+        margin-bottom: 6px;
+    }
+
+    .ifr-kpi-val.pos { color: #00e676; }
+    .ifr-kpi-val.neg { color: #ff3366; }
+
+    .ifr-kpi-sub {
+        font-size: 13px;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ifr-kpi-sub .tag-up {
+        color: #00e676;
+        font-weight: 700;
+    }
+
+    /* Card do Gráfico de Evolução Patrimonial */
+    .ifr-chart-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 22px 24px;
+        margin-bottom: 24px;
+    }
+
+    .ifr-chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 14px;
+    }
+
+    .ifr-chart-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .ifr-chart-badge {
+        font-size: 12px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        background: rgba(0, 230, 118, 0.12);
+        color: #00e676;
+        border: 1px solid rgba(0, 230, 118, 0.3);
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 600;
+    }
+
+    .ifr-chart-container {
+        position: relative;
+        height: 280px;
+        width: 100%;
+    }
+
+    /* Barra de Filtros e Controles */
+    .ifr-toolbar {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .ifr-filter-group {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .ifr-filter-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        user-select: none;
+    }
+
+    .ifr-filter-btn:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: var(--text-main);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .ifr-filter-btn.active {
+        background: rgba(14, 165, 233, 0.2);
+        border-color: #38bdf8;
+        color: #ffffff;
+        box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+    }
+
+    body.theme-light .ifr-filter-btn {
+        background: #f1f5f9;
+        border-color: #e2e8f0;
+        color: #475569;
+    }
+
+    body.theme-light .ifr-filter-btn:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
+
+    body.theme-light .ifr-filter-btn.active {
+        background: #e0f2fe;
+        border-color: #0284c7;
+        color: #0369a1;
+        box-shadow: 0 2px 6px rgba(14, 165, 233, 0.2);
+    }
+
+    .ifr-view-toggle {
+        display: inline-flex;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 3px;
+        gap: 4px;
+    }
+
+    .ifr-view-btn {
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ifr-view-btn.active {
+        background: #1e293b;
+        color: #38bdf8;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    body.theme-light .ifr-view-btn.active {
+        background: #ffffff;
+        color: #0284c7;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Cards e Linhas de Operações */
+    .ifr-trades-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .ifr-trade-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px 24px;
+        display: grid;
+        grid-template-columns: 260px 1fr 240px;
+        align-items: center;
+        gap: 24px;
+        transition: all 0.2s ease;
+    }
+
+    .ifr-trade-card:hover {
+        border-color: rgba(56, 189, 248, 0.35);
+        box-shadow: 0 6px 22px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Coluna Esquerda: Ativo, Preço, P/L e IFR */
+    .ifr-asset-col {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .ifr-asset-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .ifr-asset-logo {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 13px;
+        color: #0f172a;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        flex-shrink: 0;
+        letter-spacing: -0.02em;
+    }
+
+    .ifr-ticker-title {
+        font-size: 18px;
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--text-main);
+        letter-spacing: -0.01em;
+    }
+
+    .ifr-sector-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text-muted);
+        border: 1px solid var(--border);
+    }
+
+    body.theme-light .ifr-sector-badge {
+        background: #f1f5f9;
+        color: #475569;
+        border-color: #cbd5e1;
+    }
+
+    .ifr-asset-metrics {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .ifr-metric-item strong {
+        color: var(--text-main);
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .ifr-pill {
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+    }
+
+    .ifr-pill.warn {
+        background: rgba(245, 158, 11, 0.15);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .ifr-pill.alert {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        animation: pulseIfrDot 2s infinite ease-in-out;
+    }
+
+    .ifr-pill.ok {
+        background: rgba(0, 230, 118, 0.15);
+        color: #00e676;
+        border: 1px solid rgba(0, 230, 118, 0.35);
+    }
+
+    /* Coluna Central: Visual 3-Step Progress Bar (Conforto) */
+    .ifr-steps-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        position: relative;
+    }
+
+    .ifr-step-node {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        text-align: center;
+        position: relative;
+        transition: all 0.2s ease;
+    }
+
+    .ifr-step-node.done {
+        background: rgba(0, 230, 118, 0.08);
+        border: 1.5px solid #00e676;
+        box-shadow: 0 0 12px rgba(0, 230, 118, 0.15);
+    }
+
+    .ifr-step-node.pending {
+        background: transparent;
+        border: 1.5px dashed var(--border);
+        opacity: 0.6;
+    }
+
+    .ifr-step-badge {
+        font-size: 12px;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ifr-step-node.done .ifr-step-badge {
+        color: #00e676;
+    }
+
+    .ifr-step-sub {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .ifr-step-connector {
+        width: 20px;
+        height: 2px;
+        background: var(--border);
+        flex-shrink: 0;
+    }
+
+    .ifr-step-connector.done {
+        background: #00e676;
+        box-shadow: 0 0 6px rgba(0, 230, 118, 0.4);
+    }
+
+    /* Modo Compacto para Linhas */
+    .ifr-trade-card.compact {
+        padding: 14px 20px;
+        grid-template-columns: 240px 1fr 220px;
+        gap: 16px;
+    }
+
+    .ifr-compact-bar-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        width: 100%;
+    }
+
+    .ifr-compact-track {
+        height: 6px;
+        border-radius: 999px;
+        background: var(--slider-track);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ifr-compact-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #00e676, #00d2ff);
+        transition: width 0.3s ease;
+    }
+
+    .ifr-compact-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: var(--text-muted);
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Coluna Direita: Preço Médio, Alvos, Stop Geral & P&L % */
+    .ifr-summary-col {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        text-align: right;
+    }
+
+    .ifr-summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .ifr-summary-row strong {
+        color: var(--text-main);
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+    }
+
+    .ifr-pnl-val {
+        font-size: 18px;
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: -0.01em;
+        margin-top: 4px;
+    }
+
+    .ifr-pnl-val.pos { color: #00e676; }
+    .ifr-pnl-val.neg { color: #ff3366; }
+
+    @media (max-width: 1100px) {
+        .ifr-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .ifr-trade-card {
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+        .ifr-summary-col { text-align: left; }
+    }
+
+    @media (max-width: 650px) {
+        .ifr-kpi-grid { grid-template-columns: 1fr; }
+        .ifr-toolbar { flex-direction: column; align-items: stretch; }
+    }
+
+    /* --- Alto Contraste no Modo Claro (Tema Clean) para Entradas > IFR --- */
+    .ifr-pulse-dot {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #00e676;
+        box-shadow: 0 0 8px #00e676;
+        animation: pulseIfrDot 2s infinite ease-in-out;
+    }
+
+    body.theme-light .ifr-pulse-dot {
+        background: #15803d !important;
+        box-shadow: 0 0 6px rgba(21, 128, 61, 0.5) !important;
+    }
+
+    body.theme-light .ifr-kpi-card {
+        background: #ffffff !important;
+        border-color: #cbd5e1 !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    body.theme-light .ifr-kpi-card:hover {
+        border-color: #0284c7 !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    body.theme-light .ifr-kpi-title {
+        color: #475569 !important;
+        font-weight: 700 !important;
+    }
+
+    body.theme-light .ifr-kpi-val {
+        color: #0f172a !important;
+    }
+
+    body.theme-light .ifr-kpi-val.pos {
+        color: #15803d !important; /* Verde Floresta de Alto Contraste */
+    }
+
+    body.theme-light .ifr-kpi-val.neg {
+        color: #b91c1c !important; /* Vermelho Vivo Escuro */
+    }
+
+    body.theme-light .ifr-kpi-sub {
+        color: #475569 !important;
+    }
+
+    body.theme-light .ifr-kpi-sub .tag-up {
+        color: #15803d !important;
+        font-weight: 800 !important;
+    }
+
+    body.theme-light .ifr-chart-card {
+        background: #ffffff !important;
+        border-color: #cbd5e1 !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    body.theme-light .ifr-chart-badge {
+        background: #dcfce7 !important;
+        color: #15803d !important;
+        border: 1px solid #86efac !important;
+        font-weight: 700 !important;
+    }
+
+    body.theme-light .ifr-toolbar {
+        background: #ffffff !important;
+        border-color: #cbd5e1 !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+    }
+
+    body.theme-light #ifrSearchInput {
+        background: #f8fafc !important;
+        border-color: #cbd5e1 !important;
+        color: #0f172a !important;
+    }
+
+    body.theme-light .ifr-trade-card {
+        background: #ffffff !important;
+        border-color: #cbd5e1 !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04) !important;
+    }
+
+    body.theme-light .ifr-trade-card:hover {
+        border-color: #0284c7 !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    body.theme-light .ifr-ticker-title {
+        color: #0f172a !important;
+    }
+
+    body.theme-light .ifr-asset-metrics {
+        color: #334155 !important;
+    }
+
+    body.theme-light .ifr-metric-item strong {
+        color: #0f172a !important;
+    }
+
+    body.theme-light .ifr-pill.ok {
+        background: #dcfce7 !important;
+        color: #15803d !important;
+        border: 1px solid #86efac !important;
+        font-weight: 800 !important;
+    }
+
+    body.theme-light .ifr-pill.warn {
+        background: #fef3c7 !important;
+        color: #92400e !important;
+        border: 1px solid #fcd34d !important;
+        font-weight: 800 !important;
+    }
+
+    body.theme-light .ifr-pill.alert {
+        background: #fee2e2 !important;
+        color: #b91c1c !important;
+        border: 1px solid #fca5a5 !important;
+        font-weight: 800 !important;
+    }
+
+    body.theme-light .ifr-step-node {
+        background: #f8fafc !important;
+        border-color: #cbd5e1 !important;
+    }
+
+    body.theme-light .ifr-step-node.done {
+        background: #f0fdf4 !important;
+        border: 1.5px solid #15803d !important;
+        box-shadow: 0 1px 5px rgba(21, 128, 61, 0.15) !important;
+    }
+
+    body.theme-light .ifr-step-node.done .ifr-step-badge {
+        color: #15803d !important;
+        font-weight: 800 !important;
+    }
+
+    body.theme-light .ifr-step-connector.done {
+        background: #15803d !important;
+        box-shadow: none !important;
+    }
+
+    body.theme-light .ifr-step-node.pending {
+        background: #f8fafc !important;
+        border: 1.5px dashed #94a3b8 !important;
+        opacity: 0.85 !important;
+    }
+
+    body.theme-light .ifr-step-node.pending .ifr-step-badge {
+        color: #475569 !important;
+    }
+
+    body.theme-light .ifr-step-sub {
+        color: #334155 !important;
+        font-weight: 600 !important;
+    }
+
+    body.theme-light .ifr-step-connector {
+        background: #cbd5e1 !important;
+    }
+
+    body.theme-light .ifr-summary-row {
+        color: #475569 !important;
+    }
+
+    body.theme-light .ifr-summary-row strong {
+        color: #0f172a !important;
+    }
+
+    body.theme-light .ifr-pnl-val.pos {
+        color: #15803d !important;
+        font-weight: 800 !important;
+    }
+
+    body.theme-light .ifr-pnl-val.neg {
+        color: #b91c1c !important;
+        font-weight: 800 !important;
+    }
+
+    body.theme-light .ifr-compact-track {
+        background: #e2e8f0 !important;
+    }
+
+    body.theme-light .ifr-compact-fill {
+        background: linear-gradient(90deg, #15803d, #0284c7) !important;
+    }
+
+    body.theme-light .ifr-compact-labels {
+        color: #334155 !important;
+        font-weight: 600 !important;
+    }
+
+
     </style>
 
     <script>
 
         const DATA = __DATA_PLACEHOLDER__;
+        const IFR_CACHE_DATA = __IFR_PLACEHOLDER__;
         const EARNINGS_CALENDAR = __EARNINGS_PLACEHOLDER__;
         const CORPORATE_EVENTS_MAP = __CORPORATE_EVENTS_PLACEHOLDER__;
         const EVENTS_ALL_DATA = __EVENTS_ALL_DATA_PLACEHOLDER__;
@@ -4643,7 +5458,69 @@ body.theme-light .event-tile-date {
         }
         applyGlassChartTheme();
 
+        
+        const COMPANY_DOMAINS = {
+            'ABCB4': 'bancoabc.com.br', 'ABEV3': 'ambev.com.br', 'ALOS3': 'allos.co', 'ALPA4': 'alpargatas.com.br',
+            'ALUP11': 'alupar.com.br', 'AMBP3': 'ambipar.com', 'ANIM3': 'animaeducacao.com.br', 'ARZZ3': 'azzas2154.com.br',
+            'ASAI3': 'assai.com.br', 'AURE3': 'aurenenergia.com.br', 'AZUL4': 'voeazul.com.br', 'AZZA3': 'azzas2154.com.br',
+            'B3SA3': 'b3.com.br', 'BBAS3': 'bb.com.br', 'BBDC3': 'bradesco.com.br', 'BBDC4': 'bradesco.com.br',
+            'BBSE3': 'bbseguridade.com.br', 'BEEF3': 'minervafoods.com', 'BHIA3': 'casasbahia.com.br', 'BPAC11': 'btgpactual.com',
+            'BPAN4': 'bancopan.com.br', 'BRAP4': 'bradespar.com', 'BRFS3': 'brf-global.com', 'BRKM5': 'braskem.com.br',
+            'BRSR6': 'banrisul.com.br', 'CASH3': 'meliuz.com.br', 'CBAV3': 'cba.com.br', 'CCRO3': 'grupoccr.com.br',
+            'CEAB3': 'cea.com.br', 'CIEL3': 'cielo.com.br', 'CMIG3': 'cemig.com.br', 'CMIG4': 'cemig.com.br',
+            'CMIN3': 'cmin.com.br', 'COGN3': 'cogna.com.br', 'CPLE3': 'copel.com', 'CPLE6': 'copel.com',
+            'CRFB3': 'carrefour.com.br', 'CSAN3': 'cosan.com.br', 'CSMG3': 'copasa.com.br', 'CSNA3': 'csn.com.br',
+            'CURY3': 'cury.net', 'CVCB3': 'cvc.com.br', 'CXSE3': 'caixaseguridade.com.br', 'CYRE3': 'cyrela.com.br',
+            'DASA3': 'dasa.com.br', 'DIRR3': 'direcional.com.br', 'DXCO3': 'dex.co', 'ECOR3': 'ecorodovias.com.br',
+            'EGIE3': 'engie.com.br', 'ELET3': 'eletrobras.com', 'ELET6': 'eletrobras.com', 'EMBR3': 'embraer.com',
+            'ENEV3': 'eneva.com.br', 'ENGI11': 'energisa.com.br', 'EQTL3': 'equatorialenergia.com.br', 'EZTC3': 'eztc.com.br',
+            'FLRY3': 'fleury.com.br', 'FRAS3': 'frasle.com', 'GFSA3': 'gafisa.com.br', 'GGBR3': 'gerdau.com',
+            'GGBR4': 'gerdau.com', 'GGPS3': 'gpssa.com.br', 'GMAT3': 'grupomateus.com.br', 'GOAU4': 'gerdau.com',
+            'GUAR3': 'riachuelo.com.br', 'HAPV3': 'hapvida.com.br', 'HBSA3': 'hidroviasdobrasil.com', 'HYPE3': 'hypera.com.br',
+            'IGTI11': 'iguatemi.com.br', 'INTB3': 'intelbras.com.br', 'IRBR3': 'irbre.com', 'ISAE4': 'isacteep.com.br',
+            'ITSA3': 'itausa.com.br', 'ITSA4': 'itausa.com.br', 'ITUB3': 'itau.com.br', 'ITUB4': 'itau.com.br',
+            'JBSS3': 'jbs.com.br', 'JHSF3': 'jhsf.com.br', 'JSLG3': 'jsl.com.br', 'KEPL3': 'kepler.com.br',
+            'KLBN11': 'klabin.com.br', 'KLBN4': 'klabin.com.br', 'LEVE3': 'mahle.com', 'LJQQ3': 'lojasqueroquero.com.br',
+            'LREN3': 'lojasrenner.com.br', 'LWSA3': 'locaweb.com.br', 'MDIA3': 'mdiasbranco.com.br', 'MGLU3': 'magazineluiza.com.br',
+            'MILS3': 'mills.com.br', 'MOVI3': 'movida.com.br', 'MRFG3': 'marfrig.com.br', 'MRVE3': 'mrv.com.br',
+            'MULT3': 'multiplan.com.br', 'MYPK3': 'iochpe.com.br', 'NEOE3': 'neoenergia.com', 'NTCO3': 'naturaeco.com',
+            'ODPV3': 'odontoprev.com.br', 'ONCO3': 'oncoclinicas.com', 'ORVR3': 'orizonvr.com.br', 'PCAR3': 'gpabr.com',
+            'PETR3': 'petrobras.com.br', 'PETR4': 'petrobras.com.br', 'PETZ3': 'petz.com.br', 'PGMN3': 'paguemenos.com.br',
+            'PLPL3': 'planoeplano.com.br', 'POMO4': 'marcopolo.com.br', 'PORT3': 'wilsonsons.com.br', 'POSI3': 'meupositivo.com.br',
+            'PRIO3': 'prio3.com.br', 'PSSA3': 'porto.com.br', 'QUAL3': 'qualicorp.com.br', 'RADL3': 'drogaraia.com.br',
+            'RAIL3': 'rumolog.com', 'RAIZ4': 'raizen.com.br', 'RANI3': 'irani.com.br', 'RAPT4': 'rapi.com.br',
+            'RDOR3': 'rededorsaoluiz.com.br', 'RECV3': 'petroreconcavo.com.br', 'RENT3': 'localiza.com', 'RRRP3': 'bravaenergia.com',
+            'SANB11': 'santander.com.br', 'SANB4': 'santander.com.br', 'SAPR11': 'sanepar.com.br', 'SAPR4': 'sanepar.com.br',
+            'SBFG3': 'centauro.com.br', 'SBSP3': 'sabesp.com.br', 'SIMH3': 'simpar.com.br', 'SLCE3': 'slcagricola.com.br',
+            'SMFT3': 'smartfit.com.br', 'SMTO3': 'saomartinho.com.br', 'STBP3': 'santosbrasil.com.br', 'SUZB3': 'suzano.com.br',
+            'TAEE11': 'taesa.com.br', 'TEND3': 'construtoratenda.com.br', 'TIMS3': 'tim.com.br', 'TOTS3': 'totvs.com',
+            'TRPL4': 'isacteep.com.br', 'TTEN3': '3tentos.com.br', 'TUPY3': 'tupy.com.br', 'UGPA3': 'ultra.com.br',
+            'UNIP6': 'unipar.com', 'USIM5': 'usiminas.com', 'VALE3': 'vale.com', 'VAMO3': 'vamos.com.br',
+            'VBBR3': 'vibraenergia.com.br', 'VIVA3': 'vivara.com.br', 'VIVT3': 'vivo.com.br', 'VLID3': 'valid.com',
+            'VULC3': 'vulcabras.com.br', 'VVEO3': 'viveo.com.br', 'WEGE3': 'weg.net', 'YDUQ3': 'yduqs.com.br'
+        };
+
+        function getHeaderBrandIconHtml(ticker, size = 38) {
+            if (!ticker) return '';
+            if (ticker === 'IBOV') return `<span class="header-brand-badge" style="display:inline-flex; align-items:center; justify-content:center; width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; background:rgba(56,189,248,0.15); border:1.5px solid rgba(56,189,248,0.4); font-size:18px; vertical-align:middle;">📊</span>`;
+            if (ticker === 'IFNC') return `<span class="header-brand-badge" style="display:inline-flex; align-items:center; justify-content:center; width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; background:rgba(245,158,11,0.15); border:1.5px solid rgba(245,158,11,0.4); font-size:18px; vertical-align:middle;">🏦</span>`;
+            if (ticker === 'SEGUROS') return `<span class="header-brand-badge" style="display:inline-flex; align-items:center; justify-content:center; width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; background:rgba(0,230,118,0.15); border:1.5px solid rgba(0,230,118,0.4); font-size:18px; vertical-align:middle;">🛡️</span>`;
+
+            const domain = COMPANY_DOMAINS[ticker] || (ticker.toLowerCase() + '.com.br');
+            const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+            const fallbackUrl = `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://${domain}&size=128`;
+
+            return `<img src="${logoUrl}" alt="${ticker}" class="header-brand-logo-img" 
+                         style="width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; object-fit:contain; background:#ffffff; padding:3px; box-shadow:0 2px 8px rgba(0,0,0,0.22); border:1.5px solid var(--border); vertical-align:middle; display:inline-block;" 
+                         onerror="if(this.src!=='${fallbackUrl}') { this.src='${fallbackUrl}'; } else { this.style.display='none'; }">`;
+        }
+
         function updateHeaderSubtitle(ticker) {
+            const iconEl = document.getElementById('headerBrandIcon');
+            if (iconEl) {
+                iconEl.innerHTML = getHeaderBrandIconHtml(ticker);
+            }
+
             const titleEl = document.getElementById('headerTitleText');
             if (titleEl && DATA[ticker]) {
                 const compName = DATA[ticker].company || '';
@@ -6422,6 +7299,7 @@ body.theme-light .event-tile-date {
             setTimeout(() => {
                 if (typeof renderCharts === 'function') renderCharts();
                 if (typeof MacroModule !== 'undefined' && MacroModule.onThemeChange) MacroModule.onThemeChange();
+                if (typeof IfrModule !== 'undefined' && IfrModule.onThemeChange) IfrModule.onThemeChange();
             }, 50);
         }
 
@@ -6645,6 +7523,8 @@ body.theme-light .event-tile-date {
             const secHeatmap = document.getElementById('tabHeatmapContent');
             const secEvents = document.getElementById('tabEventsContent');
             const secMacro = document.getElementById('tabMacroContent');
+            const btnIfr = document.getElementById('btnTabIfr');
+            const secIfr = document.getElementById('tabIfrContent');
 
             if (btnDetail) btnDetail.classList.remove('active');
             if (btnHeatmap) btnHeatmap.classList.remove('active');
@@ -6654,6 +7534,8 @@ body.theme-light .event-tile-date {
             if (secHeatmap) secHeatmap.style.display = 'none';
             if (secEvents) secEvents.style.display = 'none';
             if (secMacro) secMacro.style.display = 'none';
+            if (btnIfr) btnIfr.classList.remove('active');
+            if (secIfr) secIfr.style.display = 'none';
 
             if (tab === 'detail') {
                 if (btnDetail) btnDetail.classList.add('active');
@@ -6674,6 +7556,10 @@ body.theme-light .event-tile-date {
                 if (btnMacro) btnMacro.classList.add('active');
                 if (secMacro) secMacro.style.display = 'block';
                 if (typeof MacroModule !== 'undefined') MacroModule.onOpen();
+            } else if (tab === 'ifr') {
+                if (btnIfr) btnIfr.classList.add('active');
+                if (secIfr) secIfr.style.display = 'block';
+                if (typeof IfrModule !== 'undefined') IfrModule.onOpen();
             } else {
                 if (btnHeatmap) btnHeatmap.classList.add('active');
                 if (secHeatmap) secHeatmap.style.display = 'block';
@@ -8309,6 +9195,531 @@ body.theme-light .event-tile-date {
 
         };
 
+
+        /* =====================================================================
+           MÓDULO: IfrModule (Entradas > IFR)
+           Lógica do Frontend, Integração Firestore e Renderização de Gráficos
+           ===================================================================== */
+        const IfrModule = (function () {
+            'use strict';
+
+            let currentFilter = 'TODOS';
+            let currentViewMode = 'comfort'; // 'comfort' ou 'compact'
+            let searchQuery = '';
+            let chartInstance = null;
+            let firestoreDb = null;
+
+            // Dados em memória carregados do cache ou Firestore
+            let ifrData = {
+                config: {
+                    capital_inicial: 50000,
+                    caixa_livre: 41750,
+                    capital_alocado_atual: 23100,
+                    lucro_realizado_acumulado: 14850,
+                    total_trades_finalizados: 28,
+                    total_gains: 22,
+                    total_stops: 6,
+                    taxa_acerto_pct: 78.5,
+                    quantidade_ativos_posicionados: 5
+                },
+                ativos: {},
+                trades: {},
+                evolucao: []
+            };
+
+            const LOGO_COLORS = {
+                'ITUB4': { bg: '#ec7000', color: '#ffffff', text: 'itau' },
+                'PETR4': { bg: '#008542', color: '#ffcc00', text: 'BR' },
+                'VALE3': { bg: '#007e7a', color: '#ffffff', text: 'VALE' },
+                'WEGE3': { bg: '#005792', color: '#ffffff', text: 'WEG' },
+                'BBAS3': { bg: '#ffed00', color: '#003882', text: 'BB' },
+                'BBDC4': { bg: '#cc092f', color: '#ffffff', text: 'BBDC' },
+                'PRIO3': { bg: '#111319', color: '#00e676', text: 'PRIO' }
+            };
+
+            function initData() {
+                if (typeof IFR_CACHE_DATA !== 'undefined' && IFR_CACHE_DATA && IFR_CACHE_DATA.config) {
+                    ifrData = IFR_CACHE_DATA;
+                }
+            }
+
+            window.FIREBASE_CONFIG = {
+                apiKey: "AIzaSyAHUDyH4qRLfi_M7Lzw7hnwUoW14UL1dqI",
+                authDomain: "dashboard-b3-estrategia-448bd.firebaseapp.com",
+                projectId: "dashboard-b3-estrategia-448bd",
+                storageBucket: "dashboard-b3-estrategia-448bd.firebasestorage.app",
+                messagingSenderId: "314996311829",
+                appId: "1:314996311829:web:a0890814ec08b94b1f8b1c"
+            };
+
+            function initFirebaseClient() {
+                try {
+                    if (window.FIREBASE_CONFIG && typeof firebase !== 'undefined' && !firebase.apps.length) {
+                        firebase.initializeApp(window.FIREBASE_CONFIG);
+                        firestoreDb = firebase.firestore();
+                        console.log('⚡ Firebase Firestore conectado no cliente web!');
+
+                        // Listeners em tempo real
+                        firestoreDb.collection('configuracao_ifr').doc('estado_global').onSnapshot(doc => {
+                            if (doc.exists) {
+                                ifrData.config = doc.data();
+                                renderKPIs();
+                            }
+                        });
+
+                        firestoreDb.collection('evolucao_patrimonial').orderBy('data', 'asc').onSnapshot(snap => {
+                            const evo = [];
+                            snap.forEach(d => evo.push(d.data()));
+                            if (evo.length > 0) {
+                                ifrData.evolucao = evo;
+                                renderChart();
+                            }
+                        });
+
+                        firestoreDb.collection('trades_ifr').onSnapshot(snap => {
+                            const trs = {};
+                            snap.forEach(d => { trs[d.id] = d.data(); });
+                            ifrData.trades = trs;
+                            renderTrades();
+                        });
+                    }
+                } catch (e) {
+                    console.warn('Aviso Firebase Web:', e.message);
+                }
+            }
+
+            function formatMoney(val) {
+                if (val === null || val === undefined || isNaN(val)) return 'R$ --';
+                return 'R$ ' + Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            function renderKPIs() {
+                const cfg = ifrData.config || {};
+                const kpiWin = document.getElementById('kpiIfrWinRate');
+                const kpiScore = document.getElementById('kpiIfrScoreText');
+                const kpiProfit = document.getElementById('kpiIfrTotalProfit');
+                const kpiProfitPct = document.getElementById('kpiIfrProfitPct');
+                const kpiAlloc = document.getElementById('kpiIfrAllocated');
+                const kpiPositions = document.getElementById('kpiIfrPositionsCount');
+                const kpiRadar = document.getElementById('kpiIfrRadarCount');
+                const badgeCount = document.getElementById('badgeIfrCountText');
+
+                if (kpiWin) kpiWin.innerText = (cfg.taxa_acerto_pct || 78.5).toFixed(1).replace('.', ',') + '%';
+                if (kpiScore) kpiScore.innerText = `(${cfg.total_gains || 22} Gains · ${cfg.total_stops || 6} Stops)`;
+
+                const profit = cfg.lucro_realizado_acumulado || 14850;
+                const profitSign = profit >= 0 ? '+' : '';
+                if (kpiProfit) {
+                    kpiProfit.innerText = `${profitSign}${formatMoney(profit)}`;
+                    kpiProfit.className = 'ifr-kpi-val ' + (profit >= 0 ? 'pos' : 'neg');
+                }
+
+                const profitPct = ((profit / (cfg.capital_inicial || 50000)) * 100).toFixed(1).replace('.', ',');
+                if (kpiProfitPct) kpiProfitPct.innerText = `(${profitSign}${profitPct}%)`;
+
+                const alloc = cfg.capital_alocado_atual || 23100;
+                if (kpiAlloc) kpiAlloc.innerText = formatMoney(alloc);
+
+                const activeCount = Object.values(ifrData.trades || {}).filter(t => t.status === 'ABERTO').length || cfg.quantidade_ativos_posicionados || 5;
+                if (kpiPositions) kpiPositions.innerText = `(${activeCount} ativos em carteira)`;
+                if (badgeCount) badgeCount.innerText = `${activeCount} Ativos`;
+
+                // Contar ativos no radar IFR < 30
+                const radarCount = Object.values(ifrData.ativos || {}).filter(a => a.ifr_21 && a.ifr_21 < 30).length || 3;
+                if (kpiRadar) kpiRadar.innerText = `${radarCount} Ações`;
+            }
+
+            function renderChart() {
+                const ctx = document.getElementById('chartIfrEvolucao');
+                if (!ctx) return;
+
+                const evoList = ifrData.evolucao || [];
+                if (evoList.length === 0) return;
+
+                const labels = evoList.map(p => {
+                    const parts = p.data.split('-');
+                    return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0].slice(2)}` : p.data;
+                });
+                const dataValues = evoList.map(p => p.patrimonio_total);
+                const lastPoint = evoList[evoList.length - 1];
+
+                const currentBadge = document.getElementById('ifrPatrimonioCurrentBadge');
+                if (currentBadge && lastPoint) {
+                    const varPct = lastPoint.variacao_pct_total || 0;
+                    currentBadge.innerText = `Patrimônio: ${formatMoney(lastPoint.patrimonio_total)} (${varPct >= 0 ? '+' : ''}${varPct.toFixed(1)}%)`;
+                }
+
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+
+                const isLight = document.body.classList.contains('theme-light');
+                // Alto Contraste: Verde Floresta #15803d no modo claro (idêntico à Visão Detalhada)
+                const lineColor = isLight ? '#15803d' : '#00e676';
+                const gridColor = isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.06)';
+                const textColor = isLight ? '#1e293b' : '#8492a6';
+
+                const canvasCtx = ctx.getContext('2d');
+                const gradient = canvasCtx.createLinearGradient(0, 0, 0, 260);
+                if (isLight) {
+                    gradient.addColorStop(0, 'rgba(21, 128, 61, 0.22)');
+                    gradient.addColorStop(1, 'rgba(21, 128, 61, 0.00)');
+                } else {
+                    gradient.addColorStop(0, 'rgba(0, 230, 118, 0.28)');
+                    gradient.addColorStop(1, 'rgba(0, 230, 118, 0.00)');
+                }
+
+                chartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Patrimônio Total (R$)',
+                            data: dataValues,
+                            borderColor: lineColor,
+                            borderWidth: 2.5,
+                            fill: true,
+                            backgroundColor: gradient,
+                            tension: 0.25,
+                            pointRadius: 3,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: lineColor,
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 1.5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: isLight ? 'rgba(255, 255, 255, 0.96)' : 'rgba(17, 19, 25, 0.95)',
+                                titleColor: isLight ? '#0f172a' : '#f1f5f9',
+                                bodyColor: isLight ? '#334155' : '#8492a6',
+                                borderColor: isLight ? '#cbd5e1' : '#222634',
+                                borderWidth: 1,
+                                padding: 12,
+                                displayColors: false,
+                                callbacks: {
+                                    label: function (context) {
+                                        const idx = context.dataIndex;
+                                        const pt = evoList[idx] || {};
+                                        return [
+                                            `Patrimônio: ${formatMoney(context.raw)}`,
+                                            `Variação: ${pt.variacao_pct_total >= 0 ? '+' : ''}${pt.variacao_pct_total}%`,
+                                            `Caixa Livre: ${formatMoney(pt.caixa_livre)}`,
+                                            `Capital Alocado: ${formatMoney(pt.capital_alocado)}`
+                                        ];
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { color: gridColor },
+                                ticks: { color: textColor, font: { size: 11, family: "'JetBrains Mono', monospace" } }
+                            },
+                            y: {
+                                grid: { color: gridColor },
+                                ticks: {
+                                    color: textColor,
+                                    font: { size: 11, family: "'JetBrains Mono', monospace" },
+                                    callback: function (val) {
+                                        return 'R$ ' + (val / 1000).toFixed(0) + 'k';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function renderTrades() {
+                const listEl = document.getElementById('ifrTradesList');
+                if (!listEl) return;
+
+                const allTrades = Object.values(ifrData.trades || {});
+                const ativosMap = ifrData.ativos || {};
+
+                // Filtrar conforme o filtro selecionado
+                let filtered = allTrades.filter(t => {
+                    if (currentFilter === 'TODOS') return true;
+                    if (currentFilter === 'E1') return t.status === 'ABERTO' && t.etapa_atual === 1;
+                    if (currentFilter === 'E2') return t.status === 'ABERTO' && t.etapa_atual === 2;
+                    if (currentFilter === 'E3') return t.status === 'ABERTO' && t.etapa_atual === 3;
+                    if (currentFilter === 'GAIN') return t.status === 'FINALIZADO_GAIN';
+                    if (currentFilter === 'STOP') return t.status === 'FINALIZADO_STOP';
+                    return true;
+                });
+
+                if (searchQuery.trim()) {
+                    const q = searchQuery.trim().toUpperCase();
+                    filtered = filtered.filter(t => t.ticker.includes(q) || (t.empresa && t.empresa.toUpperCase().includes(q)));
+                }
+
+                if (filtered.length === 0) {
+                    listEl.innerHTML = `
+                        <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius); padding:40px; text-align:center; color:var(--text-muted);">
+                            <div style="font-size:32px; margin-bottom:10px;">🔍</div>
+                            <div style="font-size:16px; font-weight:600; color:var(--text-main);">Nenhuma operação encontrada</div>
+                            <div style="font-size:13px; margin-top:4px;">Ajuste os filtros ou aguarde os próximos pregões monitorados.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                for (const t of filtered) {
+                    const ativo = ativosMap[t.ticker] || {};
+                    const logo = LOGO_COLORS[t.ticker] || { bg: '#ffffff', color: '#0f172a', text: t.ticker.slice(0, 4) };
+
+                    const currentPrice = t.preco_fechamento_atual || ativo.ultimo_preco || t.preco_medio_atual;
+                    const ifr = ativo.ifr_21 !== undefined ? ativo.ifr_21 : 45.0;
+                    const ifrClass = ifr < 30 ? 'alert' : (ifr > 70 ? 'ok' : 'warn');
+
+                    const pnlPct = t.status === 'ABERTO'
+                        ? (t.resultado_nao_realizado_pct || 0)
+                        : (t.resultado_realizado_pct || 0);
+                    const pnlClass = pnlPct >= 0 ? 'pos' : 'neg';
+                    const pnlSign = pnlPct >= 0 ? '+' : '';
+
+                    const e1 = (t.entradas && t.entradas[0]) || { preco: currentPrice, data: t.data_abertura || '--' };
+                    const e2 = (t.entradas && t.entradas[1]) || null;
+                    const e3 = (t.entradas && t.entradas[2]) || null;
+
+                    const pm = t.preco_medio_atual || currentPrice;
+                    const stopPrice = t.stop_geral_preco || Number((pm * 0.50).toFixed(2));
+                    const alvoDesc = t.alvo_saida_desc || 'IFR > 70';
+
+                    // Formatar data abreviada (DD/MM)
+                    function fmtDate(dStr) {
+                        if (!dStr || dStr === '--') return '--';
+                        const p = dStr.split('-');
+                        return p.length === 3 ? `${p[2]}/${p[1]}` : dStr;
+                    }
+
+                    if (currentViewMode === 'comfort') {
+                        // Modo Conforto
+                        const isFinalizado = (t.status === 'FINALIZADO_GAIN' || t.status === 'FINALIZADO_STOP');
+                        const isGain = (t.status === 'FINALIZADO_GAIN');
+                        const e1Done = true;
+                        const e2Done = Boolean(e2 && (t.etapa_atual >= 2));
+                        const e3Done = Boolean(e3 && (t.etapa_atual >= 3));
+
+                        const nextE2Price = Number((e1.preco * 0.90).toFixed(2));
+                        const nextE3Price = e2 ? Number((e2.preco * 0.90).toFixed(2)) : Number((e1.preco * 0.81).toFixed(2));
+
+                        let statusBadgeHtml = '';
+                        if (isFinalizado) {
+                            statusBadgeHtml = isGain 
+                                ? '<span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; background:#dcfce7; color:#15803d; border:1px solid #86efac;">ENCERRADO (GAIN) 🎯</span>'
+                                : '<span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5;">ENCERRADO (STOP) 🚨</span>';
+                        }
+
+                        // Textos descritivos das etapas
+                        let e2SubText = 'Aguardando ' + formatMoney(nextE2Price);
+                        if (e2Done && e2) {
+                            e2SubText = `${fmtDate(e2.data)} ${formatMoney(e2.preco)}`;
+                        } else if (isFinalizado) {
+                            e2SubText = 'Não necessária';
+                        }
+
+                        let e3SubText = 'Aguardando ' + formatMoney(nextE3Price);
+                        if (e3Done && e3) {
+                            e3SubText = `${fmtDate(e3.data)} ${formatMoney(e3.preco)}`;
+                        } else if (isFinalizado) {
+                            e3SubText = 'Não necessária';
+                        }
+
+                        // Coluna da Direita adaptada para abertos vs encerrados
+                        let col3Html = '';
+                        if (isFinalizado) {
+                            const resRealizadoRs = t.resultado_realizado_rs !== null && t.resultado_realizado_rs !== undefined
+                                ? t.resultado_realizado_rs
+                                : (t.valor_mercado_atual - t.capital_total_alocado);
+                            const resSign = resRealizadoRs >= 0 ? '+' : '';
+
+                            col3Html = `
+                                <div class="ifr-summary-row">
+                                    <span>Preço Entrada (PM)</span>
+                                    <span>Saída em ${fmtDate(t.data_encerramento)}</span>
+                                </div>
+                                <div class="ifr-summary-row">
+                                    <strong>${formatMoney(pm)}</strong>
+                                    <strong style="color:${isGain ? 'var(--accent-green)' : 'var(--accent-red)'};">${formatMoney(t.preco_saida || currentPrice)}</strong>
+                                </div>
+                                <div class="ifr-summary-row" style="margin-top:6px;">
+                                    <span>Motivo Saída:</span>
+                                    <span style="font-size:11px; font-weight:600; color:${isGain ? 'var(--accent-green)' : 'var(--accent-red)'};">${t.motivo_encerramento || alvoDesc}</span>
+                                </div>
+                                <div class="ifr-pnl-val ${pnlClass}">
+                                    Resultado: ${resSign}${formatMoney(resRealizadoRs)} (${pnlSign}${pnlPct.toFixed(1).replace('.', ',')}%)
+                                </div>
+                            `;
+                        } else {
+                            col3Html = `
+                                <div class="ifr-summary-row">
+                                    <span>Preço Médio Atual</span>
+                                    <span>Stop Geral (-50%)</span>
+                                </div>
+                                <div class="ifr-summary-row">
+                                    <strong>${formatMoney(pm)}</strong>
+                                    <strong style="color:var(--accent-red);">${formatMoney(stopPrice)}</strong>
+                                </div>
+                                <div class="ifr-summary-row" style="margin-top:6px;">
+                                    <span>Alvo de Saída:</span>
+                                    <span style="font-size:11px; font-weight:600; color:#38bdf8;">${alvoDesc}</span>
+                                </div>
+                                <div class="ifr-pnl-val ${pnlClass}">
+                                    P&amp;L: ${pnlSign}${pnlPct.toFixed(1).replace('.', ',')}%
+                                </div>
+                            `;
+                        }
+
+                        html += `
+                        <div class="ifr-trade-card">
+                            <!-- Coluna 1: Ativo, Preço, P/L e IFR -->
+                            <div class="ifr-asset-col">
+                                <div class="ifr-asset-head">
+                                    ${getHeaderBrandIconHtml(t.ticker, 36)}
+                                    <div>
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <span class="ifr-ticker-title">${t.ticker}</span>
+                                            <span class="ifr-sector-badge">${t.setor || 'Geral'}</span>
+                                            ${statusBadgeHtml}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ifr-asset-metrics">
+                                    <span class="ifr-metric-item">Preço: <strong>${formatMoney(currentPrice)}</strong></span>
+                                    <span class="ifr-metric-item">P/L: <strong>${ativo.ultimo_pl ? ativo.ultimo_pl + 'x' : '--'}</strong> vs Méd 2A: <strong>${(ativo.pl_medio_historico_2a || ativo.pl_medio_historico) ? (ativo.pl_medio_historico_2a || ativo.pl_medio_historico) + 'x' : '--'}</strong></span>
+                                    <span class="ifr-pill ${ifrClass}">IFR: ${ifr.toFixed(1)}</span>
+                                </div>
+                            </div>
+
+                            <!-- Coluna 2: Progressão das 3 Entradas (E1, E2, E3) -->
+                            <div class="ifr-steps-wrap">
+                                <!-- E1 -->
+                                <div class="ifr-step-node done">
+                                    <div class="ifr-step-badge">✓ E1 R$ 3.300</div>
+                                    <div class="ifr-step-sub">${fmtDate(e1.data)} ${formatMoney(e1.preco)}</div>
+                                </div>
+
+                                <div class="ifr-step-connector ${e2Done ? 'done' : ''}"></div>
+
+                                <!-- E2 -->
+                                <div class="ifr-step-node ${e2Done ? 'done' : 'pending'}">
+                                    <div class="ifr-step-badge">${e2Done ? '✓ ' : ''}E2 R$ 3.300</div>
+                                    <div class="ifr-step-sub">${e2SubText}</div>
+                                </div>
+
+                                <div class="ifr-step-connector ${e3Done ? 'done' : ''}"></div>
+
+                                <!-- E3 -->
+                                <div class="ifr-step-node ${e3Done ? 'done' : 'pending'}">
+                                    <div class="ifr-step-badge">${e3Done ? '✓ ' : ''}E3 R$ 3.300</div>
+                                    <div class="ifr-step-sub">${e3SubText}</div>
+                                </div>
+                            </div>
+
+                            <!-- Coluna 3: Métricas de Fechamento ou Posição Aberta -->
+                            <div class="ifr-summary-col">
+                                ${col3Html}
+                            </div>
+                        </div>
+                        `;
+                    } else {
+                        // Modo Compacto
+                        const progressPct = t.etapa_atual === 1 ? 33 : (t.etapa_atual === 2 ? 66 : 100);
+
+                        html += `
+                        <div class="ifr-trade-card compact">
+                            <div class="ifr-asset-col">
+                                <div class="ifr-asset-head">
+                                    ${getHeaderBrandIconHtml(t.ticker, 28)}
+                                    <span class="ifr-ticker-title" style="font-size:15px;">${t.ticker}</span>
+                                    <span class="ifr-sector-badge">${t.setor || 'Geral'}</span>
+                                </div>
+                                <div class="ifr-asset-metrics">
+                                    <span>${formatMoney(currentPrice)}</span>
+                                    <span class="ifr-pill ${ifrClass}" style="padding:1px 6px; font-size:10px;">IFR ${ifr.toFixed(1)}</span>
+                                </div>
+                            </div>
+
+                            <div class="ifr-compact-bar-wrap">
+                                <div class="ifr-compact-track">
+                                    <div class="ifr-compact-fill" style="width: ${progressPct}%;"></div>
+                                </div>
+                                <div class="ifr-compact-labels">
+                                    <span>E1 (${fmtDate(e1.data)})</span>
+                                    <span>${e2 ? 'E2 (' + fmtDate(e2.data) + ')' : 'E2 (-10%)'}</span>
+                                    <span>${e3 ? 'E3 (' + fmtDate(e3.data) + ')' : 'E3 (-10%)'}</span>
+                                </div>
+                            </div>
+
+                            <div class="ifr-summary-col">
+                                <div class="ifr-summary-row">
+                                    <span>PM: <strong>${formatMoney(pm)}</strong></span>
+                                    <span class="ifr-pnl-val ${pnlClass}" style="font-size:15px; margin:0;">
+                                        ${pnlSign}${pnlPct.toFixed(1).replace('.', ',')}%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    }
+                }
+
+                listEl.innerHTML = html;
+            }
+
+            return {
+                init: function () {
+                    initData();
+                    initFirebaseClient();
+                },
+                onThemeChange: function () {
+                    renderChart();
+                    renderTrades();
+                },
+                onOpen: function () {
+                    initData();
+                    renderKPIs();
+                    renderChart();
+                    renderTrades();
+                },
+                onResize: function () {
+                    if (chartInstance) chartInstance.resize();
+                },
+                setFilter: function (filter, btnEl) {
+                    currentFilter = filter;
+                    document.querySelectorAll('.ifr-filter-btn').forEach(b => b.classList.remove('active'));
+                    if (btnEl) btnEl.classList.add('active');
+                    renderTrades();
+                },
+                setViewMode: function (mode, btnEl) {
+                    currentViewMode = mode;
+                    document.querySelectorAll('.ifr-view-btn').forEach(b => b.classList.remove('active'));
+                    if (btnEl) btnEl.classList.add('active');
+                    renderTrades();
+                },
+                onSearch: function (val) {
+                    searchQuery = val || '';
+                    renderTrades();
+                }
+            };
+        })();
+
+        // Inicializar IfrModule no carregamento
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof IfrModule !== 'undefined') IfrModule.init();
+        });
+        
     </script>
 
 </body>
@@ -8326,6 +9737,7 @@ html_final = html_final.replace("__EARNINGS_PLACEHOLDER__", json.dumps(earnings_
 html_final = html_final.replace("__CORPORATE_EVENTS_PLACEHOLDER__", json.dumps(corporate_events_summary, ensure_ascii=False))
 html_final = html_final.replace("__EVENTS_ALL_DATA_PLACEHOLDER__", json.dumps(corporate_events_full, ensure_ascii=False))
 html_final = html_final.replace("__MACRO_PLACEHOLDER__", json.dumps(macro_snapshot, ensure_ascii=False))
+html_final = html_final.replace("__IFR_PLACEHOLDER__", json.dumps(ifr_cache, ensure_ascii=False))
 
 ibov_val = ibov_info.get("aggregated_pe_all") or ibov_info.get("weighted_pe", 10.16)
 html_final = html_final.replace("__IBOV_PE__", f"{float(ibov_val):.2f}")

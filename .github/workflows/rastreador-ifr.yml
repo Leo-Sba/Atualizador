@@ -1,0 +1,60 @@
+name: Rastreador & Máquina de Estados (Entradas > IFR)
+
+on:
+  schedule:
+    # 18h30 Horário de Brasília (UTC-3) de Segunda a Sexta = 21h30 UTC
+    - cron: '30 21 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      force_run:
+        description: 'Forçar execução mesmo se já processado hoje'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: b3-ifr-tracker
+  cancel-in-progress: false
+
+jobs:
+  processar-ifr:
+    name: Processar Entradas IFR & Atualizar Firestore
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js (v22)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Instalar Dependências
+        run: |
+          npm ci || npm install
+
+      - name: Executar Rastreador Diário & Máquina de Estados
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+        run: |
+          node processar-ifr.js
+
+      - name: Commit e Push do Cache Sincronizado (Se houver alterações)
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Actions [Rastreador IFR]"
+          if [ -f entradas_ifr_cache.json ]; then
+            git add entradas_ifr_cache.json
+            git diff --quiet && git diff --staged --quiet || git commit -m "chore(ifr): sincronizar entradas_ifr_cache.json [skip ci]"
+            git push || true
+          fi

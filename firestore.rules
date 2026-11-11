@@ -1,0 +1,131 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model: Módulo "Entradas > IFR" (B3 Fundamentalista)
+// ===============================================================
+//
+// 1. Coleção: configuracao_ifr
+//    Document ID: {configId} (ex: 'global', 'default')
+//    Campos:
+//      - capital_inicial: number - Capital base alocado para a estratégia
+//      - caixa_livre: number - Saldo disponível não alocado
+//      - capital_alocado: number - Total investido em operações ativas
+//      - lucro_realizado_acumulado: number - Lucro financeiro total consolidado
+//      - taxa_acerto_pct: number - Percentual de operações vencedoras (0 a 100)
+//      - total_trades: int - Número total de trades realizados
+//      - trades_vencedores: int - Quantidade de trades finalizados com gain
+//      - trades_perdedores: int - Quantidade de trades finalizados com stop
+//      - ultima_data_processada: string / timestamp - Último pregão analisado
+//      - updated_at: timestamp / string - Data/hora da última sincronização
+//
+// 2. Coleção: ativos_ifr
+//    Document ID: {ticker} (ex: 'PETR4', 'VALE3', 'BBAS3')
+//    Campos:
+//      - ticker: string - Código de negociação do ativo na B3
+//      - ifr21: number - Índice de Força Relativa de 21 períodos
+//      - fechamentos_35: list - Série histórica recente dos últimos 35 fechamentos
+//      - pe_medio_historico: number - Múltiplo P/L médio histórico de referência
+//      - status: string - Estado operacional (ex: 'AGUARDANDO_IFR', 'ENTRADA_E1', 'ALOCADO')
+//      - preco_atual: number - Preço de fechamento mais recente
+//      - updated_at: timestamp / string - Momento do cálculo pelo pipeline
+//
+// 3. Coleção: trades_ifr
+//    Document ID: {tradeId} (ex: 'PETR4_20261111_1' ou auto-id)
+//    Campos:
+//      - id: string - Identificador do trade
+//      - ticker: string - Ticker do ativo operado
+//      - status: string ('ABERTO', 'ENCERRADO_GAIN', 'ENCERRADO_STOP')
+//      - entradas: list / map - Detalhamento das etapas de entrada (E1, E2, E3)
+//      - preco_medio: number - Preço médio ponderado da posição
+//      - alvo_gain: number - Preço planejado para realização de lucro
+//      - stop_loss: number - Preço limite de saída por stop loss
+//      - data_entrada: string / timestamp - Data de início da operação
+//      - data_saida: string / timestamp (opcional) - Data de término do trade
+//      - resultado_pct: number (opcional) - Rentabilidade final apurada
+//      - lucro_prejuizo_reais: number (opcional) - Resultado financeiro líquido apurado
+//      - motivo_saida: string (opcional) - Motivo da saída (ex: 'ALVO_GAIN', 'STOP_LOSS')
+//      - updated_at: timestamp / string
+//
+// 4. Coleção: evolucao_patrimonial
+//    Document ID: {registroId} (ex: '2026-11-11' ou auto-id)
+//    Campos:
+//      - data: string (YYYY-MM-DD) ou timestamp - Data do pregão de referência
+//      - patrimonio_total: number - Soma de caixa livre + valor de mercado das posições
+//      - capital_alocado: number - Montante comprometido em trades
+//      - caixa_disponivel: number - Saldo líquido livre para novas ordens
+//      - lucro_acumulado: number - Lucro total apurado até a data
+//      - rentabilidade_acumulada_pct: number - Retorno percentual acumulado da carteira
+//      - benchmark_ibov_pct: number (opcional) - Rentabilidade acumulada do Ibovespa
+//      - created_at: timestamp / string
+//
+// ===============================================================
+// Modelo de Autorização e Princípios de Segurança:
+// ===============================================================
+// - Leitura Pública (Unauthenticated Read):
+//   O dashboard web em produção (hospedado na Vercel) faz leitura pública dos
+//   dados analíticos sem exigir login de usuário final (allow read: if true).
+//
+// - Escrita Bloqueada para Clientes (Default Write Deny):
+//   Nenhum cliente web possui permissão de gravação, modificação ou exclusão
+//   (allow write: if false). Todas as gravações e atualizações são executadas
+//   exclusivamente pelo pipeline automatizado no GitHub Actions usando o
+//   Firebase Admin SDK com credenciais de Service Account (que ignoram as Security Rules).
+//
+// - Default Deny Global:
+//   Todas as outras coleções ou subcoleções não explicitamente mapeadas têm
+//   leitura e escrita expressamente negadas.
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    // Verifica se a requisição possui usuário autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Regra explícita para bloquear qualquer mutação originada por clientes web
+    function isClientWriteAllowed() {
+      return false;
+    }
+
+    // ===============================================================
+    // Coleções do Módulo "Entradas > IFR"
+    // ===============================================================
+
+    // 1. Configuração e Estado Global da Estratégia IFR
+    match /configuracao_ifr/{configId} {
+      allow read: if true;
+      allow write: if isClientWriteAllowed();
+    }
+
+    // 2. Estado dos Ativos Monitorados (IFR 21, fechamentos, P/L histórico)
+    match /ativos_ifr/{ticker} {
+      allow read: if true;
+      allow write: if isClientWriteAllowed();
+    }
+
+    // 3. Histórico e Gerenciamento de Trades (Abertos, E1/E2/E3, Gain/Stop)
+    match /trades_ifr/{tradeId} {
+      allow read: if true;
+      allow write: if isClientWriteAllowed();
+    }
+
+    // 4. Série Temporal Diária da Evolução Patrimonial
+    match /evolucao_patrimonial/{registroId} {
+      allow read: if true;
+      allow write: if isClientWriteAllowed();
+    }
+
+    // ===============================================================
+    // Default Deny: Bloqueio estrito para qualquer outra coleção/rota
+    // ===============================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

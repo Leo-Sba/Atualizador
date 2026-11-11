@@ -1,0 +1,17 @@
+{
+  "name": "entradas-ifr-b3",
+  "version": "1.0.0",
+  "description": "Rastreador e Máquina de Estados da Estratégia Entradas > IFR (B3 + Supabase + Firebase Firestore)",
+  "main": "processar-ifr.js",
+  "type": "commonjs",
+  "scripts": {
+    "seed": "node seed-historico.js",
+    "process": "node processar-ifr.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.48.1",
+    "dotenv": "^16.4.7",
+    "firebase-admin": "^13.1.0",
+    "pg": "^8.13.1"
+  }
+}
