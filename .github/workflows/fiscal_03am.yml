@@ -7,14 +7,21 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: b3-fiscal-firebase-sync
+  group: b3-supabase-pipeline
   cancel-in-progress: false
+
+env:
+  DB_HOST: ${{ secrets.DB_HOST }}
+  DB_PORT: ${{ secrets.DB_PORT }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  DB_USER: ${{ secrets.DB_USER }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
 jobs:
   sync-fiscal-firestore:
     name: "Coletar Receitas/Despesas RTN & Divida/PIB e Gravar no Firestore (03:00 BRT)"
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
 
     steps:
       - name: Checkout do Repositório
@@ -26,10 +33,10 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Configurar Node.js (v22 - Firebase Admin SDK)
+      - name: Configurar Node.js (v20 - Firebase Admin SDK & Vercel CLI)
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
           cache: 'npm'
 
       - name: Instalar Dependências Python e Node.js
@@ -44,12 +51,49 @@ jobs:
         run: |
           python fetch_fiscal_data.py
 
+      - name: Verificar se Houve Alteração nos Dados Fiscais
+        id: check_diff
+        run: |
+          if git diff --quiet macro_fiscal_cache.json; then
+            echo "has_changes=0" >> "$GITHUB_OUTPUT"
+            echo "Nenhum dado fiscal novo publicado pelo Tesouro/BCB hoje."
+          else
+            echo "has_changes=1" >> "$GITHUB_OUTPUT"
+            echo "Novos dados fiscais detectados! Prosseguindo com deploy e sincronização."
+          fi
+
       - name: Commit e Push do Cache Fiscal Sincronizado (Se houver alterações)
+        if: steps.check_diff.outputs.has_changes == '1'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Actions [Fiscal 03AM]"
-          if [ -f macro_fiscal_cache.json ]; then
-            git add macro_fiscal_cache.json
-            git diff --quiet && git diff --staged --quiet || git commit -m "chore(fiscal): sincronizar macro_fiscal_cache.json e Firestore (03:00 BRT) [skip ci]"
-            git push || true
+          git add macro_fiscal_cache.json
+          git commit -m "chore(fiscal): sincronizar macro_fiscal_cache.json e Firestore (03:00 BRT) [skip ci]"
+          git push || true
+
+      - name: Recompilar Dashboard com Novo Cache (Estágio 6)
+        if: steps.check_diff.outputs.has_changes == '1' || github.event_name == 'workflow_dispatch'
+        run: |
+          python run_updater.py --stage 6
+
+      - name: Publicar Dashboard Atualizado em Produção na Vercel
+        if: steps.check_diff.outputs.has_changes == '1' || github.event_name == 'workflow_dispatch'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -n "$VERCEL_TOKEN" ]; then
+            echo "Publicando novo build na Vercel..."
+            mkdir -p deploy_dist/.vercel
+            cp dashboard.html deploy_dist/index.html
+            [ -f anomalias.html ] && cp anomalias.html deploy_dist/
+            [ -f anomalies_data.json ] && cp anomalies_data.json deploy_dist/
+            [ -f events_data.json ] && cp events_data.json deploy_dist/
+            [ -f macro_fiscal_cache.json ] && cp macro_fiscal_cache.json deploy_dist/
+            [ -d events ] && cp -r events deploy_dist/
+            [ -f vercel.json ] && cp vercel.json deploy_dist/
+            cd deploy_dist
+            echo '{"projectId":"prj_iTbDA9V8SZyxoUIxuNzbpV2SIQoB","orgId":"team_Vq8xybWYkCQy4ZCfUg2rDEfv","projectName":"dashboard-ibov-preco-lucro"}' > .vercel/project.json
+            npx vercel --prod --token="$VERCEL_TOKEN" --yes
+          else
+            echo "::warning::Secret VERCEL_TOKEN nao configurado no repositorio. Deploy estatico pulado, mas Firebase ja atualizou em tempo real."
           fi
