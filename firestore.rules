@@ -58,6 +58,15 @@ rules_version = '2';
 //      - benchmark_ibov_pct: number (opcional) - Rentabilidade acumulada do Ibovespa
 //      - created_at: timestamp / string
 //
+// 5. Coleção: macro_fiscal
+//    Document ID: {docId} (ex: 'governo_central_historico')
+//    Campos:
+//      - updated_at: timestamp / string - Data/hora da última sincronização
+//      - reference_month: string - Mês de referência da série fiscal
+//      - source: string - Fonte oficial dos dados (ex: Tesouro Nacional / BCB)
+//      - kpis: map - Indicadores consolidados de receitas, despesas e dívida/PIB
+//      - series: list / map - Série histórica mensal completa
+//
 // ===============================================================
 // Modelo de Autorização e Princípios de Segurança:
 // ===============================================================
@@ -117,6 +126,12 @@ service cloud.firestore {
 
     // 4. Série Temporal Diária da Evolução Patrimonial
     match /evolucao_patrimonial/{registroId} {
+      allow read: if true;
+      allow write: if isClientWriteAllowed();
+    }
+
+    // 5. Série Histórica Fiscal (Receitas, Despesas do Governo Central e Dívida/PIB)
+    match /macro_fiscal/{docId} {
       allow read: if true;
       allow write: if isClientWriteAllowed();
     }

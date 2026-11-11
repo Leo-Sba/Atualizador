@@ -70,6 +70,14 @@ if os.path.exists("macro_data.json"):
     except Exception:
         pass
 
+macro_fiscal_cache = {}
+if os.path.exists("macro_fiscal_cache.json"):
+    try:
+        with open("macro_fiscal_cache.json", "r", encoding="utf-8") as f:
+            macro_fiscal_cache = json.load(f)
+    except Exception:
+        pass
+
 
 
 template = """<!DOCTYPE html>
@@ -3867,6 +3875,7 @@ body.theme-light .event-tile-date {
                     <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecCurva')">📈 Vértices DI1 &amp; Curva de Juros</button>
                     <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecRegimes')">🧭 Regimes de Risco</button>
                     <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecEse')">🔀 Mapa "E se…?"</button>
+                    <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecFiscal')">🏛️ Fiscal &amp; Dívida/PIB</button>
                 </div>
             </div>
 
@@ -4062,6 +4071,59 @@ body.theme-light .event-tile-date {
                         </table>
                     </div>
                 </div>
+            </div>
+
+            <!-- Bloco 5: Receitas e Despesas do Governo Central vs. Dívida/PIB (%) -->
+            <div id="macroSecFiscal" class="macro-panel macro-section">
+                <div class="macro-panel-head">
+                    <div>
+                        <span class="macro-kicker green">POLÍTICA FISCAL · TESOURO NACIONAL (RTN) &amp; BCB</span>
+                        <h3>Receitas e Despesas do Governo Central vs. Dívida/PIB (%)</h3>
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+                        <div class="macro-live-pill" id="mcFiscalSyncBadge" title="Sincronizado diariamente às 03:00 BRT via GitHub Actions + Cloud Firestore">
+                            <span class="macro-live-dot"></span>
+                            <span id="mcFiscalSyncText">Sincronizado · Firebase Firestore (03:00 BRT)</span>
+                        </div>
+                        <div class="period-selector" style="padding: 2px;" id="mcFiscalPeriodBtns">
+                            <button type="button" class="period-btn" onclick="MacroModule.setFiscalRange(5, this)">5A</button>
+                            <button type="button" class="period-btn" onclick="MacroModule.setFiscalRange(10, this)">10A</button>
+                            <button type="button" class="period-btn" onclick="MacroModule.setFiscalRange(20, this)">20A</button>
+                            <button type="button" class="period-btn active" onclick="MacroModule.setFiscalRange(0, this)">MÁX (2003–2026)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="macro-kpi-strip" style="margin-top: 8px; margin-bottom: 16px;">
+                    <div class="macro-kpi-chip" style="border-color: rgba(16, 185, 129, 0.35); background: rgba(16, 185, 129, 0.06);">
+                        <span class="lbl">Receita Total (MM12M)</span>
+                        <strong id="mcFiscalKpiRec" style="color: #10b981;">R$ -- bi</strong>
+                        <small id="mcFiscalKpiRecSub">Deflacionado IPCA</small>
+                    </div>
+                    <div class="macro-kpi-chip" style="border-color: rgba(239, 68, 68, 0.35); background: rgba(239, 68, 68, 0.06);">
+                        <span class="lbl">Despesa Primária (MM12M)</span>
+                        <strong id="mcFiscalKpiDesp" style="color: #ef4444;">R$ -- bi</strong>
+                        <small id="mcFiscalKpiDespSub">Deflacionado IPCA</small>
+                    </div>
+                    <div class="macro-kpi-chip" id="mcFiscalKpiPrimCard">
+                        <span class="lbl">Resultado Primário</span>
+                        <strong id="mcFiscalKpiPrim">R$ -- bi / mês</strong>
+                        <small id="mcFiscalKpiPrimSub">Balanço Fiscal Mensal</small>
+                    </div>
+                    <div class="macro-kpi-chip copom">
+                        <span class="lbl">Dívida Bruta / PIB</span>
+                        <strong id="mcFiscalKpiDiv" style="color: #f59e0b;">--%</strong>
+                        <small id="mcFiscalKpiDivSub">Série Encadeada FMI &amp; DBGG BCB</small>
+                    </div>
+                </div>
+
+                <div style="position: relative; width: 100%; height: 390px;">
+                    <canvas id="chartMacroFiscal"></canvas>
+                </div>
+
+                <p class="macro-note" id="mcFiscalFooterNote" style="margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 11px;">
+                    Fonte: Tesouro Transparente (RTN - Série Histórica Mensal IPCA) e Banco Central do Brasil (SGS 4537 / 13762) · Valores mensais em média móvel de 12 meses corrigidos pelo IPCA (escala base constante 2003 de 0 a 80 bi e valores equivalentes atuais no tooltip).
+                </p>
             </div>
         </div>
 
@@ -5714,6 +5776,7 @@ body.theme-light .event-tile-date {
         const CORPORATE_EVENTS_MAP = __CORPORATE_EVENTS_PLACEHOLDER__;
         const EVENTS_ALL_DATA = __EVENTS_ALL_DATA_PLACEHOLDER__;
         const MACRO_DATA = __MACRO_PLACEHOLDER__;
+        const MACRO_FISCAL_DATA = __MACRO_FISCAL_PLACEHOLDER__;
 
         // Glass Pro: tipografia e tooltips flutuantes dos gráficos alinhados ao design system (zinc-900/80 + border-zinc-800)
         function applyGlassChartTheme() {
@@ -9394,6 +9457,221 @@ body.theme-light .event-tile-date {
                 renderAll();
             }
 
+            let fiscalData = (typeof MACRO_FISCAL_DATA !== "undefined" && MACRO_FISCAL_DATA && Array.isArray(MACRO_FISCAL_DATA.series))
+                ? MACRO_FISCAL_DATA
+                : { kpis: {}, series: [] };
+            let fiscalYearsRange = 0;
+            let fiscalChartInstance = null;
+
+            function formatFiscalMonth(ym) {
+                if (!ym || ym.length < 7) return ym || "";
+                const parts = ym.split("-");
+                return parts[1] + "/" + parts[0];
+            }
+
+            function renderFiscalSection() {
+                const seriesAll = (fiscalData && Array.isArray(fiscalData.series)) ? fiscalData.series : [];
+                if (!seriesAll.length) return;
+
+                const latest = seriesAll[seriesAll.length - 1];
+                const kpis = fiscalData.kpis || {};
+                const recBi = (kpis.receita_bi !== undefined) ? kpis.receita_bi : latest.rec;
+                const despBi = (kpis.despesa_bi !== undefined) ? kpis.despesa_bi : latest.desp;
+                const primBi = (kpis.resultado_primario_bi !== undefined) ? kpis.resultado_primario_bi : (recBi - despBi);
+                const divPct = (kpis.divida_pib_pct !== undefined) ? kpis.divida_pib_pct : latest.div;
+                const divBcb = (kpis.divida_bcb_pct !== undefined) ? kpis.divida_bcb_pct : latest.div_bcb;
+                const refMonth = formatFiscalMonth(fiscalData.reference_month || latest.m);
+
+                const elRec = document.getElementById("mcFiscalKpiRec");
+                const elRecSub = document.getElementById("mcFiscalKpiRecSub");
+                const elDesp = document.getElementById("mcFiscalKpiDesp");
+                const elDespSub = document.getElementById("mcFiscalKpiDespSub");
+                const elPrim = document.getElementById("mcFiscalKpiPrim");
+                const elPrimSub = document.getElementById("mcFiscalKpiPrimSub");
+                const elPrimCard = document.getElementById("mcFiscalKpiPrimCard");
+                const elDiv = document.getElementById("mcFiscalKpiDiv");
+                const elDivSub = document.getElementById("mcFiscalKpiDivSub");
+
+                if (elRec) elRec.textContent = "R$ " + Number(recBi).toFixed(1).replace(".", ",") + " bi";
+                if (elRecSub) elRecSub.textContent = "Deflacionado IPCA (" + refMonth + ")";
+                if (elDesp) elDesp.textContent = "R$ " + Number(despBi).toFixed(1).replace(".", ",") + " bi";
+                if (elDespSub) elDespSub.textContent = "Deflacionado IPCA (" + refMonth + ")";
+
+                if (elPrim) {
+                    const sign = primBi >= 0 ? "+" : "-";
+                    elPrim.textContent = sign + "R$ " + Math.abs(primBi).toFixed(1).replace(".", ",") + " bi / mês";
+                    elPrim.style.color = primBi >= 0 ? "#10b981" : "#ef4444";
+                }
+                if (elPrimSub) {
+                    elPrimSub.textContent = primBi >= 0 ? "Superávit Primário (MM12M)" : "Déficit Primário (MM12M)";
+                }
+                if (elPrimCard) {
+                    elPrimCard.style.borderColor = primBi >= 0 ? "rgba(16, 185, 129, 0.35)" : "rgba(239, 68, 68, 0.35)";
+                    elPrimCard.style.background = primBi >= 0 ? "rgba(16, 185, 129, 0.06)" : "rgba(239, 68, 68, 0.06)";
+                }
+                if (elDiv) elDiv.textContent = Number(divPct).toFixed(1).replace(".", ",") + "%";
+                if (elDivSub) {
+                    elDivSub.textContent = divBcb ? ("FMI: " + Number(divPct).toFixed(1).replace(".", ",") + "% · DBGG BCB: " + Number(divBcb).toFixed(1).replace(".", ",") + "%") : "Série Histórica BCB";
+                }
+
+                const filtered = fiscalYearsRange > 0
+                    ? seriesAll.slice(-Math.min(seriesAll.length, fiscalYearsRange * 12))
+                    : seriesAll;
+
+                const labels = filtered.map(item => formatFiscalMonth(item.m));
+                const dataRec = filtered.map(item => item.rec);
+                const dataDesp = filtered.map(item => item.desp);
+                const dataDiv = filtered.map(item => item.div);
+
+                const canvas = document.getElementById("chartMacroFiscal");
+                if (!canvas || typeof Chart === "undefined") return;
+
+                const isLight = document.body.classList.contains("theme-light");
+                const gridColor = isLight ? "rgba(15, 23, 42, 0.07)" : "rgba(148, 163, 184, 0.1)";
+                const tickColor = isLight ? "#475569" : "#94a3b8";
+
+                if (fiscalChartInstance) {
+                    fiscalChartInstance.destroy();
+                    fiscalChartInstance = null;
+                }
+
+                fiscalChartInstance = new Chart(canvas.getContext("2d"), {
+                    type: "line",
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: "Receita",
+                                data: dataRec,
+                                borderColor: "#10b981",
+                                backgroundColor: "rgba(16, 185, 129, 0.12)",
+                                borderWidth: 2.4,
+                                pointRadius: 0,
+                                pointHoverRadius: 5,
+                                pointHoverBackgroundColor: "#10b981",
+                                tension: 0.25,
+                                yAxisID: "y"
+                            },
+                            {
+                                label: "Despesa",
+                                data: dataDesp,
+                                borderColor: "#ef4444",
+                                backgroundColor: "rgba(239, 68, 68, 0.12)",
+                                borderWidth: 2.4,
+                                pointRadius: 0,
+                                pointHoverRadius: 5,
+                                pointHoverBackgroundColor: "#ef4444",
+                                tension: 0.25,
+                                yAxisID: "y"
+                            },
+                            {
+                                label: "Dívida/PIB (%)",
+                                data: dataDiv,
+                                borderColor: "#f59e0b",
+                                backgroundColor: "rgba(245, 158, 11, 0.1)",
+                                borderWidth: 2.0,
+                                borderDash: [5, 4],
+                                pointRadius: 0,
+                                pointHoverRadius: 5,
+                                pointHoverBackgroundColor: "#f59e0b",
+                                tension: 0.25,
+                                yAxisID: "y1"
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: "index",
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: "top",
+                                labels: {
+                                    color: isLight ? "#0f172a" : "#e2e8f0",
+                                    usePointStyle: true,
+                                    pointStyle: "circle",
+                                    padding: 18,
+                                    font: { family: "Inter, sans-serif", size: 12, weight: "600" }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const val = context.parsed.y;
+                                        if (val === null || val === undefined) return "";
+                                        const idx = context.dataIndex;
+                                        const item = filtered[idx] || {};
+                                        if (context.dataset.label === "Receita") {
+                                            const extra = item.rec_atual ? " (Preços atuais: R$ " + Number(item.rec_atual).toFixed(1).replace(".", ",") + " bi)" : "";
+                                            return "Receita: R$ " + Number(val).toFixed(1).replace(".", ",") + " bi" + extra;
+                                        }
+                                        if (context.dataset.label === "Despesa") {
+                                            const extra = item.desp_atual ? " (Preços atuais: R$ " + Number(item.desp_atual).toFixed(1).replace(".", ",") + " bi)" : "";
+                                            return "Despesa: R$ " + Number(val).toFixed(1).replace(".", ",") + " bi" + extra;
+                                        }
+                                        return "Dívida/PIB (%): " + Number(val).toFixed(1).replace(".", ",") + "%";
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: {
+                                    color: tickColor,
+                                    maxTicksLimit: 14,
+                                    font: { family: "JetBrains Mono, monospace", size: 10.5 }
+                                }
+                            },
+                            y: {
+                                type: "linear",
+                                display: true,
+                                position: "left",
+                                min: 0,
+                                max: 80,
+                                title: {
+                                    display: true,
+                                    text: "R$ (bilhões – deflacionado)",
+                                    color: tickColor,
+                                    font: { family: "Inter, sans-serif", size: 11, weight: "600" }
+                                },
+                                grid: { color: gridColor },
+                                ticks: {
+                                    color: tickColor,
+                                    stepSize: 10,
+                                    callback: function(v) { return v + " bi"; },
+                                    font: { family: "JetBrains Mono, monospace", size: 10.5 }
+                                }
+                            },
+                            y1: {
+                                type: "linear",
+                                display: true,
+                                position: "right",
+                                min: 0,
+                                max: 100,
+                                title: {
+                                    display: true,
+                                    text: "Dívida / PIB (%)",
+                                    color: tickColor,
+                                    font: { family: "Inter, sans-serif", size: 11, weight: "600" }
+                                },
+                                grid: { drawOnChartArea: false },
+                                ticks: {
+                                    color: tickColor,
+                                    stepSize: 20,
+                                    callback: function(v) { return v + "%"; },
+                                    font: { family: "JetBrains Mono, monospace", size: 10.5 }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
             function renderAll() {
                 renderTopBadgeAndKPIs();
                 renderCopomChart();
@@ -9402,6 +9680,7 @@ body.theme-light .event-tile-date {
                 renderCurveSection();
                 setRegime(regimeSelected);
                 renderTxScenario(false);
+                renderFiscalSection();
             }
 
             return {
@@ -9415,6 +9694,7 @@ body.theme-light .event-tile-date {
                     } else {
                         renderCopomChart();
                         renderCurveSection();
+                        renderFiscalSection();
                     }
                     if (!liveLoaded) {
                         liveLoaded = true;
@@ -9426,11 +9706,27 @@ body.theme-light .event-tile-date {
                         renderCopomChart();
                         renderCurveSection();
                         renderTxScenario(false);
+                        renderFiscalSection();
                     }
                 },
                 onResize: function () {
                     if (initialized && typeof currentAppTab !== 'undefined' && currentAppTab === 'macro') {
                         renderCurveSection();
+                        if (fiscalChartInstance) fiscalChartInstance.resize();
+                    }
+                },
+                setFiscalRange: function (yrs, btn) {
+                    fiscalYearsRange = yrs;
+                    document.querySelectorAll('#mcFiscalPeriodBtns .period-btn').forEach(b => b.classList.remove('active'));
+                    if (btn) btn.classList.add('active');
+                    renderFiscalSection();
+                },
+                updateFiscalFromFirestore: function (docData) {
+                    if (docData && Array.isArray(docData.series) && docData.series.length > 0) {
+                        fiscalData = docData;
+                        const syncEl = document.getElementById('mcFiscalSyncText');
+                        if (syncEl) syncEl.textContent = 'Sincronizado Ao Vivo · Firebase Firestore (03:00 BRT)';
+                        if (initialized) renderFiscalSection();
                     }
                 },
                 setCopomYear: function (yr, btn) {
@@ -9551,6 +9847,12 @@ body.theme-light .event-tile-date {
                         console.log('⚡ Firebase Firestore conectado no cliente web!');
 
                         // Listeners em tempo real
+                        firestoreDb.collection('macro_fiscal').doc('governo_central_historico').onSnapshot(doc => {
+                            if (doc.exists && typeof MacroModule !== 'undefined' && MacroModule.updateFiscalFromFirestore) {
+                                MacroModule.updateFiscalFromFirestore(doc.data());
+                            }
+                        });
+
                         firestoreDb.collection('configuracao_ifr').doc('estado_global').onSnapshot(doc => {
                             if (doc.exists) {
                                 ifrData.config = doc.data();
@@ -10343,6 +10645,7 @@ html_final = html_final.replace("__EARNINGS_PLACEHOLDER__", json.dumps(earnings_
 html_final = html_final.replace("__CORPORATE_EVENTS_PLACEHOLDER__", json.dumps(corporate_events_summary, ensure_ascii=False))
 html_final = html_final.replace("__EVENTS_ALL_DATA_PLACEHOLDER__", json.dumps(corporate_events_full, ensure_ascii=False))
 html_final = html_final.replace("__MACRO_PLACEHOLDER__", json.dumps(macro_snapshot, ensure_ascii=False))
+html_final = html_final.replace("__MACRO_FISCAL_PLACEHOLDER__", json.dumps(macro_fiscal_cache, ensure_ascii=False))
 html_final = html_final.replace("__IFR_PLACEHOLDER__", json.dumps(ifr_cache, ensure_ascii=False))
 
 ibov_val = ibov_info.get("aggregated_pe_all") or ibov_info.get("weighted_pe", 10.16)

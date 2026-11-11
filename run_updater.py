@@ -216,6 +216,15 @@ def run_stage_5_macro():
         critical=False,
     )
 
+    from fetch_fiscal_data import main as run_fiscal_collection
+    run_step_with_retry(
+        "5.2 Coleta Fiscal RTN Tesouro & Dívida/PIB BCB -> Firestore (fetch_fiscal_data)",
+        run_fiscal_collection,
+        retries=1,
+        delay_sec=10,
+        critical=False,
+    )
+
 
 def run_stage_6_export():
     """

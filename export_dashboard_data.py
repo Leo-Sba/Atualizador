@@ -281,6 +281,15 @@ def export_dashboard_data():
     except Exception as e:
         logging.warning(f"Aviso ao executar detect_anomalies.py: {e}")
 
+    # 4.5 Garantir cache de Receitas e Despesas do Governo Central (macro_fiscal_cache.json)
+    if not os.path.exists("macro_fiscal_cache.json"):
+        try:
+            import subprocess, sys
+            logging.info("macro_fiscal_cache.json ausente; executando fetch_fiscal_data.py...")
+            subprocess.run([sys.executable, "fetch_fiscal_data.py"], check=False)
+        except Exception as e_fisc:
+            logging.warning(f"Aviso ao gerar macro_fiscal_cache.json: {e_fisc}")
+
     # Regenerar dashboard.html
     import subprocess
     import sys

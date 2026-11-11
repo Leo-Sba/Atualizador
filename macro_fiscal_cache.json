@@ -1,0 +1,2566 @@
+{
+  "updated_at": "2026-11-11 19:32:20",
+  "schedule_info": "Atualizado diariamente às 03:00 BRT via GitHub Actions",
+  "reference_month": "2026-07",
+  "source": "Tesouro Transparente (RTN - Série Histórica Mensal IPCA) & Banco Central do Brasil (SGS 4537 / 13762)",
+  "ipca_deflator_factor": 3.6716,
+  "kpis": {
+    "receita_bi": 71.37,
+    "despesa_bi": 72.99,
+    "resultado_primario_bi": -1.62,
+    "receita_atual_bi": 262.04,
+    "despesa_atual_bi": 268.0,
+    "resultado_atual_bi": -5.96,
+    "divida_pib_pct": 92.8,
+    "divida_bcb_pct": 82.5
+  },
+  "series": [
+    {
+      "m": "2003-01",
+      "rec": 29.22,
+      "desp": 26.24,
+      "div": 73.9,
+      "rec_atual": 107.28,
+      "desp_atual": 96.36,
+      "div_bcb": 73.9
+    },
+    {
+      "m": "2003-02",
+      "rec": 29.21,
+      "desp": 26.17,
+      "div": 74.7,
+      "rec_atual": 107.26,
+      "desp_atual": 96.07,
+      "div_bcb": 74.7
+    },
+    {
+      "m": "2003-03",
+      "rec": 29.13,
+      "desp": 25.94,
+      "div": 75.5,
+      "rec_atual": 106.96,
+      "desp_atual": 95.23,
+      "div_bcb": 75.5
+    },
+    {
+      "m": "2003-04",
+      "rec": 29.2,
+      "desp": 25.77,
+      "div": 75.8,
+      "rec_atual": 107.21,
+      "desp_atual": 94.6,
+      "div_bcb": 75.8
+    },
+    {
+      "m": "2003-05",
+      "rec": 29.23,
+      "desp": 25.67,
+      "div": 76.1,
+      "rec_atual": 107.32,
+      "desp_atual": 94.25,
+      "div_bcb": 76.1
+    },
+    {
+      "m": "2003-06",
+      "rec": 29.16,
+      "desp": 25.71,
+      "div": 76.2,
+      "rec_atual": 107.06,
+      "desp_atual": 94.38,
+      "div_bcb": 76.2
+    },
+    {
+      "m": "2003-07",
+      "rec": 29.02,
+      "desp": 25.51,
+      "div": 75.9,
+      "rec_atual": 106.56,
+      "desp_atual": 93.66,
+      "div_bcb": 75.9
+    },
+    {
+      "m": "2003-08",
+      "rec": 29.07,
+      "desp": 25.47,
+      "div": 76.0,
+      "rec_atual": 106.72,
+      "desp_atual": 93.53,
+      "div_bcb": 76.0
+    },
+    {
+      "m": "2003-09",
+      "rec": 28.65,
+      "desp": 25.4,
+      "div": 75.4,
+      "rec_atual": 105.2,
+      "desp_atual": 93.25,
+      "div_bcb": 75.4
+    },
+    {
+      "m": "2003-10",
+      "rec": 28.47,
+      "desp": 25.21,
+      "div": 75.1,
+      "rec_atual": 104.52,
+      "desp_atual": 92.56,
+      "div_bcb": 75.1
+    },
+    {
+      "m": "2003-11",
+      "rec": 28.46,
+      "desp": 25.11,
+      "div": 74.7,
+      "rec_atual": 104.49,
+      "desp_atual": 92.19,
+      "div_bcb": 74.7
+    },
+    {
+      "m": "2003-12",
+      "rec": 28.46,
+      "desp": 25.3,
+      "div": 74.3,
+      "rec_atual": 104.49,
+      "desp_atual": 92.89,
+      "div_bcb": 74.3
+    },
+    {
+      "m": "2004-01",
+      "rec": 28.45,
+      "desp": 25.33,
+      "div": 73.9,
+      "rec_atual": 104.46,
+      "desp_atual": 93.0,
+      "div_bcb": 73.9
+    },
+    {
+      "m": "2004-02",
+      "rec": 28.6,
+      "desp": 25.47,
+      "div": 73.4,
+      "rec_atual": 105.02,
+      "desp_atual": 93.5,
+      "div_bcb": 73.4
+    },
+    {
+      "m": "2004-03",
+      "rec": 29.01,
+      "desp": 25.76,
+      "div": 73.0,
+      "rec_atual": 106.49,
+      "desp_atual": 94.59,
+      "div_bcb": 73.0
+    },
+    {
+      "m": "2004-04",
+      "rec": 29.09,
+      "desp": 26.08,
+      "div": 72.9,
+      "rec_atual": 106.82,
+      "desp_atual": 95.77,
+      "div_bcb": 72.9
+    },
+    {
+      "m": "2004-05",
+      "rec": 29.24,
+      "desp": 26.24,
+      "div": 72.7,
+      "rec_atual": 107.35,
+      "desp_atual": 96.34,
+      "div_bcb": 72.7
+    },
+    {
+      "m": "2004-06",
+      "rec": 29.75,
+      "desp": 26.38,
+      "div": 72.5,
+      "rec_atual": 109.22,
+      "desp_atual": 96.87,
+      "div_bcb": 72.5
+    },
+    {
+      "m": "2004-07",
+      "rec": 30.0,
+      "desp": 26.58,
+      "div": 72.1,
+      "rec_atual": 110.13,
+      "desp_atual": 97.61,
+      "div_bcb": 72.1
+    },
+    {
+      "m": "2004-08",
+      "rec": 30.24,
+      "desp": 26.77,
+      "div": 71.6,
+      "rec_atual": 111.04,
+      "desp_atual": 98.3,
+      "div_bcb": 71.6
+    },
+    {
+      "m": "2004-09",
+      "rec": 30.57,
+      "desp": 27.05,
+      "div": 71.1,
+      "rec_atual": 112.23,
+      "desp_atual": 99.3,
+      "div_bcb": 71.1
+    },
+    {
+      "m": "2004-10",
+      "rec": 30.71,
+      "desp": 27.18,
+      "div": 70.7,
+      "rec_atual": 112.75,
+      "desp_atual": 99.79,
+      "div_bcb": 70.7
+    },
+    {
+      "m": "2004-11",
+      "rec": 30.82,
+      "desp": 27.35,
+      "div": 70.3,
+      "rec_atual": 113.17,
+      "desp_atual": 100.42,
+      "div_bcb": 70.3
+    },
+    {
+      "m": "2004-12",
+      "rec": 31.39,
+      "desp": 27.65,
+      "div": 70.0,
+      "rec_atual": 115.24,
+      "desp_atual": 101.52,
+      "div_bcb": 70.0
+    },
+    {
+      "m": "2005-01",
+      "rec": 31.69,
+      "desp": 27.91,
+      "div": 69.6,
+      "rec_atual": 116.35,
+      "desp_atual": 102.48,
+      "div_bcb": 69.6
+    },
+    {
+      "m": "2005-02",
+      "rec": 31.79,
+      "desp": 28.2,
+      "div": 69.3,
+      "rec_atual": 116.73,
+      "desp_atual": 103.53,
+      "div_bcb": 69.3
+    },
+    {
+      "m": "2005-03",
+      "rec": 32.0,
+      "desp": 28.37,
+      "div": 69.0,
+      "rec_atual": 117.48,
+      "desp_atual": 104.18,
+      "div_bcb": 69.0
+    },
+    {
+      "m": "2005-04",
+      "rec": 32.36,
+      "desp": 28.38,
+      "div": 68.7,
+      "rec_atual": 118.79,
+      "desp_atual": 104.2,
+      "div_bcb": 68.7
+    },
+    {
+      "m": "2005-05",
+      "rec": 32.45,
+      "desp": 28.57,
+      "div": 68.5,
+      "rec_atual": 119.15,
+      "desp_atual": 104.88,
+      "div_bcb": 68.5
+    },
+    {
+      "m": "2005-06",
+      "rec": 32.78,
+      "desp": 28.92,
+      "div": 68.2,
+      "rec_atual": 120.36,
+      "desp_atual": 106.18,
+      "div_bcb": 68.2
+    },
+    {
+      "m": "2005-07",
+      "rec": 33.0,
+      "desp": 29.07,
+      "div": 68.0,
+      "rec_atual": 121.16,
+      "desp_atual": 106.74,
+      "div_bcb": 68.0
+    },
+    {
+      "m": "2005-08",
+      "rec": 33.26,
+      "desp": 29.33,
+      "div": 67.9,
+      "rec_atual": 122.12,
+      "desp_atual": 107.67,
+      "div_bcb": 67.9
+    },
+    {
+      "m": "2005-09",
+      "rec": 33.28,
+      "desp": 29.5,
+      "div": 67.8,
+      "rec_atual": 122.18,
+      "desp_atual": 108.3,
+      "div_bcb": 67.8
+    },
+    {
+      "m": "2005-10",
+      "rec": 33.51,
+      "desp": 29.68,
+      "div": 67.7,
+      "rec_atual": 123.04,
+      "desp_atual": 108.96,
+      "div_bcb": 67.7
+    },
+    {
+      "m": "2005-11",
+      "rec": 33.81,
+      "desp": 30.02,
+      "div": 67.6,
+      "rec_atual": 124.14,
+      "desp_atual": 110.2,
+      "div_bcb": 67.6
+    },
+    {
+      "m": "2005-12",
+      "rec": 34.2,
+      "desp": 30.48,
+      "div": 67.6,
+      "rec_atual": 125.57,
+      "desp_atual": 111.9,
+      "div_bcb": 67.6
+    },
+    {
+      "m": "2006-01",
+      "rec": 34.32,
+      "desp": 30.93,
+      "div": 67.5,
+      "rec_atual": 126.03,
+      "desp_atual": 113.56,
+      "div_bcb": 67.5
+    },
+    {
+      "m": "2006-02",
+      "rec": 34.42,
+      "desp": 30.93,
+      "div": 67.4,
+      "rec_atual": 126.39,
+      "desp_atual": 113.55,
+      "div_bcb": 67.4
+    },
+    {
+      "m": "2006-03",
+      "rec": 34.5,
+      "desp": 30.98,
+      "div": 67.2,
+      "rec_atual": 126.68,
+      "desp_atual": 113.75,
+      "div_bcb": 67.2
+    },
+    {
+      "m": "2006-04",
+      "rec": 34.78,
+      "desp": 31.17,
+      "div": 66.9,
+      "rec_atual": 127.71,
+      "desp_atual": 114.43,
+      "div_bcb": 66.9
+    },
+    {
+      "m": "2006-05",
+      "rec": 35.03,
+      "desp": 31.43,
+      "div": 66.6,
+      "rec_atual": 128.62,
+      "desp_atual": 115.41,
+      "div_bcb": 66.6
+    },
+    {
+      "m": "2006-06",
+      "rec": 35.19,
+      "desp": 31.59,
+      "div": 66.3,
+      "rec_atual": 129.2,
+      "desp_atual": 115.97,
+      "div_bcb": 66.3
+    },
+    {
+      "m": "2006-07",
+      "rec": 35.39,
+      "desp": 31.92,
+      "div": 66.0,
+      "rec_atual": 129.95,
+      "desp_atual": 117.2,
+      "div_bcb": 66.0
+    },
+    {
+      "m": "2006-08",
+      "rec": 35.71,
+      "desp": 32.08,
+      "div": 65.7,
+      "rec_atual": 131.1,
+      "desp_atual": 117.77,
+      "div_bcb": 65.7
+    },
+    {
+      "m": "2006-09",
+      "rec": 36.16,
+      "desp": 32.7,
+      "div": 65.5,
+      "rec_atual": 132.75,
+      "desp_atual": 120.04,
+      "div_bcb": 65.5
+    },
+    {
+      "m": "2006-10",
+      "rec": 36.43,
+      "desp": 32.91,
+      "div": 65.2,
+      "rec_atual": 133.75,
+      "desp_atual": 120.84,
+      "div_bcb": 65.2
+    },
+    {
+      "m": "2006-11",
+      "rec": 36.54,
+      "desp": 33.13,
+      "div": 65.0,
+      "rec_atual": 134.16,
+      "desp_atual": 121.66,
+      "div_bcb": 65.0
+    },
+    {
+      "m": "2006-12",
+      "rec": 36.54,
+      "desp": 33.25,
+      "div": 64.8,
+      "rec_atual": 134.16,
+      "desp_atual": 122.06,
+      "div_bcb": 55.5
+    },
+    {
+      "m": "2007-01",
+      "rec": 36.88,
+      "desp": 33.1,
+      "div": 64.5,
+      "rec_atual": 135.41,
+      "desp_atual": 121.52,
+      "div_bcb": 56.2
+    },
+    {
+      "m": "2007-02",
+      "rec": 37.11,
+      "desp": 33.34,
+      "div": 64.4,
+      "rec_atual": 136.24,
+      "desp_atual": 122.4,
+      "div_bcb": 56.9
+    },
+    {
+      "m": "2007-03",
+      "rec": 37.43,
+      "desp": 33.9,
+      "div": 64.2,
+      "rec_atual": 137.44,
+      "desp_atual": 124.48,
+      "div_bcb": 57.2
+    },
+    {
+      "m": "2007-04",
+      "rec": 37.74,
+      "desp": 34.27,
+      "div": 64.1,
+      "rec_atual": 138.55,
+      "desp_atual": 125.84,
+      "div_bcb": 57.2
+    },
+    {
+      "m": "2007-05",
+      "rec": 38.04,
+      "desp": 34.48,
+      "div": 64.1,
+      "rec_atual": 139.68,
+      "desp_atual": 126.61,
+      "div_bcb": 57.9
+    },
+    {
+      "m": "2007-06",
+      "rec": 38.27,
+      "desp": 34.78,
+      "div": 64.1,
+      "rec_atual": 140.5,
+      "desp_atual": 127.69,
+      "div_bcb": 58.2
+    },
+    {
+      "m": "2007-07",
+      "rec": 38.55,
+      "desp": 34.93,
+      "div": 64.0,
+      "rec_atual": 141.55,
+      "desp_atual": 128.25,
+      "div_bcb": 58.3
+    },
+    {
+      "m": "2007-08",
+      "rec": 38.64,
+      "desp": 35.2,
+      "div": 64.0,
+      "rec_atual": 141.87,
+      "desp_atual": 129.25,
+      "div_bcb": 58.5
+    },
+    {
+      "m": "2007-09",
+      "rec": 38.82,
+      "desp": 35.4,
+      "div": 63.8,
+      "rec_atual": 142.52,
+      "desp_atual": 129.98,
+      "div_bcb": 57.9
+    },
+    {
+      "m": "2007-10",
+      "rec": 39.2,
+      "desp": 35.61,
+      "div": 63.7,
+      "rec_atual": 143.92,
+      "desp_atual": 130.74,
+      "div_bcb": 57.5
+    },
+    {
+      "m": "2007-11",
+      "rec": 39.71,
+      "desp": 35.81,
+      "div": 63.5,
+      "rec_atual": 145.81,
+      "desp_atual": 131.48,
+      "div_bcb": 57.3
+    },
+    {
+      "m": "2007-12",
+      "rec": 40.15,
+      "desp": 36.38,
+      "div": 63.4,
+      "rec_atual": 147.42,
+      "desp_atual": 133.56,
+      "div_bcb": 56.7
+    },
+    {
+      "m": "2008-01",
+      "rec": 40.79,
+      "desp": 36.81,
+      "div": 63.2,
+      "rec_atual": 149.76,
+      "desp_atual": 135.14,
+      "div_bcb": 57.5
+    },
+    {
+      "m": "2008-02",
+      "rec": 41.1,
+      "desp": 37.02,
+      "div": 63.0,
+      "rec_atual": 150.9,
+      "desp_atual": 135.92,
+      "div_bcb": 57.0
+    },
+    {
+      "m": "2008-03",
+      "rec": 41.46,
+      "desp": 36.97,
+      "div": 62.8,
+      "rec_atual": 152.21,
+      "desp_atual": 135.72,
+      "div_bcb": 57.1
+    },
+    {
+      "m": "2008-04",
+      "rec": 41.81,
+      "desp": 37.2,
+      "div": 62.4,
+      "rec_atual": 153.52,
+      "desp_atual": 136.6,
+      "div_bcb": 56.5
+    },
+    {
+      "m": "2008-05",
+      "rec": 42.05,
+      "desp": 37.38,
+      "div": 62.1,
+      "rec_atual": 154.41,
+      "desp_atual": 137.24,
+      "div_bcb": 55.8
+    },
+    {
+      "m": "2008-06",
+      "rec": 42.28,
+      "desp": 37.46,
+      "div": 61.9,
+      "rec_atual": 155.24,
+      "desp_atual": 137.53,
+      "div_bcb": 55.6
+    },
+    {
+      "m": "2008-07",
+      "rec": 42.81,
+      "desp": 37.88,
+      "div": 61.5,
+      "rec_atual": 157.19,
+      "desp_atual": 139.09,
+      "div_bcb": 55.5
+    },
+    {
+      "m": "2008-08",
+      "rec": 43.22,
+      "desp": 38.15,
+      "div": 61.2,
+      "rec_atual": 158.7,
+      "desp_atual": 140.07,
+      "div_bcb": 55.0
+    },
+    {
+      "m": "2008-09",
+      "rec": 43.68,
+      "desp": 38.24,
+      "div": 60.8,
+      "rec_atual": 160.39,
+      "desp_atual": 140.4,
+      "div_bcb": 54.8
+    },
+    {
+      "m": "2008-10",
+      "rec": 44.13,
+      "desp": 38.43,
+      "div": 60.4,
+      "rec_atual": 162.04,
+      "desp_atual": 141.09,
+      "div_bcb": 55.0
+    },
+    {
+      "m": "2008-11",
+      "rec": 44.09,
+      "desp": 38.94,
+      "div": 60.0,
+      "rec_atual": 161.89,
+      "desp_atual": 142.98,
+      "div_bcb": 54.6
+    },
+    {
+      "m": "2008-12",
+      "rec": 43.99,
+      "desp": 39.52,
+      "div": 59.9,
+      "rec_atual": 161.5,
+      "desp_atual": 145.12,
+      "div_bcb": 56.0
+    },
+    {
+      "m": "2009-01",
+      "rec": 43.66,
+      "desp": 39.93,
+      "div": 59.7,
+      "rec_atual": 160.29,
+      "desp_atual": 146.6,
+      "div_bcb": 56.9
+    },
+    {
+      "m": "2009-02",
+      "rec": 43.37,
+      "desp": 40.04,
+      "div": 59.5,
+      "rec_atual": 159.25,
+      "desp_atual": 147.01,
+      "div_bcb": 57.2
+    },
+    {
+      "m": "2009-03",
+      "rec": 43.2,
+      "desp": 40.14,
+      "div": 59.3,
+      "rec_atual": 158.62,
+      "desp_atual": 147.38,
+      "div_bcb": 57.5
+    },
+    {
+      "m": "2009-04",
+      "rec": 42.95,
+      "desp": 40.34,
+      "div": 59.3,
+      "rec_atual": 157.71,
+      "desp_atual": 148.12,
+      "div_bcb": 56.8
+    },
+    {
+      "m": "2009-05",
+      "rec": 42.87,
+      "desp": 40.63,
+      "div": 59.2,
+      "rec_atual": 157.42,
+      "desp_atual": 149.16,
+      "div_bcb": 57.1
+    },
+    {
+      "m": "2009-06",
+      "rec": 42.65,
+      "desp": 40.92,
+      "div": 59.2,
+      "rec_atual": 156.58,
+      "desp_atual": 150.24,
+      "div_bcb": 58.3
+    },
+    {
+      "m": "2009-07",
+      "rec": 42.33,
+      "desp": 40.96,
+      "div": 59.5,
+      "rec_atual": 155.43,
+      "desp_atual": 150.38,
+      "div_bcb": 59.7
+    },
+    {
+      "m": "2009-08",
+      "rec": 42.32,
+      "desp": 41.13,
+      "div": 59.9,
+      "rec_atual": 155.38,
+      "desp_atual": 151.01,
+      "div_bcb": 60.8
+    },
+    {
+      "m": "2009-09",
+      "rec": 41.79,
+      "desp": 41.43,
+      "div": 60.3,
+      "rec_atual": 153.43,
+      "desp_atual": 152.1,
+      "div_bcb": 60.8
+    },
+    {
+      "m": "2009-10",
+      "rec": 41.84,
+      "desp": 41.73,
+      "div": 60.7,
+      "rec_atual": 153.64,
+      "desp_atual": 153.21,
+      "div_bcb": 61.0
+    },
+    {
+      "m": "2009-11",
+      "rec": 42.81,
+      "desp": 41.81,
+      "div": 61.0,
+      "rec_atual": 157.17,
+      "desp_atual": 153.5,
+      "div_bcb": 60.2
+    },
+    {
+      "m": "2009-12",
+      "rec": 43.23,
+      "desp": 40.92,
+      "div": 61.3,
+      "rec_atual": 158.72,
+      "desp_atual": 150.24,
+      "div_bcb": 59.2
+    },
+    {
+      "m": "2010-01",
+      "rec": 43.69,
+      "desp": 40.83,
+      "div": 61.5,
+      "rec_atual": 160.43,
+      "desp_atual": 149.92,
+      "div_bcb": 59.8
+    },
+    {
+      "m": "2010-02",
+      "rec": 44.06,
+      "desp": 41.2,
+      "div": 61.8,
+      "rec_atual": 161.77,
+      "desp_atual": 151.27,
+      "div_bcb": 59.0
+    },
+    {
+      "m": "2010-03",
+      "rec": 44.27,
+      "desp": 42.06,
+      "div": 62.0,
+      "rec_atual": 162.55,
+      "desp_atual": 154.43,
+      "div_bcb": 56.2
+    },
+    {
+      "m": "2010-04",
+      "rec": 44.97,
+      "desp": 42.42,
+      "div": 62.4,
+      "rec_atual": 165.1,
+      "desp_atual": 155.77,
+      "div_bcb": 56.0
+    },
+    {
+      "m": "2010-05",
+      "rec": 45.31,
+      "desp": 42.78,
+      "div": 62.9,
+      "rec_atual": 166.37,
+      "desp_atual": 157.08,
+      "div_bcb": 56.0
+    },
+    {
+      "m": "2010-06",
+      "rec": 45.52,
+      "desp": 42.92,
+      "div": 63.2,
+      "rec_atual": 167.15,
+      "desp_atual": 157.6,
+      "div_bcb": 55.8
+    },
+    {
+      "m": "2010-07",
+      "rec": 45.83,
+      "desp": 43.28,
+      "div": 63.3,
+      "rec_atual": 168.27,
+      "desp_atual": 158.89,
+      "div_bcb": 55.5
+    },
+    {
+      "m": "2010-08",
+      "rec": 46.18,
+      "desp": 43.61,
+      "div": 63.3,
+      "rec_atual": 169.55,
+      "desp_atual": 160.11,
+      "div_bcb": 55.0
+    },
+    {
+      "m": "2010-09",
+      "rec": 50.8,
+      "desp": 46.33,
+      "div": 63.2,
+      "rec_atual": 186.53,
+      "desp_atual": 170.12,
+      "div_bcb": 54.9
+    },
+    {
+      "m": "2010-10",
+      "rec": 50.86,
+      "desp": 46.62,
+      "div": 63.2,
+      "rec_atual": 186.75,
+      "desp_atual": 171.17,
+      "div_bcb": 55.1
+    },
+    {
+      "m": "2010-11",
+      "rec": 50.46,
+      "desp": 46.79,
+      "div": 63.1,
+      "rec_atual": 185.27,
+      "desp_atual": 171.78,
+      "div_bcb": 54.6
+    },
+    {
+      "m": "2010-12",
+      "rec": 51.2,
+      "desp": 46.86,
+      "div": 62.9,
+      "rec_atual": 187.99,
+      "desp_atual": 172.07,
+      "div_bcb": 51.8
+    },
+    {
+      "m": "2011-01",
+      "rec": 51.88,
+      "desp": 47.57,
+      "div": 62.8,
+      "rec_atual": 190.47,
+      "desp_atual": 174.66,
+      "div_bcb": 52.4
+    },
+    {
+      "m": "2011-02",
+      "rec": 52.22,
+      "desp": 47.71,
+      "div": 62.6,
+      "rec_atual": 191.72,
+      "desp_atual": 175.17,
+      "div_bcb": 52.4
+    },
+    {
+      "m": "2011-03",
+      "rec": 52.59,
+      "desp": 47.35,
+      "div": 62.4,
+      "rec_atual": 193.07,
+      "desp_atual": 173.84,
+      "div_bcb": 52.6
+    },
+    {
+      "m": "2011-04",
+      "rec": 52.88,
+      "desp": 47.75,
+      "div": 62.1,
+      "rec_atual": 194.15,
+      "desp_atual": 175.32,
+      "div_bcb": 52.6
+    },
+    {
+      "m": "2011-05",
+      "rec": 53.18,
+      "desp": 47.81,
+      "div": 61.7,
+      "rec_atual": 195.25,
+      "desp_atual": 175.52,
+      "div_bcb": 52.2
+    },
+    {
+      "m": "2011-06",
+      "rec": 54.12,
+      "desp": 48.24,
+      "div": 61.5,
+      "rec_atual": 198.71,
+      "desp_atual": 177.11,
+      "div_bcb": 52.4
+    },
+    {
+      "m": "2011-07",
+      "rec": 55.0,
+      "desp": 48.58,
+      "div": 61.1,
+      "rec_atual": 201.94,
+      "desp_atual": 178.35,
+      "div_bcb": 52.5
+    },
+    {
+      "m": "2011-08",
+      "rec": 55.0,
+      "desp": 48.66,
+      "div": 60.8,
+      "rec_atual": 201.94,
+      "desp_atual": 178.66,
+      "div_bcb": 52.3
+    },
+    {
+      "m": "2011-09",
+      "rec": 51.32,
+      "desp": 46.15,
+      "div": 60.6,
+      "rec_atual": 188.44,
+      "desp_atual": 169.45,
+      "div_bcb": 52.1
+    },
+    {
+      "m": "2011-10",
+      "rec": 51.71,
+      "desp": 46.37,
+      "div": 60.4,
+      "rec_atual": 189.84,
+      "desp_atual": 170.26,
+      "div_bcb": 51.7
+    },
+    {
+      "m": "2011-11",
+      "rec": 51.9,
+      "desp": 46.38,
+      "div": 60.3,
+      "rec_atual": 190.57,
+      "desp_atual": 170.29,
+      "div_bcb": 51.8
+    },
+    {
+      "m": "2011-12",
+      "rec": 51.7,
+      "desp": 46.87,
+      "div": 60.1,
+      "rec_atual": 189.83,
+      "desp_atual": 172.1,
+      "div_bcb": 51.3
+    },
+    {
+      "m": "2012-01",
+      "rec": 52.0,
+      "desp": 46.88,
+      "div": 60.1,
+      "rec_atual": 190.92,
+      "desp_atual": 172.14,
+      "div_bcb": 51.8
+    },
+    {
+      "m": "2012-02",
+      "rec": 52.35,
+      "desp": 47.09,
+      "div": 60.2,
+      "rec_atual": 192.2,
+      "desp_atual": 172.91,
+      "div_bcb": 52.2
+    },
+    {
+      "m": "2012-03",
+      "rec": 52.64,
+      "desp": 47.48,
+      "div": 60.1,
+      "rec_atual": 193.26,
+      "desp_atual": 174.33,
+      "div_bcb": 52.7
+    },
+    {
+      "m": "2012-04",
+      "rec": 52.78,
+      "desp": 47.9,
+      "div": 60.1,
+      "rec_atual": 193.79,
+      "desp_atual": 175.87,
+      "div_bcb": 53.2
+    },
+    {
+      "m": "2012-05",
+      "rec": 52.89,
+      "desp": 48.15,
+      "div": 60.2,
+      "rec_atual": 194.21,
+      "desp_atual": 176.79,
+      "div_bcb": 53.3
+    },
+    {
+      "m": "2012-06",
+      "rec": 52.51,
+      "desp": 48.28,
+      "div": 60.3,
+      "rec_atual": 192.79,
+      "desp_atual": 177.25,
+      "div_bcb": 53.4
+    },
+    {
+      "m": "2012-07",
+      "rec": 52.18,
+      "desp": 48.34,
+      "div": 60.4,
+      "rec_atual": 191.6,
+      "desp_atual": 177.5,
+      "div_bcb": 53.6
+    },
+    {
+      "m": "2012-08",
+      "rec": 52.33,
+      "desp": 48.55,
+      "div": 60.4,
+      "rec_atual": 192.12,
+      "desp_atual": 178.26,
+      "div_bcb": 53.3
+    },
+    {
+      "m": "2012-09",
+      "rec": 52.27,
+      "desp": 48.71,
+      "div": 60.4,
+      "rec_atual": 191.91,
+      "desp_atual": 178.86,
+      "div_bcb": 54.0
+    },
+    {
+      "m": "2012-10",
+      "rec": 52.25,
+      "desp": 48.82,
+      "div": 60.4,
+      "rec_atual": 191.84,
+      "desp_atual": 179.26,
+      "div_bcb": 54.5
+    },
+    {
+      "m": "2012-11",
+      "rec": 52.2,
+      "desp": 49.24,
+      "div": 60.4,
+      "rec_atual": 191.65,
+      "desp_atual": 180.8,
+      "div_bcb": 54.6
+    },
+    {
+      "m": "2012-12",
+      "rec": 53.21,
+      "desp": 48.99,
+      "div": 60.5,
+      "rec_atual": 195.35,
+      "desp_atual": 179.86,
+      "div_bcb": 53.7
+    },
+    {
+      "m": "2013-01",
+      "rec": 53.62,
+      "desp": 49.2,
+      "div": 60.5,
+      "rec_atual": 196.87,
+      "desp_atual": 180.64,
+      "div_bcb": 54.0
+    },
+    {
+      "m": "2013-02",
+      "rec": 53.31,
+      "desp": 49.48,
+      "div": 60.3,
+      "rec_atual": 195.74,
+      "desp_atual": 181.67,
+      "div_bcb": 54.0
+    },
+    {
+      "m": "2013-03",
+      "rec": 52.91,
+      "desp": 49.47,
+      "div": 60.3,
+      "rec_atual": 194.25,
+      "desp_atual": 181.63,
+      "div_bcb": 54.0
+    },
+    {
+      "m": "2013-04",
+      "rec": 52.97,
+      "desp": 49.76,
+      "div": 60.1,
+      "rec_atual": 194.48,
+      "desp_atual": 182.7,
+      "div_bcb": 53.8
+    },
+    {
+      "m": "2013-05",
+      "rec": 53.23,
+      "desp": 49.84,
+      "div": 59.8,
+      "rec_atual": 195.45,
+      "desp_atual": 182.98,
+      "div_bcb": 53.9
+    },
+    {
+      "m": "2013-06",
+      "rec": 53.47,
+      "desp": 50.07,
+      "div": 59.4,
+      "rec_atual": 196.32,
+      "desp_atual": 183.84,
+      "div_bcb": 53.6
+    },
+    {
+      "m": "2013-07",
+      "rec": 53.64,
+      "desp": 50.27,
+      "div": 59.3,
+      "rec_atual": 196.95,
+      "desp_atual": 184.57,
+      "div_bcb": 53.7
+    },
+    {
+      "m": "2013-08",
+      "rec": 53.76,
+      "desp": 50.47,
+      "div": 59.2,
+      "rec_atual": 197.37,
+      "desp_atual": 185.3,
+      "div_bcb": 53.4
+    },
+    {
+      "m": "2013-09",
+      "rec": 53.79,
+      "desp": 51.05,
+      "div": 59.0,
+      "rec_atual": 197.5,
+      "desp_atual": 187.45,
+      "div_bcb": 53.0
+    },
+    {
+      "m": "2013-10",
+      "rec": 53.98,
+      "desp": 51.47,
+      "div": 58.9,
+      "rec_atual": 198.18,
+      "desp_atual": 188.98,
+      "div_bcb": 53.1
+    },
+    {
+      "m": "2013-11",
+      "rec": 55.75,
+      "desp": 51.71,
+      "div": 58.7,
+      "rec_atual": 204.69,
+      "desp_atual": 189.85,
+      "div_bcb": 52.7
+    },
+    {
+      "m": "2013-12",
+      "rec": 55.08,
+      "desp": 51.71,
+      "div": 58.6,
+      "rec_atual": 202.21,
+      "desp_atual": 189.88,
+      "div_bcb": 51.5
+    },
+    {
+      "m": "2014-01",
+      "rec": 55.12,
+      "desp": 52.46,
+      "div": 58.4,
+      "rec_atual": 202.38,
+      "desp_atual": 192.59,
+      "div_bcb": 52.6
+    },
+    {
+      "m": "2014-02",
+      "rec": 55.42,
+      "desp": 52.58,
+      "div": 58.3,
+      "rec_atual": 203.46,
+      "desp_atual": 193.06,
+      "div_bcb": 51.8
+    },
+    {
+      "m": "2014-03",
+      "rec": 55.81,
+      "desp": 52.83,
+      "div": 58.2,
+      "rec_atual": 204.93,
+      "desp_atual": 193.97,
+      "div_bcb": 51.8
+    },
+    {
+      "m": "2014-04",
+      "rec": 55.87,
+      "desp": 52.48,
+      "div": 58.1,
+      "rec_atual": 205.13,
+      "desp_atual": 192.7,
+      "div_bcb": 52.0
+    },
+    {
+      "m": "2014-05",
+      "rec": 55.51,
+      "desp": 52.89,
+      "div": 58.1,
+      "rec_atual": 203.81,
+      "desp_atual": 194.2,
+      "div_bcb": 52.2
+    },
+    {
+      "m": "2014-06",
+      "rec": 55.37,
+      "desp": 52.91,
+      "div": 58.1,
+      "rec_atual": 203.29,
+      "desp_atual": 194.25,
+      "div_bcb": 52.8
+    },
+    {
+      "m": "2014-07",
+      "rec": 55.25,
+      "desp": 53.07,
+      "div": 58.2,
+      "rec_atual": 202.87,
+      "desp_atual": 194.84,
+      "div_bcb": 53.2
+    },
+    {
+      "m": "2014-08",
+      "rec": 55.47,
+      "desp": 53.73,
+      "div": 58.2,
+      "rec_atual": 203.66,
+      "desp_atual": 197.29,
+      "div_bcb": 53.8
+    },
+    {
+      "m": "2014-09",
+      "rec": 55.42,
+      "desp": 54.1,
+      "div": 58.2,
+      "rec_atual": 203.49,
+      "desp_atual": 198.62,
+      "div_bcb": 55.1
+    },
+    {
+      "m": "2014-10",
+      "rec": 55.38,
+      "desp": 54.15,
+      "div": 58.1,
+      "rec_atual": 203.34,
+      "desp_atual": 198.83,
+      "div_bcb": 55.4
+    },
+    {
+      "m": "2014-11",
+      "rec": 53.99,
+      "desp": 54.38,
+      "div": 58.1,
+      "rec_atual": 198.24,
+      "desp_atual": 199.65,
+      "div_bcb": 56.0
+    },
+    {
+      "m": "2014-12",
+      "rec": 53.71,
+      "desp": 54.71,
+      "div": 58.3,
+      "rec_atual": 197.2,
+      "desp_atual": 200.87,
+      "div_bcb": 56.3
+    },
+    {
+      "m": "2015-01",
+      "rec": 53.36,
+      "desp": 54.49,
+      "div": 58.5,
+      "rec_atual": 195.91,
+      "desp_atual": 200.07,
+      "div_bcb": 57.2
+    },
+    {
+      "m": "2015-02",
+      "rec": 53.28,
+      "desp": 54.57,
+      "div": 58.8,
+      "rec_atual": 195.62,
+      "desp_atual": 200.37,
+      "div_bcb": 58.3
+    },
+    {
+      "m": "2015-03",
+      "rec": 53.12,
+      "desp": 54.5,
+      "div": 59.3,
+      "rec_atual": 195.04,
+      "desp_atual": 200.1,
+      "div_bcb": 59.5
+    },
+    {
+      "m": "2015-04",
+      "rec": 52.97,
+      "desp": 54.66,
+      "div": 59.8,
+      "rec_atual": 194.48,
+      "desp_atual": 200.68,
+      "div_bcb": 59.1
+    },
+    {
+      "m": "2015-05",
+      "rec": 52.94,
+      "desp": 54.47,
+      "div": 60.4,
+      "rec_atual": 194.39,
+      "desp_atual": 200.0,
+      "div_bcb": 60.2
+    },
+    {
+      "m": "2015-06",
+      "rec": 52.81,
+      "desp": 54.59,
+      "div": 60.9,
+      "rec_atual": 193.91,
+      "desp_atual": 200.42,
+      "div_bcb": 60.8
+    },
+    {
+      "m": "2015-07",
+      "rec": 52.6,
+      "desp": 54.57,
+      "div": 61.5,
+      "rec_atual": 193.13,
+      "desp_atual": 200.35,
+      "div_bcb": 62.2
+    },
+    {
+      "m": "2015-08",
+      "rec": 52.05,
+      "desp": 53.78,
+      "div": 62.3,
+      "rec_atual": 191.1,
+      "desp_atual": 197.45,
+      "div_bcb": 63.0
+    },
+    {
+      "m": "2015-09",
+      "rec": 51.86,
+      "desp": 52.97,
+      "div": 63.3,
+      "rec_atual": 190.42,
+      "desp_atual": 194.49,
+      "div_bcb": 63.6
+    },
+    {
+      "m": "2015-10",
+      "rec": 51.34,
+      "desp": 53.1,
+      "div": 64.2,
+      "rec_atual": 188.49,
+      "desp_atual": 194.95,
+      "div_bcb": 63.9
+    },
+    {
+      "m": "2015-11",
+      "rec": 50.52,
+      "desp": 52.8,
+      "div": 65.0,
+      "rec_atual": 185.47,
+      "desp_atual": 193.84,
+      "div_bcb": 64.3
+    },
+    {
+      "m": "2015-12",
+      "rec": 50.41,
+      "desp": 55.11,
+      "div": 65.9,
+      "rec_atual": 185.07,
+      "desp_atual": 202.32,
+      "div_bcb": 65.5
+    },
+    {
+      "m": "2016-01",
+      "rec": 50.5,
+      "desp": 55.06,
+      "div": 66.8,
+      "rec_atual": 185.41,
+      "desp_atual": 202.15,
+      "div_bcb": 66.5
+    },
+    {
+      "m": "2016-02",
+      "rec": 50.07,
+      "desp": 55.28,
+      "div": 67.6,
+      "rec_atual": 183.82,
+      "desp_atual": 202.96,
+      "div_bcb": 66.7
+    },
+    {
+      "m": "2016-03",
+      "rec": 49.75,
+      "desp": 55.31,
+      "div": 68.3,
+      "rec_atual": 182.67,
+      "desp_atual": 203.06,
+      "div_bcb": 66.3
+    },
+    {
+      "m": "2016-04",
+      "rec": 49.43,
+      "desp": 55.05,
+      "div": 69.0,
+      "rec_atual": 181.47,
+      "desp_atual": 202.14,
+      "div_bcb": 66.6
+    },
+    {
+      "m": "2016-05",
+      "rec": 49.07,
+      "desp": 54.98,
+      "div": 69.6,
+      "rec_atual": 180.16,
+      "desp_atual": 201.86,
+      "div_bcb": 67.6
+    },
+    {
+      "m": "2016-06",
+      "rec": 48.84,
+      "desp": 54.75,
+      "div": 70.2,
+      "rec_atual": 179.3,
+      "desp_atual": 201.01,
+      "div_bcb": 67.5
+    },
+    {
+      "m": "2016-07",
+      "rec": 48.59,
+      "desp": 54.9,
+      "div": 70.8,
+      "rec_atual": 178.41,
+      "desp_atual": 201.58,
+      "div_bcb": 68.7
+    },
+    {
+      "m": "2016-08",
+      "rec": 48.13,
+      "desp": 54.95,
+      "div": 71.2,
+      "rec_atual": 176.71,
+      "desp_atual": 201.77,
+      "div_bcb": 69.3
+    },
+    {
+      "m": "2016-09",
+      "rec": 47.77,
+      "desp": 55.23,
+      "div": 71.6,
+      "rec_atual": 175.37,
+      "desp_atual": 202.79,
+      "div_bcb": 70.0
+    },
+    {
+      "m": "2016-10",
+      "rec": 49.12,
+      "desp": 54.57,
+      "div": 72.1,
+      "rec_atual": 180.33,
+      "desp_atual": 200.35,
+      "div_bcb": 69.8
+    },
+    {
+      "m": "2016-11",
+      "rec": 49.19,
+      "desp": 55.21,
+      "div": 72.6,
+      "rec_atual": 180.6,
+      "desp_atual": 202.72,
+      "div_bcb": 70.8
+    },
+    {
+      "m": "2016-12",
+      "rec": 48.82,
+      "desp": 54.74,
+      "div": 73.1,
+      "rec_atual": 179.23,
+      "desp_atual": 200.97,
+      "div_bcb": 69.8
+    },
+    {
+      "m": "2017-01",
+      "rec": 48.4,
+      "desp": 54.23,
+      "div": 73.6,
+      "rec_atual": 177.72,
+      "desp_atual": 199.11,
+      "div_bcb": 69.8
+    },
+    {
+      "m": "2017-02",
+      "rec": 48.41,
+      "desp": 54.22,
+      "div": 74.1,
+      "rec_atual": 177.72,
+      "desp_atual": 199.08,
+      "div_bcb": 70.4
+    },
+    {
+      "m": "2017-03",
+      "rec": 48.41,
+      "desp": 54.34,
+      "div": 74.7,
+      "rec_atual": 177.76,
+      "desp_atual": 199.52,
+      "div_bcb": 71.2
+    },
+    {
+      "m": "2017-04",
+      "rec": 48.47,
+      "desp": 54.29,
+      "div": 75.4,
+      "rec_atual": 177.97,
+      "desp_atual": 199.32,
+      "div_bcb": 71.4
+    },
+    {
+      "m": "2017-05",
+      "rec": 48.45,
+      "desp": 54.69,
+      "div": 76.0,
+      "rec_atual": 177.88,
+      "desp_atual": 200.78,
+      "div_bcb": 72.3
+    },
+    {
+      "m": "2017-06",
+      "rec": 48.5,
+      "desp": 55.09,
+      "div": 76.6,
+      "rec_atual": 178.07,
+      "desp_atual": 202.26,
+      "div_bcb": 72.7
+    },
+    {
+      "m": "2017-07",
+      "rec": 48.42,
+      "desp": 55.02,
+      "div": 77.1,
+      "rec_atual": 177.76,
+      "desp_atual": 202.01,
+      "div_bcb": 73.2
+    },
+    {
+      "m": "2017-08",
+      "rec": 48.99,
+      "desp": 55.21,
+      "div": 77.8,
+      "rec_atual": 179.87,
+      "desp_atual": 202.72,
+      "div_bcb": 73.6
+    },
+    {
+      "m": "2017-09",
+      "rec": 49.27,
+      "desp": 55.38,
+      "div": 78.4,
+      "rec_atual": 180.91,
+      "desp_atual": 203.35,
+      "div_bcb": 73.7
+    },
+    {
+      "m": "2017-10",
+      "rec": 48.14,
+      "desp": 55.57,
+      "div": 79.0,
+      "rec_atual": 176.75,
+      "desp_atual": 204.02,
+      "div_bcb": 74.1
+    },
+    {
+      "m": "2017-11",
+      "rec": 48.9,
+      "desp": 54.88,
+      "div": 79.6,
+      "rec_atual": 179.55,
+      "desp_atual": 201.5,
+      "div_bcb": 74.0
+    },
+    {
+      "m": "2017-12",
+      "rec": 49.58,
+      "desp": 54.03,
+      "div": 80.1,
+      "rec_atual": 182.05,
+      "desp_atual": 198.38,
+      "div_bcb": 73.7
+    },
+    {
+      "m": "2018-01",
+      "rec": 50.11,
+      "desp": 54.12,
+      "div": 80.5,
+      "rec_atual": 183.97,
+      "desp_atual": 198.71,
+      "div_bcb": 74.0
+    },
+    {
+      "m": "2018-02",
+      "rec": 50.44,
+      "desp": 54.18,
+      "div": 80.9,
+      "rec_atual": 185.19,
+      "desp_atual": 198.91,
+      "div_bcb": 74.5
+    },
+    {
+      "m": "2018-03",
+      "rec": 50.49,
+      "desp": 54.69,
+      "div": 81.2,
+      "rec_atual": 185.39,
+      "desp_atual": 200.78,
+      "div_bcb": 74.6
+    },
+    {
+      "m": "2018-04",
+      "rec": 50.83,
+      "desp": 55.17,
+      "div": 81.6,
+      "rec_atual": 186.64,
+      "desp_atual": 202.54,
+      "div_bcb": 75.0
+    },
+    {
+      "m": "2018-05",
+      "rec": 51.33,
+      "desp": 54.99,
+      "div": 82.0,
+      "rec_atual": 188.46,
+      "desp_atual": 201.9,
+      "div_bcb": 76.1
+    },
+    {
+      "m": "2018-06",
+      "rec": 51.33,
+      "desp": 54.85,
+      "div": 82.4,
+      "rec_atual": 188.48,
+      "desp_atual": 201.37,
+      "div_bcb": 76.1
+    },
+    {
+      "m": "2018-07",
+      "rec": 51.79,
+      "desp": 54.83,
+      "div": 82.9,
+      "rec_atual": 190.14,
+      "desp_atual": 201.32,
+      "div_bcb": 76.0
+    },
+    {
+      "m": "2018-08",
+      "rec": 51.81,
+      "desp": 55.17,
+      "div": 83.2,
+      "rec_atual": 190.22,
+      "desp_atual": 202.56,
+      "div_bcb": 76.0
+    },
+    {
+      "m": "2018-09",
+      "rec": 51.91,
+      "desp": 55.24,
+      "div": 83.4,
+      "rec_atual": 190.59,
+      "desp_atual": 202.82,
+      "div_bcb": 76.0
+    },
+    {
+      "m": "2018-10",
+      "rec": 52.13,
+      "desp": 55.31,
+      "div": 83.6,
+      "rec_atual": 191.38,
+      "desp_atual": 203.09,
+      "div_bcb": 75.3
+    },
+    {
+      "m": "2018-11",
+      "rec": 51.94,
+      "desp": 55.72,
+      "div": 83.8,
+      "rec_atual": 190.69,
+      "desp_atual": 204.59,
+      "div_bcb": 75.7
+    },
+    {
+      "m": "2018-12",
+      "rec": 51.5,
+      "desp": 55.63,
+      "div": 84.0,
+      "rec_atual": 189.09,
+      "desp_atual": 204.23,
+      "div_bcb": 75.3
+    },
+    {
+      "m": "2019-01",
+      "rec": 51.46,
+      "desp": 55.65,
+      "div": 84.1,
+      "rec_atual": 188.93,
+      "desp_atual": 204.32,
+      "div_bcb": 75.4
+    },
+    {
+      "m": "2019-02",
+      "rec": 51.61,
+      "desp": 55.74,
+      "div": 84.2,
+      "rec_atual": 189.48,
+      "desp_atual": 204.66,
+      "div_bcb": 75.5
+    },
+    {
+      "m": "2019-03",
+      "rec": 51.67,
+      "desp": 55.65,
+      "div": 84.3,
+      "rec_atual": 189.71,
+      "desp_atual": 204.32,
+      "div_bcb": 76.7
+    },
+    {
+      "m": "2019-04",
+      "rec": 51.62,
+      "desp": 55.69,
+      "div": 84.4,
+      "rec_atual": 189.52,
+      "desp_atual": 204.46,
+      "div_bcb": 77.1
+    },
+    {
+      "m": "2019-05",
+      "rec": 51.51,
+      "desp": 55.68,
+      "div": 84.3,
+      "rec_atual": 189.11,
+      "desp_atual": 204.43,
+      "div_bcb": 76.5
+    },
+    {
+      "m": "2019-06",
+      "rec": 51.5,
+      "desp": 55.5,
+      "div": 84.2,
+      "rec_atual": 189.08,
+      "desp_atual": 203.78,
+      "div_bcb": 76.7
+    },
+    {
+      "m": "2019-07",
+      "rec": 51.68,
+      "desp": 55.63,
+      "div": 84.2,
+      "rec_atual": 189.75,
+      "desp_atual": 204.23,
+      "div_bcb": 76.8
+    },
+    {
+      "m": "2019-08",
+      "rec": 51.63,
+      "desp": 55.46,
+      "div": 84.2,
+      "rec_atual": 189.56,
+      "desp_atual": 203.61,
+      "div_bcb": 77.5
+    },
+    {
+      "m": "2019-09",
+      "rec": 51.83,
+      "desp": 55.55,
+      "div": 84.4,
+      "rec_atual": 190.28,
+      "desp_atual": 203.94,
+      "div_bcb": 76.6
+    },
+    {
+      "m": "2019-10",
+      "rec": 51.8,
+      "desp": 55.56,
+      "div": 84.5,
+      "rec_atual": 190.2,
+      "desp_atual": 203.99,
+      "div_bcb": 75.8
+    },
+    {
+      "m": "2019-11",
+      "rec": 51.77,
+      "desp": 55.52,
+      "div": 84.7,
+      "rec_atual": 190.06,
+      "desp_atual": 203.83,
+      "div_bcb": 76.2
+    },
+    {
+      "m": "2019-12",
+      "rec": 54.47,
+      "desp": 57.62,
+      "div": 84.9,
+      "rec_atual": 200.0,
+      "desp_atual": 211.55,
+      "div_bcb": 74.4
+    },
+    {
+      "m": "2020-01",
+      "rec": 54.68,
+      "desp": 57.41,
+      "div": 85.2,
+      "rec_atual": 200.78,
+      "desp_atual": 210.79,
+      "div_bcb": 74.8
+    },
+    {
+      "m": "2020-02",
+      "rec": 54.57,
+      "desp": 57.52,
+      "div": 85.4,
+      "rec_atual": 200.37,
+      "desp_atual": 211.2,
+      "div_bcb": 75.2
+    },
+    {
+      "m": "2020-03",
+      "rec": 54.35,
+      "desp": 57.28,
+      "div": 85.5,
+      "rec_atual": 199.56,
+      "desp_atual": 210.32,
+      "div_bcb": 76.8
+    },
+    {
+      "m": "2020-04",
+      "rec": 52.81,
+      "desp": 58.99,
+      "div": 85.6,
+      "rec_atual": 193.9,
+      "desp_atual": 216.59,
+      "div_bcb": 78.0
+    },
+    {
+      "m": "2020-05",
+      "rec": 51.35,
+      "desp": 61.19,
+      "div": 86.0,
+      "rec_atual": 188.55,
+      "desp_atual": 224.65,
+      "div_bcb": 80.0
+    },
+    {
+      "m": "2020-06",
+      "rec": 50.22,
+      "desp": 66.02,
+      "div": 86.5,
+      "rec_atual": 184.38,
+      "desp_atual": 242.39,
+      "div_bcb": 82.9
+    },
+    {
+      "m": "2020-07",
+      "rec": 49.31,
+      "desp": 67.76,
+      "div": 86.9,
+      "rec_atual": 181.03,
+      "desp_atual": 248.8,
+      "div_bcb": 83.5
+    },
+    {
+      "m": "2020-08",
+      "rec": 49.35,
+      "desp": 70.36,
+      "div": 87.2,
+      "rec_atual": 181.18,
+      "desp_atual": 258.34,
+      "div_bcb": 85.8
+    },
+    {
+      "m": "2020-09",
+      "rec": 49.26,
+      "desp": 72.05,
+      "div": 87.6,
+      "rec_atual": 180.87,
+      "desp_atual": 264.55,
+      "div_bcb": 87.4
+    },
+    {
+      "m": "2020-10",
+      "rec": 49.7,
+      "desp": 72.88,
+      "div": 88.3,
+      "rec_atual": 182.46,
+      "desp_atual": 267.6,
+      "div_bcb": 87.7
+    },
+    {
+      "m": "2020-11",
+      "rec": 49.92,
+      "desp": 73.14,
+      "div": 88.9,
+      "rec_atual": 183.29,
+      "desp_atual": 268.54,
+      "div_bcb": 87.0
+    },
+    {
+      "m": "2020-12",
+      "rec": 47.33,
+      "desp": 71.45,
+      "div": 89.6,
+      "rec_atual": 173.79,
+      "desp_atual": 262.35,
+      "div_bcb": 86.9
+    },
+    {
+      "m": "2021-01",
+      "rec": 47.33,
+      "desp": 71.53,
+      "div": 90.4,
+      "rec_atual": 173.77,
+      "desp_atual": 262.63,
+      "div_bcb": 86.9
+    },
+    {
+      "m": "2021-02",
+      "rec": 47.59,
+      "desp": 71.61,
+      "div": 91.2,
+      "rec_atual": 174.71,
+      "desp_atual": 262.91,
+      "div_bcb": 86.9
+    },
+    {
+      "m": "2021-03",
+      "rec": 48.32,
+      "desp": 71.59,
+      "div": 92.0,
+      "rec_atual": 177.41,
+      "desp_atual": 262.85,
+      "div_bcb": 85.1
+    },
+    {
+      "m": "2021-04",
+      "rec": 50.04,
+      "desp": 69.77,
+      "div": 92.5,
+      "rec_atual": 183.71,
+      "desp_atual": 256.16,
+      "div_bcb": 82.6
+    },
+    {
+      "m": "2021-05",
+      "rec": 51.98,
+      "desp": 68.21,
+      "div": 92.7,
+      "rec_atual": 190.86,
+      "desp_atual": 250.42,
+      "div_bcb": 81.4
+    },
+    {
+      "m": "2021-06",
+      "rec": 53.46,
+      "desp": 65.53,
+      "div": 92.9,
+      "rec_atual": 196.27,
+      "desp_atual": 240.61,
+      "div_bcb": 80.6
+    },
+    {
+      "m": "2021-07",
+      "rec": 54.83,
+      "desp": 64.63,
+      "div": 93.1,
+      "rec_atual": 201.32,
+      "desp_atual": 237.3,
+      "div_bcb": 80.2
+    },
+    {
+      "m": "2021-08",
+      "rec": 55.35,
+      "desp": 62.31,
+      "div": 93.2,
+      "rec_atual": 203.24,
+      "desp_atual": 228.77,
+      "div_bcb": 79.6
+    },
+    {
+      "m": "2021-09",
+      "rec": 55.86,
+      "desp": 60.34,
+      "div": 93.1,
+      "rec_atual": 205.1,
+      "desp_atual": 221.55,
+      "div_bcb": 79.6
+    },
+    {
+      "m": "2021-10",
+      "rec": 56.23,
+      "desp": 59.78,
+      "div": 92.7,
+      "rec_atual": 206.46,
+      "desp_atual": 219.49,
+      "div_bcb": 79.5
+    },
+    {
+      "m": "2021-11",
+      "rec": 56.6,
+      "desp": 59.45,
+      "div": 92.2,
+      "rec_atual": 207.83,
+      "desp_atual": 218.29,
+      "div_bcb": 78.2
+    },
+    {
+      "m": "2021-12",
+      "rec": 57.56,
+      "desp": 58.64,
+      "div": 91.6,
+      "rec_atual": 211.35,
+      "desp_atual": 215.31,
+      "div_bcb": 77.3
+    },
+    {
+      "m": "2022-01",
+      "rec": 58.58,
+      "desp": 58.84,
+      "div": 91.0,
+      "rec_atual": 215.07,
+      "desp_atual": 216.05,
+      "div_bcb": 77.0
+    },
+    {
+      "m": "2022-02",
+      "rec": 59.18,
+      "desp": 59.35,
+      "div": 90.4,
+      "rec_atual": 217.28,
+      "desp_atual": 217.92,
+      "div_bcb": 76.9
+    },
+    {
+      "m": "2022-03",
+      "rec": 59.5,
+      "desp": 59.91,
+      "div": 89.6,
+      "rec_atual": 218.44,
+      "desp_atual": 219.96,
+      "div_bcb": 76.4
+    },
+    {
+      "m": "2022-04",
+      "rec": 59.9,
+      "desp": 60.03,
+      "div": 89.2,
+      "rec_atual": 219.93,
+      "desp_atual": 220.42,
+      "div_bcb": 76.3
+    },
+    {
+      "m": "2022-05",
+      "rec": 60.15,
+      "desp": 60.71,
+      "div": 88.8,
+      "rec_atual": 220.85,
+      "desp_atual": 222.92,
+      "div_bcb": 75.7
+    },
+    {
+      "m": "2022-06",
+      "rec": 62.08,
+      "desp": 60.04,
+      "div": 88.4,
+      "rec_atual": 227.94,
+      "desp_atual": 220.44,
+      "div_bcb": 75.6
+    },
+    {
+      "m": "2022-07",
+      "rec": 62.51,
+      "desp": 59.38,
+      "div": 88.0,
+      "rec_atual": 229.52,
+      "desp_atual": 218.0,
+      "div_bcb": 75.2
+    },
+    {
+      "m": "2022-08",
+      "rec": 62.93,
+      "desp": 60.94,
+      "div": 87.5,
+      "rec_atual": 231.04,
+      "desp_atual": 223.76,
+      "div_bcb": 74.6
+    },
+    {
+      "m": "2022-09",
+      "rec": 63.34,
+      "desp": 61.11,
+      "div": 87.0,
+      "rec_atual": 232.54,
+      "desp_atual": 224.38,
+      "div_bcb": 74.2
+    },
+    {
+      "m": "2022-10",
+      "rec": 63.57,
+      "desp": 61.39,
+      "div": 86.6,
+      "rec_atual": 233.4,
+      "desp_atual": 225.39,
+      "div_bcb": 73.7
+    },
+    {
+      "m": "2022-11",
+      "rec": 63.32,
+      "desp": 61.71,
+      "div": 86.2,
+      "rec_atual": 232.48,
+      "desp_atual": 226.58,
+      "div_bcb": 73.0
+    },
+    {
+      "m": "2022-12",
+      "rec": 63.15,
+      "desp": 61.83,
+      "div": 85.7,
+      "rec_atual": 231.86,
+      "desp_atual": 227.0,
+      "div_bcb": 71.7
+    },
+    {
+      "m": "2023-01",
+      "rec": 63.35,
+      "desp": 62.08,
+      "div": 85.2,
+      "rec_atual": 232.58,
+      "desp_atual": 227.93,
+      "div_bcb": 71.4
+    },
+    {
+      "m": "2023-02",
+      "rec": 62.79,
+      "desp": 62.03,
+      "div": 84.6,
+      "rec_atual": 230.54,
+      "desp_atual": 227.74,
+      "div_bcb": 71.8
+    },
+    {
+      "m": "2023-03",
+      "rec": 62.78,
+      "desp": 62.01,
+      "div": 84.1,
+      "rec_atual": 230.49,
+      "desp_atual": 227.68,
+      "div_bcb": 71.5
+    },
+    {
+      "m": "2023-04",
+      "rec": 62.7,
+      "desp": 62.32,
+      "div": 83.8,
+      "rec_atual": 230.22,
+      "desp_atual": 228.8,
+      "div_bcb": 71.6
+    },
+    {
+      "m": "2023-05",
+      "rec": 62.89,
+      "desp": 62.6,
+      "div": 83.4,
+      "rec_atual": 230.89,
+      "desp_atual": 229.84,
+      "div_bcb": 72.1
+    },
+    {
+      "m": "2023-06",
+      "rec": 61.55,
+      "desp": 62.83,
+      "div": 83.1,
+      "rec_atual": 225.99,
+      "desp_atual": 230.69,
+      "div_bcb": 72.0
+    },
+    {
+      "m": "2023-07",
+      "rec": 61.18,
+      "desp": 63.91,
+      "div": 82.8,
+      "rec_atual": 224.63,
+      "desp_atual": 234.64,
+      "div_bcb": 72.5
+    },
+    {
+      "m": "2023-08",
+      "rec": 60.74,
+      "desp": 62.74,
+      "div": 82.6,
+      "rec_atual": 223.02,
+      "desp_atual": 230.35,
+      "div_bcb": 72.9
+    },
+    {
+      "m": "2023-09",
+      "rec": 61.12,
+      "desp": 63.07,
+      "div": 82.5,
+      "rec_atual": 224.41,
+      "desp_atual": 231.57,
+      "div_bcb": 73.0
+    },
+    {
+      "m": "2023-10",
+      "rec": 61.11,
+      "desp": 63.37,
+      "div": 82.3,
+      "rec_atual": 224.37,
+      "desp_atual": 232.66,
+      "div_bcb": 73.3
+    },
+    {
+      "m": "2023-11",
+      "rec": 61.2,
+      "desp": 63.99,
+      "div": 82.3,
+      "rec_atual": 224.7,
+      "desp_atual": 234.93,
+      "div_bcb": 73.3
+    },
+    {
+      "m": "2023-12",
+      "rec": 61.42,
+      "desp": 67.29,
+      "div": 82.3,
+      "rec_atual": 225.5,
+      "desp_atual": 247.05,
+      "div_bcb": 73.8
+    },
+    {
+      "m": "2024-01",
+      "rec": 61.67,
+      "desp": 67.62,
+      "div": 82.4,
+      "rec_atual": 226.43,
+      "desp_atual": 248.29,
+      "div_bcb": 74.5
+    },
+    {
+      "m": "2024-02",
+      "rec": 62.41,
+      "desp": 68.76,
+      "div": 82.6,
+      "rec_atual": 229.13,
+      "desp_atual": 252.46,
+      "div_bcb": 74.8
+    },
+    {
+      "m": "2024-03",
+      "rec": 62.8,
+      "desp": 69.0,
+      "div": 82.8,
+      "rec_atual": 230.57,
+      "desp_atual": 253.35,
+      "div_bcb": 75.0
+    },
+    {
+      "m": "2024-04",
+      "rec": 63.21,
+      "desp": 69.54,
+      "div": 83.0,
+      "rec_atual": 232.09,
+      "desp_atual": 255.32,
+      "div_bcb": 75.2
+    },
+    {
+      "m": "2024-05",
+      "rec": 63.62,
+      "desp": 70.3,
+      "div": 83.4,
+      "rec_atual": 233.59,
+      "desp_atual": 258.1,
+      "div_bcb": 75.7
+    },
+    {
+      "m": "2024-06",
+      "rec": 64.0,
+      "desp": 70.48,
+      "div": 83.7,
+      "rec_atual": 234.99,
+      "desp_atual": 258.76,
+      "div_bcb": 76.7
+    },
+    {
+      "m": "2024-07",
+      "rec": 64.49,
+      "desp": 70.25,
+      "div": 84.1,
+      "rec_atual": 236.77,
+      "desp_atual": 257.93,
+      "div_bcb": 77.2
+    },
+    {
+      "m": "2024-08",
+      "rec": 64.91,
+      "desp": 70.54,
+      "div": 84.3,
+      "rec_atual": 238.33,
+      "desp_atual": 258.98,
+      "div_bcb": 77.4
+    },
+    {
+      "m": "2024-09",
+      "rec": 64.66,
+      "desp": 70.72,
+      "div": 84.6,
+      "rec_atual": 237.41,
+      "desp_atual": 259.65,
+      "div_bcb": 77.1
+    },
+    {
+      "m": "2024-10",
+      "rec": 65.24,
+      "desp": 70.76,
+      "div": 84.9,
+      "rec_atual": 239.54,
+      "desp_atual": 259.79,
+      "div_bcb": 77.4
+    },
+    {
+      "m": "2024-11",
+      "rec": 65.88,
+      "desp": 70.52,
+      "div": 85.2,
+      "rec_atual": 241.89,
+      "desp_atual": 258.94,
+      "div_bcb": 77.5
+    },
+    {
+      "m": "2024-12",
+      "rec": 66.97,
+      "desp": 68.05,
+      "div": 85.5,
+      "rec_atual": 245.9,
+      "desp_atual": 249.85,
+      "div_bcb": 76.3
+    },
+    {
+      "m": "2025-01",
+      "rec": 67.23,
+      "desp": 68.25,
+      "div": 85.8,
+      "rec_atual": 246.83,
+      "desp_atual": 250.6,
+      "div_bcb": 75.5
+    },
+    {
+      "m": "2025-02",
+      "rec": 67.34,
+      "desp": 67.65,
+      "div": 86.2,
+      "rec_atual": 247.24,
+      "desp_atual": 248.38,
+      "div_bcb": 75.8
+    },
+    {
+      "m": "2025-03",
+      "rec": 67.45,
+      "desp": 67.7,
+      "div": 86.4,
+      "rec_atual": 247.65,
+      "desp_atual": 248.57,
+      "div_bcb": 75.5
+    },
+    {
+      "m": "2025-04",
+      "rec": 67.73,
+      "desp": 67.84,
+      "div": 86.7,
+      "rec_atual": 248.68,
+      "desp_atual": 249.08,
+      "div_bcb": 75.6
+    },
+    {
+      "m": "2025-05",
+      "rec": 67.98,
+      "desp": 67.53,
+      "div": 86.9,
+      "rec_atual": 249.59,
+      "desp_atual": 247.94,
+      "div_bcb": 75.8
+    },
+    {
+      "m": "2025-06",
+      "rec": 68.09,
+      "desp": 67.72,
+      "div": 87.1,
+      "rec_atual": 249.98,
+      "desp_atual": 248.63,
+      "div_bcb": 76.3
+    },
+    {
+      "m": "2025-07",
+      "rec": 68.34,
+      "desp": 69.15,
+      "div": 87.2,
+      "rec_atual": 250.91,
+      "desp_atual": 253.88,
+      "div_bcb": 77.2
+    },
+    {
+      "m": "2025-08",
+      "rec": 68.68,
+      "desp": 69.31,
+      "div": 87.6,
+      "rec_atual": 252.18,
+      "desp_atual": 254.48,
+      "div_bcb": 77.3
+    },
+    {
+      "m": "2025-09",
+      "rec": 68.82,
+      "desp": 69.66,
+      "div": 88.1,
+      "rec_atual": 252.67,
+      "desp_atual": 255.75,
+      "div_bcb": 77.8
+    },
+    {
+      "m": "2025-10",
+      "rec": 69.06,
+      "desp": 70.05,
+      "div": 88.6,
+      "rec_atual": 253.58,
+      "desp_atual": 257.2,
+      "div_bcb": 78.3
+    },
+    {
+      "m": "2025-11",
+      "rec": 68.93,
+      "desp": 70.28,
+      "div": 89.1,
+      "rec_atual": 253.08,
+      "desp_atual": 258.04,
+      "div_bcb": 79.0
+    },
+    {
+      "m": "2025-12",
+      "rec": 69.11,
+      "desp": 70.53,
+      "div": 89.6,
+      "rec_atual": 253.73,
+      "desp_atual": 258.95,
+      "div_bcb": 78.6
+    },
+    {
+      "m": "2026-01",
+      "rec": 69.26,
+      "desp": 70.72,
+      "div": 90.1,
+      "rec_atual": 254.28,
+      "desp_atual": 259.66,
+      "div_bcb": 78.7
+    },
+    {
+      "m": "2026-02",
+      "rec": 69.43,
+      "desp": 70.83,
+      "div": 90.6,
+      "rec_atual": 254.93,
+      "desp_atual": 260.07,
+      "div_bcb": 79.1
+    },
+    {
+      "m": "2026-03",
+      "rec": 69.69,
+      "desp": 72.82,
+      "div": 90.9,
+      "rec_atual": 255.89,
+      "desp_atual": 267.37,
+      "div_bcb": 79.9
+    },
+    {
+      "m": "2026-04",
+      "rec": 70.06,
+      "desp": 73.04,
+      "div": 91.3,
+      "rec_atual": 257.22,
+      "desp_atual": 268.16,
+      "div_bcb": 80.1
+    },
+    {
+      "m": "2026-05",
+      "rec": 70.36,
+      "desp": 73.59,
+      "div": 91.8,
+      "rec_atual": 258.34,
+      "desp_atual": 270.21,
+      "div_bcb": 81.0
+    },
+    {
+      "m": "2026-06",
+      "rec": 70.89,
+      "desp": 74.16,
+      "div": 92.3,
+      "rec_atual": 260.28,
+      "desp_atual": 272.28,
+      "div_bcb": 82.0
+    },
+    {
+      "m": "2026-07",
+      "rec": 71.37,
+      "desp": 72.99,
+      "div": 92.8,
+      "rec_atual": 262.04,
+      "desp_atual": 268.0,
+      "div_bcb": 82.5
+    }
+  ]
+}

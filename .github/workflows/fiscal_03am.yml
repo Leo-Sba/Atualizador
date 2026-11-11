@@ -1,0 +1,55 @@
+name: Atualizacao Fiscal 03h AM (RTN Tesouro & BCB -> Firebase Firestore)
+
+on:
+  schedule:
+    # Executa diariamente às 03:00 AM Horário de Brasília (06:00 UTC)
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: b3-fiscal-firebase-sync
+  cancel-in-progress: false
+
+jobs:
+  sync-fiscal-firestore:
+    name: "Coletar Receitas/Despesas RTN & Divida/PIB e Gravar no Firestore (03:00 BRT)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Configurar Node.js (v22 - Firebase Admin SDK)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Instalar Dependências Python e Node.js
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          npm ci || npm install
+
+      - name: Executar Coleta Fiscal (RTN + BCB SGS) e Gravar no Cloud Firestore
+        env:
+          FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+        run: |
+          python fetch_fiscal_data.py
+
+      - name: Commit e Push do Cache Fiscal Sincronizado (Se houver alterações)
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Actions [Fiscal 03AM]"
+          if [ -f macro_fiscal_cache.json ]; then
+            git add macro_fiscal_cache.json
+            git diff --quiet && git diff --staged --quiet || git commit -m "chore(fiscal): sincronizar macro_fiscal_cache.json e Firestore (03:00 BRT) [skip ci]"
+            git push || true
+          fi
