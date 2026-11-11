@@ -473,20 +473,317 @@ async function runSeed() {
 
   // Histórico de Evolução Patrimonial partindo de R$ 50.000,00
   const evolucaoSerie = [
-    { data: '2026-01-02', patrimonio_total: 50000.00, capital_alocado: 0.00, valor_mercado_posicoes: 0.00, caixa_livre: 50000.00, lucro_realizado_acumulado: 0.00, variacao_pct_total: 0.00, quantidade_ativos_posicionados: 0 },
-    { data: '2026-01-15', patrimonio_total: 50450.00, capital_alocado: 3300.00, valor_mercado_posicoes: 3750.00, caixa_livre: 46700.00, lucro_realizado_acumulado: 0.00, variacao_pct_total: 0.90, quantidade_ativos_posicionados: 1 },
-    { data: '2026-02-01', patrimonio_total: 51200.00, capital_alocado: 6600.00, valor_mercado_posicoes: 7210.00, caixa_livre: 43990.00, lucro_realizado_acumulado: 590.00, variacao_pct_total: 2.40, quantidade_ativos_posicionados: 2 },
-    { data: '2026-02-28', patrimonio_total: 52800.00, capital_alocado: 9900.00, valor_mercado_posicoes: 10830.00, caixa_livre: 41970.00, lucro_realizado_acumulado: 1460.00, variacao_pct_total: 5.60, quantidade_ativos_posicionados: 3 },
-    { data: '2026-03-31', patrimonio_total: 54100.00, capital_alocado: 13200.00, valor_mercado_posicoes: 13950.00, caixa_livre: 40150.00, lucro_realizado_acumulado: 2640.00, variacao_pct_total: 8.20, quantidade_ativos_posicionados: 4 },
-    { data: '2026-04-30', patrimonio_total: 56900.00, capital_alocado: 16500.00, valor_mercado_posicoes: 18200.00, caixa_livre: 38700.00, lucro_realizado_acumulado: 5210.00, variacao_pct_total: 13.80, quantidade_ativos_posicionados: 4 },
-    { data: '2026-05-31', patrimonio_total: 59200.00, capital_alocado: 19800.00, valor_mercado_posicoes: 21600.00, caixa_livre: 37600.00, lucro_realizado_acumulado: 8430.00, variacao_pct_total: 18.40, quantidade_ativos_posicionados: 5 },
-    { data: '2026-06-30', patrimonio_total: 61400.00, capital_alocado: 23100.00, valor_mercado_posicoes: 25480.00, caixa_livre: 35920.00, lucro_realizado_acumulado: 11250.00, variacao_pct_total: 22.80, quantidade_ativos_posicionados: 5 },
-    { data: '2026-07-31', patrimonio_total: 62800.00, capital_alocado: 23100.00, valor_mercado_posicoes: 26900.00, caixa_livre: 35900.00, lucro_realizado_acumulado: 12900.00, variacao_pct_total: 25.60, quantidade_ativos_posicionados: 5 },
-    { data: '2026-08-31', patrimonio_total: 63950.00, capital_alocado: 23100.00, valor_mercado_posicoes: 27800.00, caixa_livre: 36150.00, lucro_realizado_acumulado: 13700.00, variacao_pct_total: 27.90, quantidade_ativos_posicionados: 5 },
-    { data: '2026-09-30', patrimonio_total: 64100.00, capital_alocado: 23100.00, valor_mercado_posicoes: 27950.00, caixa_livre: 36150.00, lucro_realizado_acumulado: 14200.00, variacao_pct_total: 28.20, quantidade_ativos_posicionados: 5 },
-    { data: '2026-10-31', patrimonio_total: 64500.00, capital_alocado: 23100.00, valor_mercado_posicoes: 28100.00, caixa_livre: 36400.00, lucro_realizado_acumulado: 14650.00, variacao_pct_total: 29.00, quantidade_ativos_posicionados: 5 },
-    { data: latestMarketDate, patrimonio_total: 64850.00, capital_alocado: 23100.00, valor_mercado_posicoes: 28459.31, caixa_livre: 36390.69, lucro_realizado_acumulado: 14850.00, variacao_pct_total: 29.70, quantidade_ativos_posicionados: 5 }
-  ];
+    {
+        "data": "2026-01-02",
+        "patrimonio_total": 50000.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 22500.0,
+        "caixa_livre": 27500.0,
+        "lucro_realizado_acumulado": 0.0,
+        "variacao_pct_total": 0.0,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-01-10",
+        "patrimonio_total": 50000.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 22500.0,
+        "caixa_livre": 27500.0,
+        "lucro_realizado_acumulado": 0.0,
+        "variacao_pct_total": 0.0,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-01-15",
+        "patrimonio_total": 50450.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 22702.5,
+        "caixa_livre": 27747.5,
+        "lucro_realizado_acumulado": 450.0,
+        "variacao_pct_total": 0.9,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-01-28",
+        "patrimonio_total": 50820.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 22869.0,
+        "caixa_livre": 27951.0,
+        "lucro_realizado_acumulado": 820.0,
+        "variacao_pct_total": 1.64,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-02-01",
+        "patrimonio_total": 51200.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 23040.0,
+        "caixa_livre": 28160.0,
+        "lucro_realizado_acumulado": 1200.0,
+        "variacao_pct_total": 2.4,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-02-14",
+        "patrimonio_total": 51788.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 23304.6,
+        "caixa_livre": 28483.4,
+        "lucro_realizado_acumulado": 1788.0,
+        "variacao_pct_total": 3.58,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-02-18",
+        "patrimonio_total": 52050.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 23422.5,
+        "caixa_livre": 28627.5,
+        "lucro_realizado_acumulado": 2050.0,
+        "variacao_pct_total": 4.1,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-02-25",
+        "patrimonio_total": 52200.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 23490.0,
+        "caixa_livre": 28710.0,
+        "lucro_realizado_acumulado": 2200.0,
+        "variacao_pct_total": 4.4,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-02-28",
+        "patrimonio_total": 53068.7,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 23880.92,
+        "caixa_livre": 29187.78,
+        "lucro_realizado_acumulado": 3068.7,
+        "variacao_pct_total": 6.14,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-03-01",
+        "patrimonio_total": 53300.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 23985.0,
+        "caixa_livre": 29315.0,
+        "lucro_realizado_acumulado": 3300.0,
+        "variacao_pct_total": 6.6,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-03-12",
+        "patrimonio_total": 53815.2,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 24216.84,
+        "caixa_livre": 29598.36,
+        "lucro_realizado_acumulado": 3815.2,
+        "variacao_pct_total": 7.63,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-03-15",
+        "patrimonio_total": 54100.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 24345.0,
+        "caixa_livre": 29755.0,
+        "lucro_realizado_acumulado": 4100.0,
+        "variacao_pct_total": 8.2,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-03-25",
+        "patrimonio_total": 50805.3,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 22862.39,
+        "caixa_livre": 27942.92,
+        "lucro_realizado_acumulado": 805.3,
+        "variacao_pct_total": 1.61,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-03-31",
+        "patrimonio_total": 51400.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 23130.0,
+        "caixa_livre": 28270.0,
+        "lucro_realizado_acumulado": 1400.0,
+        "variacao_pct_total": 2.8,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-04-05",
+        "patrimonio_total": 52120.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 23454.0,
+        "caixa_livre": 28666.0,
+        "lucro_realizado_acumulado": 2120.0,
+        "variacao_pct_total": 4.24,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-04-10",
+        "patrimonio_total": 52600.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 23670.0,
+        "caixa_livre": 28930.0,
+        "lucro_realizado_acumulado": 2600.0,
+        "variacao_pct_total": 5.2,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-04-20",
+        "patrimonio_total": 54200.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 24390.0,
+        "caixa_livre": 29810.0,
+        "lucro_realizado_acumulado": 4200.0,
+        "variacao_pct_total": 8.4,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-04-22",
+        "patrimonio_total": 54400.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 24480.0,
+        "caixa_livre": 29920.0,
+        "lucro_realizado_acumulado": 4400.0,
+        "variacao_pct_total": 8.8,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-04-30",
+        "patrimonio_total": 56900.0,
+        "capital_alocado": 9900.0,
+        "valor_mercado_posicoes": 25605.0,
+        "caixa_livre": 31295.0,
+        "lucro_realizado_acumulado": 6900.0,
+        "variacao_pct_total": 13.8,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-05-08",
+        "patrimonio_total": 57300.0,
+        "capital_alocado": 16500.0,
+        "valor_mercado_posicoes": 25785.0,
+        "caixa_livre": 31515.0,
+        "lucro_realizado_acumulado": 7300.0,
+        "variacao_pct_total": 14.6,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-05-21",
+        "patrimonio_total": 58600.0,
+        "capital_alocado": 16500.0,
+        "valor_mercado_posicoes": 26370.0,
+        "caixa_livre": 32230.0,
+        "lucro_realizado_acumulado": 8600.0,
+        "variacao_pct_total": 17.2,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-05-28",
+        "patrimonio_total": 59000.0,
+        "capital_alocado": 16500.0,
+        "valor_mercado_posicoes": 26550.0,
+        "caixa_livre": 32450.0,
+        "lucro_realizado_acumulado": 9000.0,
+        "variacao_pct_total": 18.0,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-05-31",
+        "patrimonio_total": 59200.0,
+        "capital_alocado": 16500.0,
+        "valor_mercado_posicoes": 26640.0,
+        "caixa_livre": 32560.0,
+        "lucro_realizado_acumulado": 9200.0,
+        "variacao_pct_total": 18.4,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-06-02",
+        "patrimonio_total": 60100.0,
+        "capital_alocado": 16500.0,
+        "valor_mercado_posicoes": 27045.0,
+        "caixa_livre": 33055.0,
+        "lucro_realizado_acumulado": 10100.0,
+        "variacao_pct_total": 20.2,
+        "quantidade_ativos_posicionados": 3
+    },
+    {
+        "data": "2026-06-08",
+        "patrimonio_total": 60850.0,
+        "capital_alocado": 23100.0,
+        "valor_mercado_posicoes": 27382.5,
+        "caixa_livre": 33467.5,
+        "lucro_realizado_acumulado": 10850.0,
+        "variacao_pct_total": 21.7,
+        "quantidade_ativos_posicionados": 5
+    },
+    {
+        "data": "2026-06-30",
+        "patrimonio_total": 61400.0,
+        "capital_alocado": 23100.0,
+        "valor_mercado_posicoes": 27630.0,
+        "caixa_livre": 33770.0,
+        "lucro_realizado_acumulado": 11400.0,
+        "variacao_pct_total": 22.8,
+        "quantidade_ativos_posicionados": 5
+    },
+    {
+        "data": "2026-07-31",
+        "patrimonio_total": 62800.0,
+        "capital_alocado": 23100.0,
+        "valor_mercado_posicoes": 28260.0,
+        "caixa_livre": 34540.0,
+        "lucro_realizado_acumulado": 12800.0,
+        "variacao_pct_total": 25.6,
+        "quantidade_ativos_posicionados": 5
+    },
+    {
+        "data": "2026-08-31",
+        "patrimonio_total": 63950.0,
+        "capital_alocado": 23100.0,
+        "valor_mercado_posicoes": 28777.5,
+        "caixa_livre": 35172.5,
+        "lucro_realizado_acumulado": 13950.0,
+        "variacao_pct_total": 27.9,
+        "quantidade_ativos_posicionados": 5
+    },
+    {
+        "data": "2026-09-30",
+        "patrimonio_total": 64100.0,
+        "capital_alocado": 23100.0,
+        "valor_mercado_posicoes": 28845.0,
+        "caixa_livre": 35255.0,
+        "lucro_realizado_acumulado": 14100.0,
+        "variacao_pct_total": 28.2,
+        "quantidade_ativos_posicionados": 5
+    },
+    {
+        "data": "2026-10-31",
+        "patrimonio_total": 64500.0,
+        "capital_alocado": 23100.0,
+        "valor_mercado_posicoes": 29025.0,
+        "caixa_livre": 35475.0,
+        "lucro_realizado_acumulado": 14500.0,
+        "variacao_pct_total": 29.0,
+        "quantidade_ativos_posicionados": 5
+    },
+    {
+        "data": "2026-11-10",
+        "patrimonio_total": 64850.0,
+        "capital_alocado": 23100.0,
+        "valor_mercado_posicoes": 29182.5,
+        "caixa_livre": 35667.5,
+        "lucro_realizado_acumulado": 14850.0,
+        "variacao_pct_total": 29.7,
+        "quantidade_ativos_posicionados": 5
+    }
+];
 
   // Gravar no Cloud Firestore via Batch Writes
   console.log('💾 Gravando dados oficiais no Cloud Firestore via Batch Writes...');

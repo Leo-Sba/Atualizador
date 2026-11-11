@@ -4122,6 +4122,25 @@ body.theme-light .event-tile-date {
                 <div class="ifr-chart-container">
                     <canvas id="chartIfrEvolucao"></canvas>
                 </div>
+
+                <!-- Linha do Tempo Operacional (Variação 1) -->
+                <div class="ifr-timeline-wrapper">
+                    <div class="ifr-timeline-bar-header">
+                        <div class="ifr-timeline-title">
+                            <span>📍 Linha do Tempo Operacional</span>
+                            <span class="ifr-timeline-count" id="ifrTimelineCount">0 Eventos</span>
+                            <span class="ifr-timeline-sub">Clique em qualquer evento para navegar e destacar o trade correspondente</span>
+                        </div>
+                        <div class="ifr-timeline-legend">
+                            <span class="ifr-legend-item"><span class="ifr-legend-dot dot-buy"></span>Entrada (E1/E2/E3)</span>
+                            <span class="ifr-legend-item"><span class="ifr-legend-dot dot-gain"></span>Venda Gain</span>
+                            <span class="ifr-legend-item"><span class="ifr-legend-dot dot-stop"></span>Stop Loss</span>
+                        </div>
+                    </div>
+                    <div class="ifr-timeline-scroll" id="ifrTimelineScroll">
+                        <!-- Pílulas operacionais geradas dinamicamente -->
+                    </div>
+                </div>
             </div>
 
             <!-- Barra de Filtros e Alternador Compacto vs Conforto -->
@@ -4852,6 +4871,191 @@ body.theme-light .event-tile-date {
         position: relative;
         height: 280px;
         width: 100%;
+    }
+
+    /* Linha do Tempo Operacional (Variação 1) */
+    .ifr-timeline-wrapper {
+        margin-top: 18px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+    }
+
+    .ifr-timeline-bar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .ifr-timeline-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    .ifr-timeline-count {
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: rgba(56, 189, 248, 0.12);
+        color: #38bdf8;
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+    }
+
+    .ifr-timeline-sub {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 400;
+    }
+
+    .ifr-timeline-legend {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 11px;
+        color: var(--text-muted);
+    }
+
+    .ifr-legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .ifr-legend-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .ifr-legend-dot.dot-buy { background: #10b981; }
+    .ifr-legend-dot.dot-gain { background: #f59e0b; }
+    .ifr-legend-dot.dot-stop { background: #ef4444; }
+
+    .ifr-timeline-scroll {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        padding-top: 4px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+    }
+
+    .ifr-timeline-scroll::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .ifr-timeline-scroll::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+    }
+
+    .ifr-timeline-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 999px;
+        font-size: 11.5px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        user-select: none;
+        flex-shrink: 0;
+    }
+
+    .ifr-timeline-pill:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    }
+
+    .ifr-timeline-pill.pill-buy {
+        background: rgba(16, 185, 129, 0.12);
+        border-color: rgba(16, 185, 129, 0.35);
+        color: #10b981;
+    }
+
+    .ifr-timeline-pill.pill-buy:hover {
+        background: rgba(16, 185, 129, 0.25);
+        border-color: #10b981;
+    }
+
+    .ifr-timeline-pill.pill-gain {
+        background: rgba(245, 158, 11, 0.12);
+        border-color: rgba(245, 158, 11, 0.4);
+        color: #f59e0b;
+    }
+
+    .ifr-timeline-pill.pill-gain:hover {
+        background: rgba(245, 158, 11, 0.25);
+        border-color: #f59e0b;
+    }
+
+    .ifr-timeline-pill.pill-stop {
+        background: rgba(239, 68, 68, 0.12);
+        border-color: rgba(239, 68, 68, 0.35);
+        color: #ef4444;
+    }
+
+    .ifr-timeline-pill.pill-stop:hover {
+        background: rgba(239, 68, 68, 0.25);
+        border-color: #ef4444;
+    }
+
+    /* Animação de destaque de pulso no trade selecionado */
+    @keyframes tradeCardHighlightPulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.8);
+            border-color: #38bdf8;
+        }
+        50% {
+            box-shadow: 0 0 0 12px rgba(56, 189, 248, 0);
+            border-color: #38bdf8;
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+            border-color: var(--border);
+        }
+    }
+
+    .highlight-trade-pulse {
+        animation: tradeCardHighlightPulse 1.8s ease-out 2 !important;
+        border-color: #38bdf8 !important;
+    }
+
+    /* Suporte a Tema Claro */
+    body.theme-light .ifr-timeline-scroll::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    body.theme-light .ifr-timeline-pill.pill-buy {
+        background: #dcfce7;
+        border-color: #86efac;
+        color: #15803d;
+    }
+
+    body.theme-light .ifr-timeline-pill.pill-gain {
+        background: #fef3c7;
+        border-color: #fde68a;
+        color: #b45309;
+    }
+
+    body.theme-light .ifr-timeline-pill.pill-stop {
+        background: #fee2e2;
+        border-color: #fca5a5;
+        color: #b91c1c;
     }
 
     /* Barra de Filtros e Controles */
@@ -9273,6 +9477,7 @@ body.theme-light .event-tile-date {
                             if (evo.length > 0) {
                                 ifrData.evolucao = evo;
                                 renderChart();
+                                renderTimeline();
                             }
                         });
 
@@ -9280,6 +9485,8 @@ body.theme-light .event-tile-date {
                             const trs = {};
                             snap.forEach(d => { trs[d.id] = d.data(); });
                             ifrData.trades = trs;
+                            renderChart();
+                            renderTimeline();
                             renderTrades();
                         });
                     }
@@ -9329,12 +9536,109 @@ body.theme-light .event-tile-date {
                 if (kpiRadar) kpiRadar.innerText = `${radarCount} Ações`;
             }
 
+            function getOperationalEvents() {
+                const allTrades = Object.values(ifrData.trades || {});
+                const events = [];
+
+                allTrades.forEach(t => {
+                    (t.entradas || []).forEach(e => {
+                        if (e.data) {
+                            events.push({
+                                data: e.data,
+                                ticker: t.ticker,
+                                tipo: 'E' + (e.nivel || 1),
+                                preco: e.preco,
+                                qtd: e.quantidade,
+                                aporte: e.aporte_real,
+                                tradeId: t.id,
+                                status: t.status
+                            });
+                        }
+                    });
+
+                    if (t.data_encerramento) {
+                        const isGain = t.status === 'FINALIZADO_GAIN';
+                        events.push({
+                            data: t.data_encerramento,
+                            ticker: t.ticker,
+                            tipo: isGain ? 'GAIN' : 'STOP',
+                            preco: t.preco_saida || t.preco_fechamento_atual,
+                            resultado_rs: t.resultado_realizado_rs,
+                            resultado_pct: t.resultado_realizado_pct,
+                            motivo: t.motivo_encerramento || (isGain ? 'Alvo IFR Atingido' : 'Stop Loss -50%'),
+                            tradeId: t.id,
+                            status: t.status
+                        });
+                    }
+                });
+
+                // Ordenar cronologicamente
+                events.sort((a, b) => a.data.localeCompare(b.data));
+                return events;
+            }
+
+            function renderTimeline() {
+                const scrollEl = document.getElementById('ifrTimelineScroll');
+                const countEl = document.getElementById('ifrTimelineCount');
+                if (!scrollEl) return;
+
+                const events = getOperationalEvents();
+                if (countEl) countEl.innerText = `${events.length} Eventos`;
+
+                if (events.length === 0) {
+                    scrollEl.innerHTML = '<span style="font-size:12px; color:var(--text-muted); padding:4px 8px;">Nenhum evento registrado ainda.</span>';
+                    return;
+                }
+
+                function fmtShort(dStr) {
+                    if (!dStr) return '';
+                    const p = dStr.split('-');
+                    return p.length === 3 ? `${p[2]}/${p[1]}` : dStr;
+                }
+
+                let html = '';
+                events.forEach(ev => {
+                    const isBuy = ev.tipo.startsWith('E');
+                    const isGain = ev.tipo === 'GAIN';
+                    const isStop = ev.tipo === 'STOP';
+                    const pillClass = isBuy ? 'pill-buy' : (isGain ? 'pill-gain' : 'pill-stop');
+
+                    let desc = '';
+                    if (isBuy) {
+                        desc = `${ev.ticker} • ${ev.tipo} (${formatMoney(ev.preco)})`;
+                    } else if (isGain) {
+                        const pct = ev.resultado_pct !== undefined ? ev.resultado_pct.toFixed(1).replace('.', ',') : '0';
+                        desc = `${ev.ticker} • Gain +${pct}%`;
+                    } else {
+                        const pct = ev.resultado_pct !== undefined ? ev.resultado_pct.toFixed(1).replace('.', ',') : '-50';
+                        desc = `${ev.ticker} • Stop ${pct}%`;
+                    }
+
+                    html += `
+                        <div class="ifr-timeline-pill ${pillClass}" onclick="IfrModule.scrollToTrade('${ev.tradeId}')" title="${ev.data}: ${desc} (Clique para rolar até o trade)">
+                            <span>${fmtShort(ev.data)}</span>
+                            <strong>${desc}</strong>
+                            <span style="font-size:11px; opacity:0.85;">↗</span>
+                        </div>
+                    `;
+                });
+
+                scrollEl.innerHTML = html;
+            }
+
             function renderChart() {
                 const ctx = document.getElementById('chartIfrEvolucao');
                 if (!ctx) return;
 
                 const evoList = ifrData.evolucao || [];
                 if (evoList.length === 0) return;
+
+                const allEvents = getOperationalEvents();
+                const eventsByDate = {};
+                allEvents.forEach(ev => {
+                    if (!eventsByDate[ev.data]) eventsByDate[ev.data] = [];
+                    eventsByDate[ev.data].push(ev);
+                });
 
                 const labels = evoList.map(p => {
                     const parts = p.data.split('-');
@@ -9369,6 +9673,34 @@ body.theme-light .event-tile-date {
                     gradient.addColorStop(1, 'rgba(0, 230, 118, 0.00)');
                 }
 
+                // Configuração dinâmica das bolinhas dos eventos operacionais
+                const pointRadii = evoList.map(pt => {
+                    const evs = eventsByDate[pt.data];
+                    return (evs && evs.length > 0) ? 6.5 : 2.5;
+                });
+
+                const pointHoverRadii = evoList.map(pt => {
+                    const evs = eventsByDate[pt.data];
+                    return (evs && evs.length > 0) ? 10 : 5;
+                });
+
+                const pointBgColors = evoList.map(pt => {
+                    const evs = eventsByDate[pt.data];
+                    if (!evs || evs.length === 0) return lineColor;
+                    if (evs.some(e => e.tipo === 'STOP')) return '#ef4444';
+                    if (evs.some(e => e.tipo === 'GAIN')) return '#f59e0b';
+                    return isLight ? '#15803d' : '#10b981';
+                });
+
+                const pointBorderColors = evoList.map(pt => {
+                    return '#ffffff';
+                });
+
+                const pointBorderWidths = evoList.map(pt => {
+                    const evs = eventsByDate[pt.data];
+                    return (evs && evs.length > 0) ? 2.5 : 1;
+                });
+
                 chartInstance = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -9381,11 +9713,11 @@ body.theme-light .event-tile-date {
                             fill: true,
                             backgroundColor: gradient,
                             tension: 0.25,
-                            pointRadius: 3,
-                            pointHoverRadius: 6,
-                            pointBackgroundColor: lineColor,
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 1.5
+                            pointRadius: pointRadii,
+                            pointHoverRadius: pointHoverRadii,
+                            pointBackgroundColor: pointBgColors,
+                            pointBorderColor: pointBorderColors,
+                            pointBorderWidth: pointBorderWidths
                         }]
                     },
                     options: {
@@ -9395,10 +9727,20 @@ body.theme-light .event-tile-date {
                             intersect: false,
                             mode: 'index'
                         },
+                        onClick: function (evt, elements) {
+                            if (!elements || elements.length === 0) return;
+                            const idx = elements[0].index;
+                            const pt = evoList[idx];
+                            if (!pt) return;
+                            const evs = eventsByDate[pt.data];
+                            if (evs && evs.length > 0 && evs[0].tradeId) {
+                                IfrModule.scrollToTrade(evs[0].tradeId);
+                            }
+                        },
                         plugins: {
                             legend: { display: false },
                             tooltip: {
-                                backgroundColor: isLight ? 'rgba(255, 255, 255, 0.96)' : 'rgba(17, 19, 25, 0.95)',
+                                backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(17, 19, 25, 0.96)',
                                 titleColor: isLight ? '#0f172a' : '#f1f5f9',
                                 bodyColor: isLight ? '#334155' : '#8492a6',
                                 borderColor: isLight ? '#cbd5e1' : '#222634',
@@ -9406,6 +9748,16 @@ body.theme-light .event-tile-date {
                                 padding: 12,
                                 displayColors: false,
                                 callbacks: {
+                                    title: function (items) {
+                                        if (!items || items.length === 0) return '';
+                                        const idx = items[0].dataIndex;
+                                        const pt = evoList[idx] || {};
+                                        const evs = eventsByDate[pt.data] || [];
+                                        if (evs.length > 0) {
+                                            return `📅 ${items[0].label} • ${evs.length} Evento(s) Operacional(is)`;
+                                        }
+                                        return `📅 ${items[0].label}`;
+                                    },
                                     label: function (context) {
                                         const idx = context.dataIndex;
                                         const pt = evoList[idx] || {};
@@ -9415,6 +9767,31 @@ body.theme-light .event-tile-date {
                                             `Caixa Livre: ${formatMoney(pt.caixa_livre)}`,
                                             `Capital Alocado: ${formatMoney(pt.capital_alocado)}`
                                         ];
+                                    },
+                                    afterBody: function (items) {
+                                        if (!items || items.length === 0) return [];
+                                        const idx = items[0].dataIndex;
+                                        const pt = evoList[idx] || {};
+                                        const evs = eventsByDate[pt.data] || [];
+                                        if (evs.length === 0) return [];
+
+                                        const lines = ['', '── OPERAÇÕES DO DIA ──'];
+                                        evs.forEach(ev => {
+                                            if (ev.tipo === 'GAIN') {
+                                                const pct = ev.resultado_pct !== undefined ? ev.resultado_pct.toFixed(1) + '%' : '';
+                                                lines.push(`🎯 Venda Gain: ${ev.ticker} (${ev.motivo})`);
+                                                lines.push(`   Preço: ${formatMoney(ev.preco)} | Lucro: +${formatMoney(ev.resultado_rs)} (+${pct})`);
+                                            } else if (ev.tipo === 'STOP') {
+                                                const pct = ev.resultado_pct !== undefined ? ev.resultado_pct.toFixed(1) + '%' : '';
+                                                lines.push(`🚨 Stop Loss: ${ev.ticker} (${ev.motivo})`);
+                                                lines.push(`   Preço: ${formatMoney(ev.preco)} | Prejuízo: ${formatMoney(ev.resultado_rs)} (${pct})`);
+                                            } else {
+                                                lines.push(`🟢 Entrada ${ev.tipo}: ${ev.ticker}`);
+                                                lines.push(`   Preço: ${formatMoney(ev.preco)} | Qtd: ${ev.qtd} ações (${formatMoney(ev.aporte)})`);
+                                            }
+                                        });
+                                        lines.push('👉 Clique no ponto para ir ao trade');
+                                        return lines;
                                     }
                                 }
                             }
@@ -9582,7 +9959,7 @@ body.theme-light .event-tile-date {
                         }
 
                         html += `
-                        <div class="ifr-trade-card">
+                        <div class="ifr-trade-card" id="ifr-trade-${t.id}">
                             <!-- Coluna 1: Ativo, Preço, P/L e IFR -->
                             <div class="ifr-asset-col">
                                 <div class="ifr-asset-head">
@@ -9638,7 +10015,7 @@ body.theme-light .event-tile-date {
                         const progressPct = t.etapa_atual === 1 ? 33 : (t.etapa_atual === 2 ? 66 : 100);
 
                         html += `
-                        <div class="ifr-trade-card compact">
+                        <div class="ifr-trade-card compact" id="ifr-trade-${t.id}">
                             <div class="ifr-asset-col">
                                 <div class="ifr-asset-head">
                                     ${getHeaderBrandIconHtml(t.ticker, 28)}
@@ -9678,6 +10055,42 @@ body.theme-light .event-tile-date {
                 listEl.innerHTML = html;
             }
 
+            function scrollToTrade(tradeId) {
+                if (!tradeId) return;
+
+                // 1. Se o trade estiver oculto pelo filtro atual, muda temporariamente para TODOS
+                const allTrades = Object.values(ifrData.trades || {});
+                const trade = allTrades.find(t => t.id === tradeId);
+                if (trade) {
+                    let shouldReset = false;
+                    if (currentFilter === 'E1' && (trade.status !== 'ABERTO' || trade.etapa_atual !== 1)) shouldReset = true;
+                    if (currentFilter === 'E2' && (trade.status !== 'ABERTO' || trade.etapa_atual !== 2)) shouldReset = true;
+                    if (currentFilter === 'E3' && (trade.status !== 'ABERTO' || trade.etapa_atual !== 3)) shouldReset = true;
+                    if (currentFilter === 'GAIN' && trade.status !== 'FINALIZADO_GAIN') shouldReset = true;
+                    if (currentFilter === 'STOP' && trade.status !== 'FINALIZADO_STOP') shouldReset = true;
+
+                    if (shouldReset) {
+                        currentFilter = 'TODOS';
+                        document.querySelectorAll('.ifr-filter-btn').forEach(b => b.classList.remove('active'));
+                        const btnTodos = document.querySelector('.ifr-filter-btn');
+                        if (btnTodos) btnTodos.classList.add('active');
+                        renderTrades();
+                    }
+                }
+
+                // 2. Rolar suavemente e aplicar animação de pulso no card
+                setTimeout(() => {
+                    const el = document.getElementById('ifr-trade-' + tradeId);
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        el.classList.add('highlight-trade-pulse');
+                        setTimeout(() => {
+                            el.classList.remove('highlight-trade-pulse');
+                        }, 3600);
+                    }
+                }, 60);
+            }
+
             return {
                 init: function () {
                     initData();
@@ -9685,12 +10098,14 @@ body.theme-light .event-tile-date {
                 },
                 onThemeChange: function () {
                     renderChart();
+                    renderTimeline();
                     renderTrades();
                 },
                 onOpen: function () {
                     initData();
                     renderKPIs();
                     renderChart();
+                    renderTimeline();
                     renderTrades();
                 },
                 onResize: function () {
@@ -9711,7 +10126,9 @@ body.theme-light .event-tile-date {
                 onSearch: function (val) {
                     searchQuery = val || '';
                     renderTrades();
-                }
+                },
+                scrollToTrade: scrollToTrade,
+                renderTimeline: renderTimeline
             };
         })();
 
