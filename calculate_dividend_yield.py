@@ -1,17 +1,21 @@
 """
-Calculador de Dividend Yield Histórico dos últimos 2 anos.
+Calculador de Dividend Yield Histórico Completo.
 Popula a coluna dividend_yield_ttm na tabela daily_metrics para todos os pregões:
- - Para cada pregão dos últimos 2 anos (a partir de 2024-01-01):
+ - Para cada pregão histórico:
      * Soma todos os proventos (dividendos + JCP) pagos nos 365 dias anteriores à data
-     * Dividend Yield (%) = (Soma Proventos / Preço de Fechamento do dia) * 100
+     * Dividend Yield (%) = (Soma Proventos 12M / Preço de Fechamento do dia) * 100
+Utiliza algoritmo O(log N) com bisect e execute_values para máxima performance.
 """
 
 import os
-import psycopg2
-from psycopg2.extras import execute_batch
-from dotenv import load_dotenv
+import bisect
+import logging
 from datetime import timedelta
+import psycopg2
+from psycopg2.extras import execute_values
+from dotenv import load_dotenv
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 load_dotenv()
 
 def get_db_connection():
@@ -21,14 +25,14 @@ def get_db_connection():
         password=os.getenv("DB_PASSWORD"),
         host=os.getenv("DB_HOST"),
         port=int(os.getenv("DB_PORT") or 5432),
-        connect_timeout=20
+        connect_timeout=25
     )
 
-def calculate_dividend_yield(start_date="2024-01-01"):
+def calculate_dividend_yield(start_date="2014-01-01"):
     conn = get_db_connection()
     cur = conn.cursor()
 
-    print(f"Calculando histórico diário de Dividend Yield a partir de {start_date} (últimos 2 anos)...")
+    logging.info(f"Calculando histórico diário de Dividend Yield a partir de {start_date}...")
 
     # 1. Carregar todas as ações
     cur.execute("SELECT id, ticker FROM securities ORDER BY ticker;")
@@ -36,7 +40,7 @@ def calculate_dividend_yield(start_date="2024-01-01"):
 
     total_updated = 0
 
-    for sec_id, ticker in securities:
+    for idx, (sec_id, ticker) in enumerate(securities):
         # Carregar proventos da ação
         cur.execute("""
             SELECT ex_date, gross_amount_per_share
@@ -49,7 +53,13 @@ def calculate_dividend_yield(start_date="2024-01-01"):
         if not divs:
             continue
 
-        # Carregar preços da ação dos últimos 2 anos
+        # Preparar busca binária com prefix sums
+        div_dates = [d[0] for d in divs]
+        prefix_sums = [0.0]
+        for d in divs:
+            prefix_sums.append(prefix_sums[-1] + float(d[1] or 0.0))
+
+        # Carregar preços da ação a partir de start_date
         cur.execute("""
             SELECT reference_date, close_price
             FROM daily_metrics
@@ -68,26 +78,27 @@ def calculate_dividend_yield(start_date="2024-01-01"):
 
             one_year_prior = ref_date - timedelta(days=365)
             # Soma dos proventos com ex_date entre (ref_date - 365) e ref_date
-            sum_divs_12m = sum(float(d[1]) for d in divs if one_year_prior <= d[0] <= ref_date)
+            idx_left = bisect.bisect_left(div_dates, one_year_prior)
+            idx_right = bisect.bisect_right(div_dates, ref_date)
+            sum_divs_12m = prefix_sums[idx_right] - prefix_sums[idx_left]
 
             dy_pct = (sum_divs_12m / float(close_price)) * 100.0 if sum_divs_12m > 0 else 0.0
-
-            updates.append((dy_pct, sec_id, ref_date))
+            updates.append((sec_id, ref_date, dy_pct))
 
         if updates:
-            sql_upd = """
-                UPDATE daily_metrics
-                SET dividend_yield_ttm = %s
-                WHERE security_id = %s AND reference_date = %s;
-            """
-            execute_batch(cur, sql_upd, updates, page_size=1000)
+            execute_values(cur, """
+                UPDATE daily_metrics AS dm
+                SET dividend_yield_ttm = v.dy
+                FROM (VALUES %s) AS v(sec_id, ref_date, dy)
+                WHERE dm.security_id = v.sec_id::uuid AND dm.reference_date = v.ref_date::date;
+            """, updates, page_size=2000)
             conn.commit()
             total_updated += len(updates)
-            print(f"  [OK] {ticker}: {len(updates)} pregões atualizados com Dividend Yield.")
+            logging.info(f"[{idx+1}/{len(securities)}] {ticker}: {len(updates)} pregões atualizados com Dividend Yield.")
 
     cur.close()
     conn.close()
-    print(f"\nFinalizado! Total de registros atualizados com Dividend Yield: {total_updated:,}")
+    logging.info(f"[OK] Total de registros atualizados com Dividend Yield: {total_updated:,}")
 
 if __name__ == "__main__":
-    calculate_dividend_yield("2024-01-01")
+    calculate_dividend_yield("2014-01-01")
