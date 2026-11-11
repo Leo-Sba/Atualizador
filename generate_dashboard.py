@@ -1917,60 +1917,60 @@ select:focus {
             color: #1e293b;
         }
 
-        /* Cores das Faixas — Sugestão A: Obsidian Velvet / TradingView Pro */
-        /* 0 - 8 Esmeralda Profundo (Excelente Desconto) */
+        /* Cores das Faixas — Harmonizadas com o padrão de Splits / Eventos B3 */
+        /* 0 - 8 Verde Esmeralda / Split (Excelente Desconto) */
         .color-pl-limao {
-            background: linear-gradient(160deg, rgba(16, 185, 129, 0.14), rgba(5, 150, 105, 0.08));
-            border-color: rgba(16, 185, 129, 0.32) !important;
+            background: linear-gradient(135deg, rgba(0, 230, 118, 0.18), rgba(16, 185, 129, 0.26));
+            border-color: rgba(0, 230, 118, 0.55) !important;
             color: #34d399 !important;
         }
         body.theme-light .color-pl-limao {
-            background: linear-gradient(135deg, rgba(0, 200, 83, 0.15), rgba(16, 185, 129, 0.22));
-            border-color: #00c853 !important;
-            color: #008738 !important;
-        }
-
-        /* 8 - 15 Teal / Verde-Água Suave (Atrativo) */
-        .color-pl-verde {
-            background: linear-gradient(160deg, rgba(20, 184, 166, 0.12), rgba(13, 148, 136, 0.06));
-            border-color: rgba(20, 184, 166, 0.28) !important;
-            color: #2dd4bf !important;
-        }
-        body.theme-light .color-pl-verde {
-            background: linear-gradient(135deg, rgba(22, 163, 74, 0.12), rgba(21, 128, 61, 0.18));
+            background: linear-gradient(135deg, rgba(0, 200, 83, 0.14), rgba(16, 185, 129, 0.22));
             border-color: #16a34a !important;
             color: #15803d !important;
         }
 
-        /* 15 - 25 Azul-Ciano Calmo / Neutro Intermediário */
+        /* 8 - 15 Verde Esmeralda / Split (Atrativo) */
+        .color-pl-verde {
+            background: linear-gradient(135deg, rgba(0, 230, 118, 0.18), rgba(16, 185, 129, 0.26));
+            border-color: rgba(0, 230, 118, 0.55) !important;
+            color: #34d399 !important;
+        }
+        body.theme-light .color-pl-verde {
+            background: linear-gradient(135deg, rgba(0, 200, 83, 0.14), rgba(16, 185, 129, 0.22));
+            border-color: #16a34a !important;
+            color: #15803d !important;
+        }
+
+        /* 15 - 25 Azul-Ciano / Bonificação (Neutro Intermediário) */
         .color-pl-claro {
-            background: linear-gradient(160deg, rgba(56, 189, 248, 0.11), rgba(14, 165, 233, 0.05));
-            border-color: rgba(56, 189, 248, 0.26) !important;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.18), rgba(20, 184, 166, 0.25));
+            border-color: rgba(56, 189, 248, 0.55) !important;
             color: #38bdf8 !important;
         }
         body.theme-light .color-pl-claro {
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.10), rgba(2, 132, 199, 0.16));
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.13), rgba(13, 148, 136, 0.20));
             border-color: #0284c7 !important;
             color: #0369a1 !important;
         }
 
-        /* 25 - 50 Âmbar Dourado Suave (Esticado) */
+        /* 25 - 50 Âmbar / Outros Eventos (Esticado) */
         .color-pl-vm-claro {
-            background: linear-gradient(160deg, rgba(245, 158, 11, 0.12), rgba(217, 119, 6, 0.06));
-            border-color: rgba(245, 158, 11, 0.28) !important;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(217, 119, 6, 0.25));
+            border-color: rgba(245, 158, 11, 0.55) !important;
             color: #fbbf24 !important;
         }
         body.theme-light .color-pl-vm-claro {
-            background: linear-gradient(135deg, rgba(234, 88, 12, 0.12), rgba(220, 38, 38, 0.16));
-            border-color: #ea580c !important;
-            color: #c2410c !important;
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.13), rgba(180, 83, 9, 0.20));
+            border-color: #d97706 !important;
+            color: #b45309 !important;
         }
 
-        /* > 50 ou Prejuízo Rosa-Rubi Suave / Alerta */
+        /* > 50 ou Prejuízo Vermelho-Rubi / Inplit (Alerta) */
         .color-pl-vm-forte {
-            background: linear-gradient(160deg, rgba(244, 63, 94, 0.13), rgba(190, 18, 60, 0.07));
-            border-color: rgba(244, 63, 94, 0.30) !important;
-            color: #fb7185 !important;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.20), rgba(185, 28, 28, 0.30));
+            border-color: rgba(239, 68, 68, 0.60) !important;
+            color: #f87171 !important;
         }
         body.theme-light .color-pl-vm-forte {
             background: linear-gradient(135deg, rgba(220, 38, 38, 0.14), rgba(185, 28, 28, 0.22));
