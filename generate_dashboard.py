@@ -20,10 +20,12 @@ if os.path.exists("earnings_calendar.json"):
         pass
 
 corporate_events_summary = {}
+corporate_events_full = {}
 if os.path.exists("events_data.json"):
     try:
         with open("events_data.json", "r", encoding="utf-8") as f:
             raw_events = json.load(f)
+        corporate_events_full = raw_events
         for tk, ev_obj in raw_events.items():
             s_list = ev_obj.get("splits", []) or []
             i_list = ev_obj.get("inplits", []) or []
@@ -4613,6 +4615,7 @@ body.theme-light .event-tile-date {
         const DATA = __DATA_PLACEHOLDER__;
         const EARNINGS_CALENDAR = __EARNINGS_PLACEHOLDER__;
         const CORPORATE_EVENTS_MAP = __CORPORATE_EVENTS_PLACEHOLDER__;
+        const EVENTS_ALL_DATA = __EVENTS_ALL_DATA_PLACEHOLDER__;
         const MACRO_DATA = __MACRO_PLACEHOLDER__;
 
         // Glass Pro: tipografia e tooltips flutuantes dos gráficos alinhados ao design system (zinc-900/80 + border-zinc-800)
@@ -5320,6 +5323,7 @@ body.theme-light .event-tile-date {
 
             renderCharts();
             updateHeaderSubtitle(ticker);
+            updateEventsDrawerForTicker(ticker);
         }
 
 
@@ -6140,6 +6144,11 @@ body.theme-light .event-tile-date {
         let eventsCache = {};
         let activeEventsTab = 'divs';
 
+        // Inicializa cache em memória a partir de EVENTS_ALL_DATA embutido
+        if (typeof EVENTS_ALL_DATA !== 'undefined' && EVENTS_ALL_DATA && Object.keys(EVENTS_ALL_DATA).length > 0) {
+            eventsCache = Object.assign({}, EVENTS_ALL_DATA);
+        }
+
         async function toggleCorporateEvents() {
             const drawer = document.getElementById('drawerCorporateEvents');
             const txt = document.getElementById('txtToggleEvents');
@@ -6179,6 +6188,26 @@ body.theme-light .event-tile-date {
             }
         }
 
+        // Função chamada sempre que o ativo muda (ou no boot) para sincronizar o drawer
+        function updateEventsDrawerForTicker(ticker) {
+            const section = document.getElementById('boxCorporateEventsSection');
+            const drawer = document.getElementById('drawerCorporateEvents');
+            const badgeCount = document.getElementById('badgeEventsCount');
+
+            // Índices não possuem eventos societários corporativos individuais da B3
+            if (['IBOV', 'IFNC', 'SEGUROS'].includes(ticker)) {
+                if (section) section.style.display = 'none';
+                if (drawer) drawer.style.display = 'none';
+                if (badgeCount) badgeCount.style.display = 'none';
+                return;
+            }
+
+            if (section) section.style.display = 'block';
+
+            // Carrega e atualiza os dados do ativo selecionado
+            loadEventsForTicker(ticker);
+        }
+
         async function loadEventsForTicker(ticker) {
             if (!ticker || ['IBOV', 'IFNC', 'SEGUROS'].includes(ticker)) return;
 
@@ -6186,16 +6215,22 @@ body.theme-light .event-tile-date {
             const contentSplits = document.getElementById('tabContentSplits');
             const badgeCount = document.getElementById('badgeEventsCount');
 
+            // 1. Tenta recuperar do cache local em memória (populado via EVENTS_ALL_DATA ou requisições anteriores)
             if (eventsCache[ticker]) {
                 renderEventsTable(ticker, eventsCache[ticker]);
                 return;
             }
 
-            if (contentDivs) contentDivs.innerHTML = '<div style="text-align:center; padding:18px; color:var(--text-muted); font-size:12px;">⏳ Carregando histórico da B3 para ' + ticker + '...</div>';
-            if (contentSplits) contentSplits.innerHTML = '<div style="text-align:center; padding:18px; color:var(--text-muted); font-size:12px;">⏳ Carregando eventos societários da B3...</div>';
+            // Exibe estado de carregamento se o drawer estiver visível
+            const drawer = document.getElementById('drawerCorporateEvents');
+            const isDrawerOpen = drawer && (drawer.style.display === 'block');
+            if (isDrawerOpen) {
+                if (contentDivs) contentDivs.innerHTML = '<div style="text-align:center; padding:18px; color:var(--text-muted); font-size:12px;">⏳ Carregando histórico da B3 para ' + ticker + '...</div>';
+                if (contentSplits) contentSplits.innerHTML = '<div style="text-align:center; padding:18px; color:var(--text-muted); font-size:12px;">⏳ Carregando eventos societários da B3...</div>';
+            }
 
             let data = null;
-            // 1. Tenta carregar individual
+            // 2. Tenta carregar arquivo individual
             try {
                 const resp = await fetch('events/' + ticker + '.json');
                 if (resp.ok) {
@@ -6203,7 +6238,7 @@ body.theme-light .event-tile-date {
                 }
             } catch(e) {}
 
-            // 2. Fallback: tentar consolidado
+            // 3. Fallback: tentar consolidado events_data.json
             if (!data) {
                 try {
                     const respCons = await fetch('events_data.json');
@@ -6219,9 +6254,10 @@ body.theme-light .event-tile-date {
                 eventsCache[ticker] = data;
                 renderEventsTable(ticker, data);
             } else {
-                const errMsg = '<div style="text-align:center; padding:18px; color:var(--text-muted); font-size:12px;">⚠️ Dados detalhados da B3 disponíveis online via Vercel ou servidor HTTP local.</div>';
-                if (contentDivs) contentDivs.innerHTML = errMsg;
-                if (contentSplits) contentSplits.innerHTML = errMsg;
+                // Fallback gracioso com objeto vazio para o ticker
+                const emptyData = { ticker: ticker, company: (DATA[ticker] ? DATA[ticker].company : ticker), dividends: [], splits: [], inplits: [], bonuses: [] };
+                eventsCache[ticker] = emptyData;
+                renderEventsTable(ticker, emptyData);
             }
         }
 
@@ -7098,6 +7134,7 @@ body.theme-light .event-tile-date {
 
             renderCharts();
             updateHeaderSubtitle(currentTicker);
+            updateEventsDrawerForTicker(currentTicker);
 
         };
 
@@ -8241,6 +8278,7 @@ from datetime import datetime
 html_final = template.replace("__DATA_PLACEHOLDER__", raw_data)
 html_final = html_final.replace("__EARNINGS_PLACEHOLDER__", json.dumps(earnings_data, ensure_ascii=False))
 html_final = html_final.replace("__CORPORATE_EVENTS_PLACEHOLDER__", json.dumps(corporate_events_summary, ensure_ascii=False))
+html_final = html_final.replace("__EVENTS_ALL_DATA_PLACEHOLDER__", json.dumps(corporate_events_full, ensure_ascii=False))
 html_final = html_final.replace("__MACRO_PLACEHOLDER__", json.dumps(macro_snapshot, ensure_ascii=False))
 
 ibov_val = ibov_info.get("aggregated_pe_all") or ibov_info.get("weighted_pe", 10.16)
