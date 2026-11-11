@@ -4735,6 +4735,7 @@ body.theme-light .event-tile-date {
             updateTimeSliderFill();
             renderCharts();
             updateHeaderSubtitle(currentTicker);
+            if (typeof updateEventsDrawerForTicker === 'function') updateEventsDrawerForTicker(currentTicker);
         }
 
         function syncTimeSliderWithData(dates, filteredStartIndex, filteredEndIndex) {
@@ -5346,6 +5347,7 @@ body.theme-light .event-tile-date {
 
             renderCharts();
             if (typeof renderHeatmap === 'function') renderHeatmap();
+            if (typeof updateEventsDrawerForTicker === 'function') updateEventsDrawerForTicker(currentTicker);
         }
 
 
@@ -6144,6 +6146,33 @@ body.theme-light .event-tile-date {
         let eventsCache = {};
         let activeEventsTab = 'divs';
 
+        // Converte data padrão brasileiro (DD/MM/AAAA) para ISO (AAAA-MM-DD)
+        function parseBRDateToISO(dateStr) {
+            if (!dateStr || dateStr === '-') return '';
+            const parts = dateStr.trim().split('/');
+            if (parts.length === 3) {
+                return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+            }
+            return dateStr;
+        }
+
+        // Obtém a data de corte inicial baseada no período atual (1A, 2A, 5A, 10A ou slider duplo)
+        function getCurrentFilterCutoffDate() {
+            const d = DATA[currentTicker];
+            if (!d || !d.dates || d.dates.length === 0) return null;
+            const n = d.dates.length;
+
+            if (isTimeSliderActive && customDateStartIndex !== null) {
+                const sIdx = Math.max(0, Math.min(customDateStartIndex, n - 1));
+                return d.dates[sIdx];
+            } else {
+                const lastDate = new Date(d.dates[n - 1]);
+                const cutoff = new Date(lastDate);
+                cutoff.setFullYear(cutoff.getFullYear() - currentYears);
+                return cutoff.toISOString().split('T')[0];
+            }
+        }
+
         // Inicializa cache em memória a partir de EVENTS_ALL_DATA embutido
         if (typeof EVENTS_ALL_DATA !== 'undefined' && EVENTS_ALL_DATA && Object.keys(EVENTS_ALL_DATA).length > 0) {
             eventsCache = Object.assign({}, EVENTS_ALL_DATA);
@@ -6188,7 +6217,7 @@ body.theme-light .event-tile-date {
             }
         }
 
-        // Função chamada sempre que o ativo muda (ou no boot) para sincronizar o drawer
+        // Função chamada sempre que o ativo muda, o período muda (1A/2A/5A/10A) ou no boot
         function updateEventsDrawerForTicker(ticker) {
             const section = document.getElementById('boxCorporateEventsSection');
             const drawer = document.getElementById('drawerCorporateEvents');
@@ -6204,7 +6233,7 @@ body.theme-light .event-tile-date {
 
             if (section) section.style.display = 'block';
 
-            // Carrega e atualiza os dados do ativo selecionado
+            // Carrega e atualiza os dados do ativo selecionado com o filtro de período ativo
             loadEventsForTicker(ticker);
         }
 
@@ -6268,24 +6297,41 @@ body.theme-light .event-tile-date {
             const countSplitsEl = document.getElementById('countTabSplits');
             const badgeCount = document.getElementById('badgeEventsCount');
 
-            const divs = (data && data.dividends) ? data.dividends : [];
+            const allDivs = (data && data.dividends) ? data.dividends : [];
             const splits = (data && data.splits) ? data.splits : [];
             const inplits = (data && data.inplits) ? data.inplits : [];
             const bonuses = (data && data.bonuses) ? data.bonuses : [];
             const allCorporateActions = [...splits, ...inplits, ...bonuses];
 
-            if (countDivsEl) countDivsEl.textContent = divs.length;
-            if (countSplitsEl) countSplitsEl.textContent = allCorporateActions.length;
+            // Aplica filtro temporal sincronizado com o período selecionado (1A, 2A, 5A, 10A ou slider)
+            const cutoffDateStr = getCurrentFilterCutoffDate();
+            const divs = cutoffDateStr 
+                ? allDivs.filter(d => {
+                    const iso = parseBRDateToISO(d.date_com || d.date_approval || '');
+                    return !iso || iso >= cutoffDateStr;
+                })
+                : allDivs;
 
+            const corporateActions = cutoffDateStr
+                ? allCorporateActions.filter(ev => {
+                    const iso = parseBRDateToISO(ev.date_com || ev.date_approval || '');
+                    return !iso || iso >= cutoffDateStr;
+                })
+                : allCorporateActions;
+
+            if (countDivsEl) countDivsEl.textContent = divs.length;
+            if (countSplitsEl) countSplitsEl.textContent = corporateActions.length;
+
+            const periodLabel = isTimeSliderActive ? 'período customizado' : `${currentYears}A`;
             if (badgeCount) {
                 badgeCount.style.display = 'inline-block';
-                badgeCount.textContent = `${divs.length} proventos • ${allCorporateActions.length} eventos`;
+                badgeCount.textContent = `${divs.length} proventos • ${corporateActions.length} eventos (${periodLabel})`;
             }
 
             // Renderizar Proventos
             if (contentDivs) {
                 if (divs.length === 0) {
-                    contentDivs.innerHTML = '<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:12px;">Nenhum provento em dinheiro recente registrado na B3 para ' + ticker + '.</div>';
+                    contentDivs.innerHTML = '<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:12px;">Nenhum provento em dinheiro registrado na B3 para ' + ticker + ' no período selecionado (' + periodLabel + ').</div>';
                 } else {
                     let html = '<table class="events-table"><thead><tr>';
                     html += '<th style="width: 140px;">Tipo de Provento</th>';
@@ -6320,8 +6366,8 @@ body.theme-light .event-tile-date {
 
             // Renderizar Splits, Inplits e Bonificações
             if (contentSplits) {
-                if (allCorporateActions.length === 0) {
-                    contentSplits.innerHTML = '<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:12px;">Nenhum evento de split, inplit ou bonificação registrado para ' + ticker + '.</div>';
+                if (corporateActions.length === 0) {
+                    contentSplits.innerHTML = '<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:12px;">Nenhum evento de split, inplit ou bonificação registrado para ' + ticker + ' no período selecionado (' + periodLabel + ').</div>';
                 } else {
                     let html = '<table class="events-table"><thead><tr>';
                     html += '<th style="width: 170px;">Evento Societário</th>';
@@ -6331,7 +6377,7 @@ body.theme-light .event-tile-date {
                     html += '<th style="text-align: center; width: 110px;">Data Aprovação</th>';
                     html += '</tr></thead><tbody>';
 
-                    allCorporateActions.forEach(ev => {
+                    corporateActions.forEach(ev => {
                         let badgeClass = 'badge-other';
                         let labelText = ev.type || 'EVENTO';
                         const typeUpper = (ev.type || '').toUpperCase();
