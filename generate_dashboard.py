@@ -2388,14 +2388,14 @@ body.theme-light::after {
     top: 10px;
     z-index: 900;
     gap: 6px;
-    padding: 6px 8px;
+    padding: 6px 8px 8px 8px;
     margin-bottom: 20px;
     flex-wrap: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    scrollbar-color: rgba(255, 255, 255, 0.28) rgba(255, 255, 255, 0.05);
     background: var(--glass-bg);
     -webkit-backdrop-filter: var(--glass-blur) saturate(150%);
     backdrop-filter: var(--glass-blur) saturate(150%);
@@ -2403,18 +2403,33 @@ body.theme-light::after {
     border-radius: 14px;
     box-shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.65), var(--surface-highlight);
 }
+body.theme-light .app-tab-nav {
+    scrollbar-color: rgba(0, 0, 0, 0.25) rgba(0, 0, 0, 0.04);
+}
 .app-tab-nav::-webkit-scrollbar {
-    height: 4px;
+    height: 5px;
 }
 .app-tab-nav::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 999px;
+    margin: 0 12px;
 }
 .app-tab-nav::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.25);
     border-radius: 999px;
+    transition: background 0.2s ease;
+}
+.app-tab-nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.45);
+}
+body.theme-light .app-tab-nav::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.04);
 }
 body.theme-light .app-tab-nav::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.22);
+}
+body.theme-light .app-tab-nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.38);
 }
 .app-tab-nav .brand,
 .app-tab-nav .app-tab-divider,
