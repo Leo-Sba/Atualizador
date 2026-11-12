@@ -3232,12 +3232,11 @@ body.theme-light .event-tile-date {
                 </span>
             </button>
 
-            <!-- Alternador Global de Tema (🌙 Escuro / ☀️ Claro) -->
+            <!-- Alternador Global de Tema (Único botão alternável) -->
             <div class="app-tab-theme-toggle">
-                <div class="period-selector" style="padding: 2px;">
-                    <button class="period-btn active" id="btnThemeObsidian" onclick="setTheme('obsidian', this)" title="Modo Escuro (Obsidian)" style="font-size: 14px; padding: 6px 12px;">🌙</button>
-                    <button class="period-btn" id="btnThemeLight" onclick="setTheme('light', this)" title="Modo Claro" style="font-size: 14px; padding: 6px 12px;">☀️</button>
-                </div>
+                <button class="period-btn theme-toggle-btn" id="btnThemeToggle" onclick="toggleTheme()" title="Alternar para Modo Claro" aria-label="Alternar tema" style="font-size: 15px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); display: inline-flex; align-items: center; justify-content: center; min-width: 38px; min-height: 32px; cursor: pointer; transition: all 0.2s ease;">
+                    <span id="themeToggleIcon">☀️</span>
+                </button>
             </div>
         </div>
     
@@ -7639,15 +7638,31 @@ body.theme-light .event-tile-date {
         }
 
 
-        function setTheme(theme, btn) {
+        function updateThemeToggleButton(theme) {
+            const btn = document.getElementById('btnThemeToggle');
+            const iconSpan = document.getElementById('themeToggleIcon');
+            if (!btn || !iconSpan) return;
+
+            // Quando está no modo claro, exibe a opção e ícone para ir para o escuro (🌙)
+            // Quando está no modo escuro, exibe a opção e ícone para ir para o claro (☀️)
+            if (theme === 'light') {
+                iconSpan.textContent = '🌙';
+                btn.title = 'Alternar para Modo Escuro (Obsidian)';
+                btn.setAttribute('aria-label', 'Alternar para Modo Escuro (Obsidian)');
+            } else {
+                iconSpan.textContent = '☀️';
+                btn.title = 'Alternar para Modo Claro';
+                btn.setAttribute('aria-label', 'Alternar para Modo Claro');
+            }
+        }
+
+        function setTheme(theme) {
             document.body.classList.remove('theme-light', 'theme-obsidian', 'theme-bloomberg', 'theme-emerald');
             if (theme === 'light') {
                 document.body.classList.add('theme-light');
             }
 
-            document.querySelectorAll('#btnThemeObsidian, #btnThemeLight').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-
+            updateThemeToggleButton(theme);
             localStorage.setItem('fundamentalista_theme', theme);
 
             setTimeout(() => {
@@ -7655,6 +7670,12 @@ body.theme-light .event-tile-date {
                 if (typeof MacroModule !== 'undefined' && MacroModule.onThemeChange) MacroModule.onThemeChange();
                 if (typeof IfrModule !== 'undefined' && IfrModule.onThemeChange) IfrModule.onThemeChange();
             }, 50);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.body.classList.contains('theme-light') ? 'light' : 'obsidian';
+            const nextTheme = (currentTheme === 'light') ? 'obsidian' : 'light';
+            setTheme(nextTheme);
         }
 
         // Inicializa o tema salvo (padrão Obsidian)
@@ -7665,11 +7686,7 @@ body.theme-light .event-tile-date {
             }
 
             window.addEventListener('DOMContentLoaded', () => {
-                const btn = (savedTheme === 'light') ? document.getElementById('btnThemeLight') : document.getElementById('btnThemeObsidian');
-                if (btn) {
-                    document.querySelectorAll('#btnThemeObsidian, #btnThemeLight').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                }
+                updateThemeToggleButton(savedTheme);
             });
         })();
 
