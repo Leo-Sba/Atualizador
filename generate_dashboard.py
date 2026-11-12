@@ -4286,6 +4286,10 @@ body.theme-light .event-tile-date {
                     <div class="ifr-timeline-scroll" id="ifrTimelineScroll">
                         <!-- Pílulas operacionais geradas dinamicamente -->
                     </div>
+                    <!-- Indicador Visual Permanente de Rolagem (Nunca some!) -->
+                    <div class="ifr-timeline-scroll-indicator" id="ifrTimelineScrollIndicator" title="Posição de rolagem da linha do tempo">
+                        <div class="ifr-timeline-scroll-thumb" id="ifrTimelineScrollThumb"></div>
+                    </div>
                 </div>
             </div>
 
@@ -5091,19 +5095,57 @@ body.theme-light .event-tile-date {
         align-items: center;
         gap: 8px;
         overflow-x: auto;
-        padding-bottom: 8px;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 4px;
         padding-top: 4px;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+        scrollbar-width: none; /* Oculta a scrollbar nativa que some automaticamente */
     }
 
     .ifr-timeline-scroll::-webkit-scrollbar {
-        height: 6px;
+        display: none;
+        height: 0;
+        width: 0;
     }
 
-    .ifr-timeline-scroll::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 4px;
+    /* Indicador Visual Permanente de Rolagem da Timeline IFR */
+    .ifr-timeline-scroll-indicator {
+        height: 4px;
+        margin: 6px 4px 2px 4px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 999px;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    body.theme-light .ifr-timeline-scroll-indicator {
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    .ifr-timeline-scroll-thumb {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 25%;
+        background: rgba(255, 255, 255, 0.28);
+        border-radius: 999px;
+        transition: background 0.2s ease, transform 0.05s ease-out;
+        pointer-events: none;
+    }
+
+    body.theme-light .ifr-timeline-scroll-thumb {
+        background: rgba(0, 0, 0, 0.25);
+    }
+
+    .ifr-timeline-scroll-indicator:hover .ifr-timeline-scroll-thumb {
+        background: rgba(255, 255, 255, 0.48);
+    }
+
+    body.theme-light .ifr-timeline-scroll-indicator:hover .ifr-timeline-scroll-thumb {
+        background: rgba(0, 0, 0, 0.42);
     }
 
     .ifr-timeline-pill {
@@ -10150,6 +10192,35 @@ body.theme-light .event-tile-date {
                 });
 
                 scrollEl.innerHTML = html;
+                setTimeout(syncIfrTimelineIndicator, 50);
+            }
+
+            function syncIfrTimelineIndicator() {
+                const container = document.getElementById('ifrTimelineScroll');
+                const track = document.getElementById('ifrTimelineScrollIndicator');
+                const thumb = document.getElementById('ifrTimelineScrollThumb');
+                if (!container || !track || !thumb) return;
+
+                const scrollWidth = container.scrollWidth;
+                const clientWidth = container.clientWidth;
+                const scrollLeft = container.scrollLeft;
+
+                if (scrollWidth <= clientWidth + 2) {
+                    track.style.display = 'none';
+                    return;
+                }
+                track.style.display = 'block';
+
+                const ratio = clientWidth / scrollWidth;
+                const thumbWidthPct = Math.max(10, Math.min(100, ratio * 100));
+                thumb.style.width = thumbWidthPct + '%';
+
+                const maxScroll = scrollWidth - clientWidth;
+                const scrollFraction = maxScroll > 0 ? (scrollLeft / maxScroll) : 0;
+                const maxTranslate = 100 - thumbWidthPct;
+                const translateX = scrollFraction * maxTranslate;
+
+                thumb.style.left = (translateX * (track.clientWidth / 100) / (track.clientWidth || 1) * 100) + '%';
             }
 
             function renderChart() {
@@ -10720,6 +10791,21 @@ body.theme-light .event-tile-date {
                 init: function () {
                     initData();
                     initFirebaseClient();
+                    const container = document.getElementById('ifrTimelineScroll');
+                    const track = document.getElementById('ifrTimelineScrollIndicator');
+                    if (container) {
+                        container.addEventListener('scroll', syncIfrTimelineIndicator, { passive: true });
+                        window.addEventListener('resize', syncIfrTimelineIndicator);
+                    }
+                    if (track && container) {
+                        track.addEventListener('click', (e) => {
+                            const rect = track.getBoundingClientRect();
+                            const clickX = e.clientX - rect.left;
+                            const fraction = Math.max(0, Math.min(1, clickX / rect.width));
+                            const maxScroll = container.scrollWidth - container.clientWidth;
+                            container.scrollTo({ left: fraction * maxScroll, behavior: 'smooth' });
+                        });
+                    }
                 },
                 onThemeChange: function () {
                     renderChart();
@@ -10732,6 +10818,7 @@ body.theme-light .event-tile-date {
                     renderChart();
                     renderTimeline();
                     renderTrades();
+                    setTimeout(syncIfrTimelineIndicator, 150);
                 },
                 onResize: function () {
                     if (chartInstance) chartInstance.resize();
