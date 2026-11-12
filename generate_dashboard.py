@@ -2387,16 +2387,40 @@ body.theme-light::after {
     position: sticky;
     top: 10px;
     z-index: 900;
-    gap: 4px;
-    padding: 5px;
+    gap: 6px;
+    padding: 6px 8px;
     margin-bottom: 20px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
     background: var(--glass-bg);
     -webkit-backdrop-filter: var(--glass-blur) saturate(150%);
     backdrop-filter: var(--glass-blur) saturate(150%);
     border: 1px solid var(--glass-border);
     border-radius: 14px;
     box-shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.65), var(--surface-highlight);
+}
+.app-tab-nav::-webkit-scrollbar {
+    height: 4px;
+}
+.app-tab-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+.app-tab-nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+}
+body.theme-light .app-tab-nav::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+}
+.app-tab-nav .brand,
+.app-tab-nav .app-tab-divider,
+.app-tab-nav .app-tab-btn,
+.app-tab-nav .app-tab-theme-toggle {
+    flex-shrink: 0;
 }
 body.theme-light .app-tab-nav { box-shadow: 0 10px 30px -14px rgba(9, 9, 11, 0.18), var(--surface-highlight); }
 .app-tab-theme-toggle {
@@ -3188,7 +3212,8 @@ body.theme-light .event-tile-date {
 }
 @media (max-width: 640px) {
     .app-tab-nav {
-        flex-wrap: wrap !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
     }
     .events-cards-grid {
         grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
