@@ -2382,54 +2382,76 @@ body.theme-light::after {
     to   { opacity: 1; }
 }
 
-/* ---------- Barra de navegação superior (menu flutuante em vidro) ---------- */
-.app-tab-nav {
+/* ---------- Container da Barra de navegação superior (menu flutuante em vidro) ---------- */
+.app-tab-nav-wrapper {
     position: sticky;
     top: 10px;
     z-index: 900;
-    gap: 6px;
-    padding: 6px 8px 8px 8px;
     margin-bottom: 20px;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.28) rgba(255, 255, 255, 0.05);
     background: var(--glass-bg);
     -webkit-backdrop-filter: var(--glass-blur) saturate(150%);
     backdrop-filter: var(--glass-blur) saturate(150%);
     border: 1px solid var(--glass-border);
     border-radius: 14px;
     box-shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.65), var(--surface-highlight);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
-body.theme-light .app-tab-nav {
-    scrollbar-color: rgba(0, 0, 0, 0.25) rgba(0, 0, 0, 0.04);
+body.theme-light .app-tab-nav-wrapper {
+    box-shadow: 0 10px 30px -14px rgba(9, 9, 11, 0.18), var(--surface-highlight);
+}
+
+.app-tab-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px 4px 8px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Oculta a scrollbar nativa fugaz para dar lugar à barra visual permanente */
 }
 .app-tab-nav::-webkit-scrollbar {
-    height: 5px;
+    display: none;
+    height: 0;
+    width: 0;
 }
-.app-tab-nav::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.04);
+
+/* Barra de Rolagem Visual Permanente (Nunca Desaparece!) */
+.app-tab-scroll-indicator {
+    height: 4px;
+    margin: 0 12px 4px 12px;
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 999px;
-    margin: 0 12px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    flex-shrink: 0;
 }
-.app-tab-nav::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.25);
+body.theme-light .app-tab-scroll-indicator {
+    background: rgba(0, 0, 0, 0.05);
+}
+.app-tab-scroll-thumb {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 25%;
+    background: rgba(255, 255, 255, 0.28);
     border-radius: 999px;
-    transition: background 0.2s ease;
+    transition: background 0.2s ease, transform 0.05s ease-out;
+    pointer-events: none;
 }
-.app-tab-nav::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.45);
+body.theme-light .app-tab-scroll-thumb {
+    background: rgba(0, 0, 0, 0.25);
 }
-body.theme-light .app-tab-nav::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.04);
+.app-tab-scroll-indicator:hover .app-tab-scroll-thumb {
+    background: rgba(255, 255, 255, 0.48);
 }
-body.theme-light .app-tab-nav::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.22);
-}
-body.theme-light .app-tab-nav::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.38);
+body.theme-light .app-tab-scroll-indicator:hover .app-tab-scroll-thumb {
+    background: rgba(0, 0, 0, 0.42);
 }
 .app-tab-nav .brand,
 .app-tab-nav .app-tab-divider,
@@ -3247,36 +3269,42 @@ body.theme-light .event-tile-date {
 
 
         <!-- Barra de Navegação Superior (Abas: Detalhada vs Heatmap Geral) -->
-        <div class="app-tab-nav">
-            <div class="brand" title="Dashboard Fundamentalista B3 / CVM"><span class="brand-mark">P/L</span><span class="brand-text"><strong>Fundamentalista</strong><small>B3 · CVM</small></span></div><span class="app-tab-divider"></span>
-            <button class="app-tab-btn active" id="btnTabDetail" onclick="switchAppTab('detail')">
-                📈 <span>Visão Detalhada do Ativo</span>
-            </button>
-            <button class="app-tab-btn" id="btnTabHeatmap" onclick="switchAppTab('heatmap')">
-                🗺️ <span>Heatmap de Mercado (P/L)</span>
-                <span class="sector-count-badge" id="badgeTotalStocksHeatmap">126 Ações</span>
-            </button>
-            <button class="app-tab-btn" id="btnTabEvents" onclick="switchAppTab('events')">
-                🔄 <span>Splits, Inplits & Eventos</span>
-                <span class="sector-count-badge" id="badgeTotalEventsTab">233 Eventos</span>
-            </button>
-            <button class="app-tab-btn" id="btnTabMacro" onclick="switchAppTab('macro')">
-                🏛️ <span>Macro & Juros</span>
-                <span class="sector-count-badge" id="badgeMacroSelic">--%</span>
-            </button>
-            <button class="app-tab-btn" id="btnTabIfr" onclick="switchAppTab('ifr')">
-                ⚡ <span>Entradas &gt; IFR</span>
-                <span class="sector-count-badge" id="badgeTotalAtivosIfr" style="display:inline-flex; align-items:center; gap:6px;">
-                    <span class="ifr-pulse-dot"></span>
-                    <span id="badgeIfrCountText">5 Ativos</span>
-                </span>
-            </button>
-
-            <!-- Alternador Global de Tema (Único botão alternável) -->
-            <div class="app-tab-theme-toggle">
-                <button class="period-btn theme-toggle-btn" id="btnThemeToggle" onclick="toggleTheme()" title="Alternar para Modo Claro" aria-label="Alternar tema" style="font-size: 15px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); display: inline-flex; align-items: center; justify-content: center; min-width: 38px; min-height: 32px; cursor: pointer; transition: all 0.2s ease;">
-                    <span id="themeToggleIcon">☀️</span>
+        <div class="app-tab-nav-wrapper">
+            <div class="app-tab-nav" id="appTabNavScrollContainer">
+                <div class="brand" title="Dashboard Fundamentalista B3 / CVM"><span class="brand-mark">P/L</span><span class="brand-text"><strong>Fundamentalista</strong><small>B3 · CVM</small></span></div><span class="app-tab-divider"></span>
+                <button class="app-tab-btn active" id="btnTabDetail" onclick="switchAppTab('detail')">
+                    📈 <span>Visão Detalhada do Ativo</span>
                 </button>
+                <button class="app-tab-btn" id="btnTabHeatmap" onclick="switchAppTab('heatmap')">
+                    🗺️ <span>Heatmap de Mercado (P/L)</span>
+                    <span class="sector-count-badge" id="badgeTotalStocksHeatmap">126 Ações</span>
+                </button>
+                <button class="app-tab-btn" id="btnTabEvents" onclick="switchAppTab('events')">
+                    🔄 <span>Splits, Inplits & Eventos</span>
+                    <span class="sector-count-badge" id="badgeTotalEventsTab">233 Eventos</span>
+                </button>
+                <button class="app-tab-btn" id="btnTabMacro" onclick="switchAppTab('macro')">
+                    🏛️ <span>Macro & Juros</span>
+                    <span class="sector-count-badge" id="badgeMacroSelic">--%</span>
+                </button>
+                <button class="app-tab-btn" id="btnTabIfr" onclick="switchAppTab('ifr')">
+                    ⚡ <span>Entradas &gt; IFR</span>
+                    <span class="sector-count-badge" id="badgeTotalAtivosIfr" style="display:inline-flex; align-items:center; gap:6px;">
+                        <span class="ifr-pulse-dot"></span>
+                        <span id="badgeIfrCountText">5 Ativos</span>
+                    </span>
+                </button>
+
+                <!-- Alternador Global de Tema (Único botão alternável) -->
+                <div class="app-tab-theme-toggle">
+                    <button class="period-btn theme-toggle-btn" id="btnThemeToggle" onclick="toggleTheme()" title="Alternar para Modo Claro" aria-label="Alternar tema" style="font-size: 15px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); display: inline-flex; align-items: center; justify-content: center; min-width: 38px; min-height: 32px; cursor: pointer; transition: all 0.2s ease;">
+                        <span id="themeToggleIcon">☀️</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Indicador Visual Permanente de Posição de Rolagem (Nunca some!) -->
+            <div class="app-tab-scroll-indicator" id="appTabScrollIndicator" title="Posição de rolagem das abas">
+                <div class="app-tab-scroll-thumb" id="appTabScrollThumb"></div>
             </div>
         </div>
     
@@ -5943,12 +5971,64 @@ body.theme-light .event-tile-date {
 
         // Mede a altura da barra de abas para posicionar o cabeçalho fixo logo abaixo dela
         function syncStickyNavHeight() {
-            const nav = document.querySelector('.app-tab-nav');
+            const nav = document.querySelector('.app-tab-nav-wrapper') || document.querySelector('.app-tab-nav');
             if (nav) document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
         }
         window.addEventListener('resize', syncStickyNavHeight);
         window.addEventListener('load', syncStickyNavHeight);
         setTimeout(syncStickyNavHeight, 300);
+
+        // Sincroniza o indicador permanente de rolagem da barra de abas
+        function syncTabNavScrollIndicator() {
+            const container = document.getElementById('appTabNavScrollContainer');
+            const track = document.getElementById('appTabScrollIndicator');
+            const thumb = document.getElementById('appTabScrollThumb');
+            if (!container || !track || !thumb) return;
+
+            const scrollWidth = container.scrollWidth;
+            const clientWidth = container.clientWidth;
+            const scrollLeft = container.scrollLeft;
+
+            if (scrollWidth <= clientWidth + 2) {
+                // Conteúdo cabe 100% sem rolagem
+                track.style.display = 'none';
+                return;
+            }
+            track.style.display = 'block';
+
+            const ratio = clientWidth / scrollWidth;
+            const thumbWidthPct = Math.max(12, Math.min(100, ratio * 100));
+            thumb.style.width = thumbWidthPct + '%';
+
+            const maxScroll = scrollWidth - clientWidth;
+            const scrollFraction = maxScroll > 0 ? (scrollLeft / maxScroll) : 0;
+            const maxTranslate = 100 - thumbWidthPct;
+            const translateX = scrollFraction * maxTranslate;
+
+            // Translação relativa percentual ao track
+            thumb.style.left = (translateX * (track.clientWidth / 100) / (track.clientWidth || 1) * 100) + '%';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('appTabNavScrollContainer');
+            const track = document.getElementById('appTabScrollIndicator');
+            if (container) {
+                container.addEventListener('scroll', syncTabNavScrollIndicator, { passive: true });
+                window.addEventListener('resize', syncTabNavScrollIndicator);
+                setTimeout(syncTabNavScrollIndicator, 100);
+                setTimeout(syncTabNavScrollIndicator, 500);
+            }
+            if (track && container) {
+                // Permite clicar no trilho permanente para pular direto para a posição
+                track.addEventListener('click', (e) => {
+                    const rect = track.getBoundingClientRect();
+                    const clickX = e.clientX - rect.left;
+                    const fraction = Math.max(0, Math.min(1, clickX / rect.width));
+                    const maxScroll = container.scrollWidth - container.clientWidth;
+                    container.scrollTo({ left: fraction * maxScroll, behavior: 'smooth' });
+                });
+            }
+        });
         let charts = {};
 
         let currentTicker = 'ITUB4';
