@@ -4295,16 +4295,22 @@ body.theme-light .event-tile-date {
 
             <!-- Barra de Filtros e Alternador Compacto vs Conforto -->
             <div class="ifr-toolbar">
-                <div class="ifr-filter-group">
-                    <button class="ifr-filter-btn active" onclick="IfrModule.setFilter('TODOS', this)">🌐 Todos</button>
-                    <button class="ifr-filter-btn" onclick="IfrModule.setFilter('E1', this)">🟢 Em Andamento 1/3</button>
-                    <button class="ifr-filter-btn" onclick="IfrModule.setFilter('E2', this)">🟡 Preço Médio 2/3</button>
-                    <button class="ifr-filter-btn" onclick="IfrModule.setFilter('E3', this)">🟠 Alerta 3/3</button>
-                    <button class="ifr-filter-btn" onclick="IfrModule.setFilter('GAIN', this)">🟢 Encerrados (Gain)</button>
-                    <button class="ifr-filter-btn" onclick="IfrModule.setFilter('STOP', this)">🔴 Encerrados (Stop)</button>
+                <div class="ifr-filter-scroll-wrapper">
+                    <div class="ifr-filter-group" id="ifrFilterScrollContainer">
+                        <button class="ifr-filter-btn active" onclick="IfrModule.setFilter('TODOS', this)">🌐 Todos</button>
+                        <button class="ifr-filter-btn" onclick="IfrModule.setFilter('E1', this)">🟢 Em Andamento 1/3</button>
+                        <button class="ifr-filter-btn" onclick="IfrModule.setFilter('E2', this)">🟡 Preço Médio 2/3</button>
+                        <button class="ifr-filter-btn" onclick="IfrModule.setFilter('E3', this)">🟠 Alerta 3/3</button>
+                        <button class="ifr-filter-btn" onclick="IfrModule.setFilter('GAIN', this)">🟢 Encerrados (Gain)</button>
+                        <button class="ifr-filter-btn" onclick="IfrModule.setFilter('STOP', this)">🔴 Encerrados (Stop)</button>
+                    </div>
+                    <!-- Indicador Visual Permanente de Rolagem dos Filtros (Nunca Some!) -->
+                    <div class="ifr-filter-scroll-indicator" id="ifrFilterScrollIndicator" title="Posição de rolagem dos filtros">
+                        <div class="ifr-filter-scroll-thumb" id="ifrFilterScrollThumb"></div>
+                    </div>
                 </div>
 
-                <div style="display:flex; align-items:center; gap: 12px; flex-wrap: wrap;">
+                <div style="display:flex; align-items:center; gap: 12px; flex-shrink: 0; white-space: nowrap;">
                     <div style="position:relative;">
                         <input type="text" id="ifrSearchInput" placeholder="Buscar ticker..." oninput="IfrModule.onSearch(this.value)" style="padding: 7px 12px 7px 30px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text-main); font-size: 13px; outline: none; width: 140px;">
                         <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:12px; color:var(--text-muted);">🔍</span>
@@ -5316,15 +5322,79 @@ body.theme-light .event-tile-date {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        flex-wrap: wrap;
-        gap: 14px;
+        flex-wrap: nowrap;
+        gap: 16px;
+    }
+
+    /* Container wrapper dos filtros com indicador permanente */
+    .ifr-filter-scroll-wrapper {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
     }
 
     .ifr-filter-group {
         display: flex;
         align-items: center;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
         gap: 8px;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+    }
+
+    .ifr-filter-group::-webkit-scrollbar {
+        display: none;
+        height: 0;
+        width: 0;
+    }
+
+    /* Barra / Indicador Visual Permanente de Rolagem dos Filtros IFR */
+    .ifr-filter-scroll-indicator {
+        height: 4px;
+        margin: 4px 2px 0 2px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 999px;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    body.theme-light .ifr-filter-scroll-indicator {
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    .ifr-filter-scroll-thumb {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 25%;
+        background: rgba(255, 255, 255, 0.28);
+        border-radius: 999px;
+        transition: background 0.2s ease, transform 0.05s ease-out;
+        pointer-events: none;
+    }
+
+    body.theme-light .ifr-filter-scroll-thumb {
+        background: rgba(0, 0, 0, 0.25);
+    }
+
+    .ifr-filter-scroll-indicator:hover .ifr-filter-scroll-thumb {
+        background: rgba(255, 255, 255, 0.48);
+    }
+
+    body.theme-light .ifr-filter-scroll-indicator:hover .ifr-filter-scroll-thumb {
+        background: rgba(0, 0, 0, 0.42);
+    }
+
+    .ifr-filter-btn {
+        flex-shrink: 0;
+        white-space: nowrap;
     }
 
     .ifr-filter-btn {
@@ -5679,6 +5749,7 @@ body.theme-light .event-tile-date {
     @media (max-width: 650px) {
         .ifr-kpi-grid { grid-template-columns: 1fr; }
         .ifr-toolbar { flex-direction: column; align-items: stretch; }
+        .ifr-filter-scroll-wrapper { width: 100%; }
     }
 
     /* --- Alto Contraste no Modo Claro (Tema Clean) para Entradas > IFR --- */
@@ -10223,6 +10294,34 @@ body.theme-light .event-tile-date {
                 thumb.style.left = (translateX * (track.clientWidth / 100) / (track.clientWidth || 1) * 100) + '%';
             }
 
+            function syncIfrFilterIndicator() {
+                const container = document.getElementById('ifrFilterScrollContainer');
+                const track = document.getElementById('ifrFilterScrollIndicator');
+                const thumb = document.getElementById('ifrFilterScrollThumb');
+                if (!container || !track || !thumb) return;
+
+                const scrollWidth = container.scrollWidth;
+                const clientWidth = container.clientWidth;
+                const scrollLeft = container.scrollLeft;
+
+                if (scrollWidth <= clientWidth + 2) {
+                    track.style.display = 'none';
+                    return;
+                }
+                track.style.display = 'block';
+
+                const ratio = clientWidth / scrollWidth;
+                const thumbWidthPct = Math.max(12, Math.min(100, ratio * 100));
+                thumb.style.width = thumbWidthPct + '%';
+
+                const maxScroll = scrollWidth - clientWidth;
+                const scrollFraction = maxScroll > 0 ? (scrollLeft / maxScroll) : 0;
+                const maxTranslate = 100 - thumbWidthPct;
+                const translateX = scrollFraction * maxTranslate;
+
+                thumb.style.left = (translateX * (track.clientWidth / 100) / (track.clientWidth || 1) * 100) + '%';
+            }
+
             function renderChart() {
                 const ctx = document.getElementById('chartIfrEvolucao');
                 if (!ctx) return;
@@ -10806,6 +10905,22 @@ body.theme-light .event-tile-date {
                             container.scrollTo({ left: fraction * maxScroll, behavior: 'smooth' });
                         });
                     }
+
+                    const filterContainer = document.getElementById('ifrFilterScrollContainer');
+                    const filterTrack = document.getElementById('ifrFilterScrollIndicator');
+                    if (filterContainer) {
+                        filterContainer.addEventListener('scroll', syncIfrFilterIndicator, { passive: true });
+                        window.addEventListener('resize', syncIfrFilterIndicator);
+                    }
+                    if (filterTrack && filterContainer) {
+                        filterTrack.addEventListener('click', (e) => {
+                            const rect = filterTrack.getBoundingClientRect();
+                            const clickX = e.clientX - rect.left;
+                            const fraction = Math.max(0, Math.min(1, clickX / rect.width));
+                            const maxScroll = filterContainer.scrollWidth - filterContainer.clientWidth;
+                            filterContainer.scrollTo({ left: fraction * maxScroll, behavior: 'smooth' });
+                        });
+                    }
                 },
                 onThemeChange: function () {
                     renderChart();
@@ -10819,6 +10934,7 @@ body.theme-light .event-tile-date {
                     renderTimeline();
                     renderTrades();
                     setTimeout(syncIfrTimelineIndicator, 150);
+                    setTimeout(syncIfrFilterIndicator, 150);
                 },
                 onResize: function () {
                     if (chartInstance) chartInstance.resize();
