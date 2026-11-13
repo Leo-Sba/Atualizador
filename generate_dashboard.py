@@ -4255,10 +4255,12 @@ body.theme-light .event-tile-date {
                     <div>
                         <div class="ifr-chart-title">
                             📈 Curva de Evolução Patrimonial
-                            <span class="ifr-chart-badge" id="ifrPatrimonioCurrentBadge">Patrimônio: R$ 64.850,00 (+29,7%)</span>
+                            <span class="ifr-chart-badge" id="ifrPatrimonioCurrentBadge">Patrimônio: R$ 61.278,73 (+22,6%)</span>
+                            <span class="ifr-chart-badge" id="ifrPatrimonioCaixaBadge" style="background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.25); margin-left: 8px;">Caixa: R$ 10.476,28</span>
+                            <span class="ifr-chart-badge" id="ifrPatrimonioAlocBadge" style="background: rgba(168, 85, 247, 0.12); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.25); margin-left: 6px;">Alocado: R$ 39.419,10</span>
                         </div>
                         <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
-                            Simulação rigorosa partindo de R$ 50.000,00 com aportes fixos de R$ 3.300,00 por entrada e gestão de saídas no IFR(21).
+                            Painel de trading em tempo real: todas as operações (entradas, aportes e saídas) registradas com marcação a mercado oficial B3.
                         </div>
                     </div>
                     <div style="font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;" id="ifrSyncStatusText">
@@ -10128,13 +10130,9 @@ body.theme-light .event-tile-date {
                         });
 
                         firestoreDb.collection('evolucao_patrimonial').orderBy('data', 'asc').onSnapshot(snap => {
-                            const evo = [];
-                            snap.forEach(d => evo.push(d.data()));
-                            if (evo.length > 0) {
-                                ifrData.evolucao = evo;
-                                renderChart();
-                                renderTimeline();
-                            }
+                            // Re-executa o cálculo dinâmico da curva para garantir fidelidade aos trades reais
+                            renderChart();
+                            renderTimeline();
                         });
 
                         firestoreDb.collection('trades_ifr').onSnapshot(snap => {
@@ -10396,9 +10394,108 @@ body.theme-light .event-tile-date {
                 thumb.style.left = (translateX * (track.clientWidth / 100) / (track.clientWidth || 1) * 100) + '%';
             }
 
+            function computeDynamicEvolution() {
+                const cfg = ifrData.config || {};
+                const initialCapital = Number(cfg.capital_inicial || 50000);
+                const allTrades = Object.values(ifrData.trades || {});
+                if (allTrades.length === 0) return ifrData.evolucao || [];
+
+                function getPriceOnDate(ticker, targetDate) {
+                    if (typeof DATA !== 'undefined' && DATA[ticker] && Array.isArray(DATA[ticker].dates)) {
+                        const dList = DATA[ticker].dates;
+                        const pList = DATA[ticker].prices;
+                        let lastP = null;
+                        for (let i = 0; i < dList.length; i++) {
+                            if (dList[i] <= targetDate) {
+                                lastP = pList[i];
+                            } else {
+                                break;
+                            }
+                        }
+                        if (lastP !== null && !isNaN(lastP)) return Number(lastP);
+                    }
+                    return null;
+                }
+
+                const dateSet = new Set();
+                dateSet.add('2026-01-02');
+
+                allTrades.forEach(t => {
+                    (t.entradas || []).forEach(e => {
+                        if (e.data) dateSet.add(e.data);
+                    });
+                    if (t.data_encerramento) dateSet.add(t.data_encerramento);
+                });
+
+                const milestones = [
+                    '2026-01-31', '2026-02-28', '2026-03-31', '2026-04-30',
+                    '2026-05-31', '2026-06-30', '2026-07-31', '2026-08-31',
+                    '2026-09-30', '2026-10-31', '2026-11-10'
+                ];
+                milestones.forEach(m => dateSet.add(m));
+
+                const sortedDates = Array.from(dateSet).sort();
+                const points = [];
+
+                sortedDates.forEach(curDate => {
+                    let realizedProfit = 0;
+                    let capitalAlocado = 0;
+                    let valorMercado = 0;
+                    let ativosPosicionados = 0;
+
+                    allTrades.forEach(t => {
+                        const ticker = t.ticker;
+                        const entradasValidas = (t.entradas || []).filter(e => e.data && e.data <= curDate);
+                        if (entradasValidas.length === 0) return;
+
+                        const isClosed = t.data_encerramento && t.data_encerramento <= curDate;
+
+                        if (isClosed) {
+                            const res = Number(t.resultado_realizado_rs);
+                            realizedProfit += isNaN(res) ? 0 : res;
+                        } else {
+                            const shares = entradasValidas.reduce((sum, e) => sum + Number(e.quantidade || 0), 0);
+                            const cost = entradasValidas.reduce((sum, e) => sum + Number(e.aporte_real || 0), 0);
+
+                            let p = getPriceOnDate(ticker, curDate);
+                            if (p === null) {
+                                p = Number(entradasValidas[entradasValidas.length - 1].preco || 0);
+                            }
+
+                            capitalAlocado += cost;
+                            valorMercado += (shares * p);
+                            ativosPosicionados++;
+                        }
+                    });
+
+                    const caixaLivre = initialCapital + realizedProfit - capitalAlocado;
+                    const patrimonio = caixaLivre + valorMercado;
+                    const varPct = initialCapital > 0 ? ((patrimonio / initialCapital - 1) * 100) : 0;
+
+                    points.push({
+                        data: curDate,
+                        patrimonio_total: Math.round(patrimonio * 100) / 100,
+                        capital_alocado: Math.round(capitalAlocado * 100) / 100,
+                        valor_mercado_posicoes: Math.round(valorMercado * 100) / 100,
+                        caixa_livre: Math.round(caixaLivre * 100) / 100,
+                        lucro_realizado_acumulado: Math.round(realizedProfit * 100) / 100,
+                        variacao_pct_total: Math.round(varPct * 100) / 100,
+                        quantidade_ativos_posicionados: ativosPosicionados
+                    });
+                });
+
+                return points;
+            }
+
             function renderChart() {
                 const ctx = document.getElementById('chartIfrEvolucao');
                 if (!ctx) return;
+
+                // 1. Recalcula curva dinâmica fiel às operações e cotações reais
+                const dynamicEvo = computeDynamicEvolution();
+                if (dynamicEvo && dynamicEvo.length > 0) {
+                    ifrData.evolucao = dynamicEvo;
+                }
 
                 const evoList = ifrData.evolucao || [];
                 if (evoList.length === 0) return;
@@ -10421,6 +10518,16 @@ body.theme-light .event-tile-date {
                 if (currentBadge && lastPoint) {
                     const varPct = lastPoint.variacao_pct_total || 0;
                     currentBadge.innerText = `Patrimônio: ${formatMoney(lastPoint.patrimonio_total)} (${varPct >= 0 ? '+' : ''}${varPct.toFixed(1)}%)`;
+                }
+
+                const caixaBadge = document.getElementById('ifrPatrimonioCaixaBadge');
+                if (caixaBadge && lastPoint) {
+                    caixaBadge.innerText = `Caixa: ${formatMoney(lastPoint.caixa_livre)}`;
+                }
+
+                const alocBadge = document.getElementById('ifrPatrimonioAlocBadge');
+                if (alocBadge && lastPoint) {
+                    alocBadge.innerText = `Alocado: ${formatMoney(lastPoint.capital_alocado)}`;
                 }
 
                 if (chartInstance) {
