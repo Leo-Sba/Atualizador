@@ -26,6 +26,21 @@ const fs = require('fs');
 const path = require('path');
 const { Pool } = require('pg');
 const admin = require('firebase-admin');
+const C = require('./contabil-ifr');
+const F = require('./fechamento-contabil');
+
+function createPgPool() {
+  return new Pool({
+    connectionString: process.env.DATABASE_URL,
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT || 5432),
+    database: process.env.DB_NAME || 'postgres',
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    ssl: { rejectUnauthorized: false },
+    connectionTimeoutMillis: 15000
+  });
+}
 
 function initFirebase() {
   if (admin.apps.length > 0) {
@@ -474,66 +489,45 @@ async function processarEstrategiaIFR() {
     }
   }
 
-  // 6. CONSOLIDAÇÃO DO PATRIMÔNIO TOTAL E CURVA DE EVOLUÇÃO
-  let totalCapitalAlocado = 0;
-  let totalValorMercado = 0;
-  let totalAtivosPosicionados = 0;
-
-  for (const t of Object.values(trades)) {
-    if (t.status === 'ABERTO') {
-      totalCapitalAlocado += t.capital_total_alocado;
-      totalValorMercado += t.valor_mercado_atual;
-      totalAtivosPosicionados++;
-    }
+  // 6. FECHAMENTO CONTÁBIL DIÁRIO E VALIDAÇÃO AUTOMÁTICA
+  console.log('📒 Executando fechamento contábil diário...');
+  const poolContabil = createPgPool();
+  let resContabil;
+  try {
+    resContabil = await F.calcularFechamentos({
+      db: firestoreDb,
+      pool: poolContabil,
+      trades,
+      modo: 'incremental'
+    });
+  } finally {
+    await poolContabil.end();
   }
 
-  const patrimonioTotal = Number((config.caixa_livre + totalValorMercado).toFixed(2));
-  const variacaoPctTotal = Number(((patrimonioTotal / CAP_INICIAL - 1) * 100).toFixed(2));
-  const totalFinalizados = (config.total_gains || 0) + (config.total_stops || 0);
-  const taxaAcertoPct = totalFinalizados > 0
-    ? Number(((config.total_gains / totalFinalizados) * 100).toFixed(1))
-    : 0.0;
+  // Aborta com erro não-zero se qualquer regra de conciliação falhar (nada foi gravado ainda)
+  F.exigirConciliacao(resContabil.novos);
 
-  config.capital_alocado_atual = Number(totalCapitalAlocado.toFixed(2));
-  config.quantidade_ativos_posicionados = totalAtivosPosicionados;
-  config.total_trades_finalizados = totalFinalizados;
-  config.taxa_acerto_pct = taxaAcertoPct;
+  const ultFechamento = resContabil.fechamentos[resContabil.fechamentos.length - 1];
+  Object.assign(config, F.estadoGlobalDe(ultFechamento));
   config.ultima_data_processada = marketDate;
   config.ultima_atualizacao = new Date().toISOString();
 
-  const novoPonto = {
-    data: marketDate,
-    patrimonio_total: patrimonioTotal,
-    capital_alocado: Number(totalCapitalAlocado.toFixed(2)),
-    valor_mercado_posicoes: Number(totalValorMercado.toFixed(2)),
-    caixa_livre: Number(config.caixa_livre.toFixed(2)),
-    lucro_realizado_acumulado: Number(config.lucro_realizado_acumulado.toFixed(2)),
-    variacao_pct_total: variacaoPctTotal,
-    quantidade_ativos_posicionados: totalAtivosPosicionados
-  };
-
-  evolucao = evolucao.filter(p => p.data !== marketDate);
-  evolucao.push(novoPonto);
-  evolucao.sort((a, b) => a.data.localeCompare(b.data));
+  const cacheBlock = F.blocoCache(resContabil);
+  evolucao = cacheBlock.evolucao;
 
   console.log('---------------------------------------------------------');
-  console.log(`📈 Resumo Diário Consolidado (${marketDate}):`);
-  console.log(`   Patrimônio Total: R$ ${patrimonioTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} (${variacaoPctTotal >= 0 ? '+' : ''}${variacaoPctTotal}%)`);
-  console.log(`   Caixa Livre:      R$ ${config.caixa_livre.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`);
-  console.log(`   Capital Alocado:  R$ ${totalCapitalAlocado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} (${totalAtivosPosicionados} ativos)`);
-  console.log(`   Taxa de Acerto:   ${taxaAcertoPct}% (${config.total_gains || 0} Gains · ${config.total_stops || 0} Stops)`);
+  console.log(`📈 Resumo Diário Conciliado (${ultFechamento.data}):`);
+  console.log(`   Patrimônio (NAV): R$ ${ultFechamento.patrimonio.nav.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} (Cota: ${ultFechamento.rentabilidade.rent_acum >= 0 ? '+' : ''}${ultFechamento.rentabilidade.rent_acum.toFixed(2)}%)`);
+  console.log(`   Caixa Livre:      R$ ${ultFechamento.caixa.livre.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`);
+  console.log(`   Capital Invest.:  R$ ${ultFechamento.investido.valor_mercado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} (${ultFechamento.investido.n_posicoes} ativos)`);
+  console.log(`   Taxa de Acerto:   ${ultFechamento.eficiencia.taxa_acerto.toFixed(1)}% (${ultFechamento.eficiencia.vencedoras} Gains · ${ultFechamento.eficiencia.perdedoras} Stops)`);
+  console.log(`   Conciliação:      ${ultFechamento.conciliado ? '✅ CONCILIADO' : '❌ DIVERGÊNCIA'}`);
   console.log('---------------------------------------------------------');
 
-  // 7. GRAVAÇÃO EM BATCH NO FIRESTORE
-  console.log('💾 Gravando atualizações atômicas no Cloud Firestore...');
-  
-  // Batch 1: Configuração global e ponto de evolução
-  const b1 = firestoreDb.batch();
-  b1.set(firestoreDb.collection('configuracao_ifr').doc('estado_global'), config);
-  b1.set(firestoreDb.collection('evolucao_patrimonial').doc(marketDate), novoPonto);
-  await b1.commit();
+  // 7. GRAVAÇÃO NO FIRESTORE (Fechamentos Imutáveis + Trades + Ativos + Estado Global)
+  console.log('💾 Gravando atualizações no Cloud Firestore...');
 
-  // Batch 2: Trades
+  // Batch 1: Trades
   let bTrades = firestoreDb.batch();
   let tCount = 0;
   for (const [tId, tData] of Object.entries(trades)) {
@@ -547,7 +541,7 @@ async function processarEstrategiaIFR() {
   }
   if (tCount > 0) await bTrades.commit();
 
-  // Batch 3: Ativos
+  // Batch 2: Ativos
   let bAtivos = firestoreDb.batch();
   let aCount = 0;
   for (const [ticker, aData] of Object.entries(ativos)) {
@@ -561,14 +555,32 @@ async function processarEstrategiaIFR() {
   }
   if (aCount > 0) await bAtivos.commit();
 
-  console.log('🎉 Atualização no Cloud Firestore concluída com sucesso!');
+  // Fechamentos imutáveis (create), Ledger, Resumos anuais e Estado Global
+  const gravadosInfo = await F.gravarFechamentos(firestoreDb, {
+    novos: resContabil.novos,
+    novosLancamentos: resContabil.novosLancamentos,
+    fechamentos: resContabil.fechamentos,
+    estado: resContabil.estado
+  });
+  await firestoreDb.collection('configuracao_ifr').doc('estado_global').set(config);
+  console.log(`🎉 Firestore atualizado (${gravadosInfo.gravados} novos fechamentos, ${gravadosInfo.lancamentos} lançamentos).`);
 
   // 8. Salvar Cache Local Sincronizado
-  const cacheData = { config, ativos, trades, evolucao };
+  const cacheData = {
+    config,
+    ativos,
+    trades,
+    ...cacheBlock
+  };
   fs.writeFileSync(cachePath, JSON.stringify(cacheData, null, 2), 'utf-8');
   console.log('💾 entradas_ifr_cache.json atualizado.');
 
-  return { status: 'SUCCESS', marketDate, patrimonioTotal, taxaAcertoPct };
+  return {
+    status: 'SUCCESS',
+    marketDate,
+    patrimonioTotal: ultFechamento.patrimonio.nav,
+    taxaAcertoPct: ultFechamento.eficiencia.taxa_acerto
+  };
 }
 
 if (require.main === module) {
