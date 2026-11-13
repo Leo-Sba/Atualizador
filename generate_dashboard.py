@@ -9900,7 +9900,7 @@ body.theme-light .event-tile-date {
                                 type: "linear",
                                 display: true,
                                 position: "left",
-                                min: 0,
+                                min: 20,
                                 max: 80,
                                 title: {
                                     display: true,
