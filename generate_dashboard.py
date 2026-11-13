@@ -5636,6 +5636,23 @@ body.theme-light .event-tile-date {
         opacity: 0.6;
     }
 
+    .ifr-step-node.gatilho {
+        background: rgba(245, 158, 11, 0.12);
+        border: 1.5px solid #f59e0b;
+        box-shadow: 0 0 14px rgba(245, 158, 11, 0.25);
+        opacity: 1;
+        animation: pulseIfrGatilho 2.2s infinite ease-in-out;
+    }
+
+    .ifr-step-node.gatilho .ifr-step-badge {
+        color: #f59e0b;
+    }
+
+    @keyframes pulseIfrGatilho {
+        0%, 100% { box-shadow: 0 0 8px rgba(245, 158, 11, 0.2); }
+        50% { box-shadow: 0 0 16px rgba(245, 158, 11, 0.45); }
+    }
+
     .ifr-step-badge {
         font-size: 12px;
         font-weight: 700;
@@ -10139,6 +10156,22 @@ body.theme-light .event-tile-date {
                 return 'R$ ' + Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
 
+            // Recupera a cotação e múltiplos mais recentes e oficiais da B3 direto da visão geral (DATA)
+            function getOfficialAssetPrice(ticker, fallback) {
+                if (typeof DATA !== 'undefined' && DATA && DATA[ticker]) {
+                    const prices = DATA[ticker].prices;
+                    if (prices && prices.length > 0) {
+                        const p = Number(prices[prices.length - 1]);
+                        if (!isNaN(p) && p > 0) return p;
+                    }
+                }
+                const at = (ifrData.ativos || {})[ticker];
+                if (at && at.ultimo_preco && !isNaN(at.ultimo_preco) && at.ultimo_preco > 0) {
+                    return Number(at.ultimo_preco);
+                }
+                return Number(fallback || 0);
+            }
+
             function renderKPIs() {
                 const cfg = ifrData.config || {};
                 const kpiWin = document.getElementById('kpiIfrWinRate');
@@ -10551,15 +10584,13 @@ body.theme-light .event-tile-date {
                     const ativo = ativosMap[t.ticker] || {};
                     const logo = LOGO_COLORS[t.ticker] || { bg: '#ffffff', color: '#0f172a', text: t.ticker.slice(0, 4) };
 
-                    const currentPrice = t.preco_fechamento_atual || ativo.ultimo_preco || t.preco_medio_atual;
+                    // Cotação Oficial B3 em tempo real refletindo a visão geral do dashboard
+                    const isFinalizado = (t.status === 'FINALIZADO_GAIN' || t.status === 'FINALIZADO_STOP');
+                    const officialPrice = getOfficialAssetPrice(t.ticker, t.preco_fechamento_atual || ativo.ultimo_preco || t.preco_medio_atual);
+                    const currentPrice = isFinalizado ? (t.preco_saida || t.preco_fechamento_atual || officialPrice) : officialPrice;
+
                     const ifr = ativo.ifr_21 !== undefined ? ativo.ifr_21 : 45.0;
                     const ifrClass = ifr < 30 ? 'alert' : (ifr > 70 ? 'ok' : 'warn');
-
-                    const pnlPct = t.status === 'ABERTO'
-                        ? (t.resultado_nao_realizado_pct || 0)
-                        : (t.resultado_realizado_pct || 0);
-                    const pnlClass = pnlPct >= 0 ? 'pos' : 'neg';
-                    const pnlSign = pnlPct >= 0 ? '+' : '';
 
                     const e1 = (t.entradas && t.entradas[0]) || { preco: currentPrice, data: t.data_abertura || '--' };
                     const e2 = (t.entradas && t.entradas[1]) || null;
@@ -10568,6 +10599,18 @@ body.theme-light .event-tile-date {
                     const pm = t.preco_medio_atual || currentPrice;
                     const stopPrice = t.stop_geral_preco || Number((pm * 0.50).toFixed(2));
                     const alvoDesc = t.alvo_saida_desc || 'IFR > 70';
+
+                    // PnL recalculado em tempo real sobre a cotação oficial se o trade estiver aberto
+                    let pnlPct = 0;
+                    if (isFinalizado) {
+                        pnlPct = (t.resultado_realizado_pct !== undefined && t.resultado_realizado_pct !== null)
+                            ? t.resultado_realizado_pct
+                            : (t.capital_total_alocado > 0 ? ((currentPrice * t.quantidade_total / t.capital_total_alocado - 1) * 100) : 0);
+                    } else {
+                        pnlPct = pm > 0 ? Number(((currentPrice / pm - 1) * 100).toFixed(2)) : (t.resultado_nao_realizado_pct || 0);
+                    }
+                    const pnlClass = pnlPct >= 0 ? 'pos' : 'neg';
+                    const pnlSign = pnlPct >= 0 ? '+' : '';
 
                     // Formatar data abreviada (DD/MM)
                     function fmtDate(dStr) {
@@ -10582,7 +10625,6 @@ body.theme-light .event-tile-date {
 
                     if (currentViewMode === 'comfort') {
                         // Modo Conforto
-                        const isFinalizado = (t.status === 'FINALIZADO_GAIN' || t.status === 'FINALIZADO_STOP');
                         const isGain = (t.status === 'FINALIZADO_GAIN');
                         const e1Done = true;
                         const e2Done = Boolean(e2 && (t.etapa_atual >= 2));
@@ -10591,22 +10633,30 @@ body.theme-light .event-tile-date {
                         const nextE2Price = Number((e1.preco * 0.90).toFixed(2));
                         const nextE3Price = e2 ? Number((e2.preco * 0.90).toFixed(2)) : Number((e1.preco * 0.81).toFixed(2));
 
+                        // Verificação dinâmica de gatilho para nova entrada atingido
+                        const e2GatilhoAtingido = !isFinalizado && !e2Done && (currentPrice <= nextE2Price);
+                        const e3GatilhoAtingido = !isFinalizado && e2Done && !e3Done && (currentPrice <= nextE3Price);
+
                         let statusBadgeHtml = '';
                         if (isFinalizado) {
                             statusBadgeHtml = isGain 
                                 ? '<span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; background:#dcfce7; color:#15803d; border:1px solid #86efac;">ENCERRADO (GAIN) 🎯</span>'
                                 : '<span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5;">ENCERRADO (STOP) 🚨</span>';
+                        } else if (e2GatilhoAtingido) {
+                            statusBadgeHtml = '<span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; background:rgba(245, 158, 11, 0.18); color:#f59e0b; border:1px solid #f59e0b;" title="Preço atual atingiu a queda de 10% da Entrada 1">GATILHO E2 ATINGIDO ⚡</span>';
+                        } else if (e3GatilhoAtingido) {
+                            statusBadgeHtml = '<span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; background:rgba(245, 158, 11, 0.18); color:#f59e0b; border:1px solid #f59e0b;" title="Preço atual atingiu a queda de 10% da Entrada 2">GATILHO E3 ATINGIDO ⚡</span>';
                         }
 
                         // Textos descritivos das etapas
-                        let e2SubText = 'Aguardando ' + formatMoney(nextE2Price);
+                        let e2SubText = e2GatilhoAtingido ? ('Gatilho R$ ' + currentPrice.toFixed(2)) : ('Aguardando ' + formatMoney(nextE2Price));
                         if (e2Done && e2) {
                             e2SubText = `${fmtDate(e2.data)} ${formatMoney(e2.preco)}`;
                         } else if (isFinalizado) {
                             e2SubText = 'Não necessária';
                         }
 
-                        let e3SubText = 'Aguardando ' + formatMoney(nextE3Price);
+                        let e3SubText = e3GatilhoAtingido ? ('Gatilho R$ ' + currentPrice.toFixed(2)) : ('Aguardando ' + formatMoney(nextE3Price));
                         if (e3Done && e3) {
                             e3SubText = `${fmtDate(e3.data)} ${formatMoney(e3.preco)}`;
                         } else if (isFinalizado) {
@@ -10675,7 +10725,7 @@ body.theme-light .event-tile-date {
                                 </div>
                                 <div class="ifr-asset-metrics">
                                     <span class="ifr-metric-item">Preço: <strong>${formatMoney(currentPrice)}</strong></span>
-                                    <span class="ifr-metric-item">P/L: <strong>${ativo.ultimo_pl ? ativo.ultimo_pl + 'x' : '--'}</strong> vs Méd 2A: <strong>${(ativo.pl_medio_historico_2a || ativo.pl_medio_historico) ? (ativo.pl_medio_historico_2a || ativo.pl_medio_historico) + 'x' : '--'}</strong></span>
+                                    <span class="ifr-metric-item">P/L: <strong>${(typeof DATA !== 'undefined' && DATA[t.ticker] && DATA[t.ticker].pl && DATA[t.ticker].pl.length > 0) ? Number(DATA[t.ticker].pl[DATA[t.ticker].pl.length - 1]).toFixed(1) + 'x' : (ativo.ultimo_pl ? ativo.ultimo_pl + 'x' : '--')}</strong> vs Méd 2A: <strong>${(ativo.pl_medio_historico_2a || ativo.pl_medio_historico) ? (ativo.pl_medio_historico_2a || ativo.pl_medio_historico) + 'x' : '--'}</strong></span>
                                     <span class="ifr-pill ${ifrClass}">IFR: ${ifr.toFixed(1)}</span>
                                 </div>
                             </div>
@@ -10691,16 +10741,16 @@ body.theme-light .event-tile-date {
                                 <div class="ifr-step-connector ${e2Done ? 'done' : ''}"></div>
 
                                 <!-- E2 -->
-                                <div class="ifr-step-node ${e2Done ? 'done' : 'pending'}" ${e2Done && e2 ? `onclick="event.stopPropagation(); IfrModule.scrollToChartDate('${e2.data}', '${t.id}')" title="Ver Aporte E2 (${fmtDate(e2.data)}) no gráfico" style="cursor:pointer;"` : ''}>
-                                    <div class="ifr-step-badge">${e2Done ? '✓ ' : ''}E2 R$ 3.300 ${e2Done ? '↗' : ''}</div>
+                                <div class="ifr-step-node ${e2Done ? 'done' : (e2GatilhoAtingido ? 'gatilho' : 'pending')}" ${e2Done && e2 ? `onclick="event.stopPropagation(); IfrModule.scrollToChartDate('${e2.data}', '${t.id}')" title="Ver Aporte E2 (${fmtDate(e2.data)}) no gráfico" style="cursor:pointer;"` : (e2GatilhoAtingido ? 'title="Gatilho de preço atingido! Nova entrada pendente de processamento."' : '')}>
+                                    <div class="ifr-step-badge">${e2Done ? '✓ ' : (e2GatilhoAtingido ? '⚡ ' : '')}E2 R$ 3.300 ${e2Done ? '↗' : ''}</div>
                                     <div class="ifr-step-sub">${e2SubText}</div>
                                 </div>
 
                                 <div class="ifr-step-connector ${e3Done ? 'done' : ''}"></div>
 
                                 <!-- E3 -->
-                                <div class="ifr-step-node ${e3Done ? 'done' : 'pending'}" ${e3Done && e3 ? `onclick="event.stopPropagation(); IfrModule.scrollToChartDate('${e3.data}', '${t.id}')" title="Ver Aporte E3 (${fmtDate(e3.data)}) no gráfico" style="cursor:pointer;"` : ''}>
-                                    <div class="ifr-step-badge">${e3Done ? '✓ ' : ''}E3 R$ 3.300 ${e3Done ? '↗' : ''}</div>
+                                <div class="ifr-step-node ${e3Done ? 'done' : (e3GatilhoAtingido ? 'gatilho' : 'pending')}" ${e3Done && e3 ? `onclick="event.stopPropagation(); IfrModule.scrollToChartDate('${e3.data}', '${t.id}')" title="Ver Aporte E3 (${fmtDate(e3.data)}) no gráfico" style="cursor:pointer;"` : (e3GatilhoAtingido ? 'title="Gatilho de preço atingido! Nova entrada pendente de processamento."' : '')}>
+                                    <div class="ifr-step-badge">${e3Done ? '✓ ' : (e3GatilhoAtingido ? '⚡ ' : '')}E3 R$ 3.300 ${e3Done ? '↗' : ''}</div>
                                     <div class="ifr-step-sub">${e3SubText}</div>
                                 </div>
                             </div>
