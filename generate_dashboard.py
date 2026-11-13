@@ -9908,7 +9908,7 @@ body.theme-light .event-tile-date {
                                 type: "linear",
                                 display: true,
                                 position: "left",
-                                min: 20,
+                                min: yMinVal,
                                 max: 80,
                                 title: {
                                     display: true,
@@ -9919,7 +9919,7 @@ body.theme-light .event-tile-date {
                                 grid: { color: gridColor },
                                 ticks: {
                                     color: tickColor,
-                                    stepSize: 10,
+                                    stepSize: (yMinVal >= 40) ? 5 : 10,
                                     callback: function(v) { return v + " bi"; },
                                     font: { family: "JetBrains Mono, monospace", size: 10.5 }
                                 }
