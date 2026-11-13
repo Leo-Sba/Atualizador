@@ -9799,6 +9799,14 @@ body.theme-light .event-tile-date {
                 const gridColor = isLight ? "rgba(15, 23, 42, 0.07)" : "rgba(148, 163, 184, 0.1)";
                 const tickColor = isLight ? "#475569" : "#94a3b8";
 
+                // Escala dinâmica do eixo Y esquerdo (evita vácuo inferior conforme a janela temporal)
+                let yMinVal = 20;
+                if (fiscalYearsRange === 5) {
+                    yMinVal = 45;
+                } else if (fiscalYearsRange === 10) {
+                    yMinVal = 40;
+                }
+
                 if (fiscalChartInstance) {
                     fiscalChartInstance.destroy();
                     fiscalChartInstance = null;
@@ -10138,6 +10146,33 @@ body.theme-light .event-tile-date {
                         firestoreDb.collection('trades_ifr').onSnapshot(snap => {
                             const trs = {};
                             snap.forEach(d => { trs[d.id] = d.data(); });
+
+                            // Preservar entradas e aportes mais recentes do cache local (evita que documentos legados na nuvem sobrescrevam aportes executados)
+                            if (typeof IFR_CACHE_DATA !== 'undefined' && IFR_CACHE_DATA && IFR_CACHE_DATA.trades) {
+                                Object.entries(IFR_CACHE_DATA.trades).forEach(([tId, cachedTrade]) => {
+                                    if (!trs[tId]) {
+                                        trs[tId] = cachedTrade;
+                                    } else {
+                                        const fsTrade = trs[tId];
+                                        const cachedEntradas = cachedTrade.entradas || [];
+                                        const fsEntradas = fsTrade.entradas || [];
+                                        if (cachedEntradas.length > fsEntradas.length) {
+                                            trs[tId] = {
+                                                ...fsTrade,
+                                                ...cachedTrade,
+                                                entradas: cachedEntradas,
+                                                etapa_atual: cachedTrade.etapa_atual,
+                                                preco_medio: cachedTrade.preco_medio,
+                                                capital_total_alocado: cachedTrade.capital_total_alocado,
+                                                quantidade_total: cachedTrade.quantidade_total,
+                                                stop_geral_rs: cachedTrade.stop_geral_rs,
+                                                alvo_saida_desc: cachedTrade.alvo_saida_desc
+                                            };
+                                        }
+                                    }
+                                });
+                            }
+
                             ifrData.trades = trs;
                             renderKPIs();
                             renderChart();
@@ -10550,32 +10585,33 @@ body.theme-light .event-tile-date {
                     gradient.addColorStop(1, 'rgba(0, 230, 118, 0.00)');
                 }
 
-                // Configuração dinâmica das bolinhas dos eventos operacionais
+                // Configuração dinâmica das bolinhas dos eventos operacionais (apenas pregões com negociações ganham bolinhas)
                 const pointRadii = evoList.map(pt => {
                     const evs = eventsByDate[pt.data];
-                    return (evs && evs.length > 0) ? 6.5 : 2.5;
+                    return (evs && evs.length > 0) ? 7 : 0;
                 });
 
                 const pointHoverRadii = evoList.map(pt => {
                     const evs = eventsByDate[pt.data];
-                    return (evs && evs.length > 0) ? 10 : 5;
+                    return (evs && evs.length > 0) ? 11 : 4;
                 });
 
                 const pointBgColors = evoList.map(pt => {
                     const evs = eventsByDate[pt.data];
-                    if (!evs || evs.length === 0) return lineColor;
-                    if (evs.some(e => e.tipo === 'STOP')) return '#ef4444';
-                    if (evs.some(e => e.tipo === 'GAIN')) return '#f59e0b';
-                    return isLight ? '#15803d' : '#10b981';
+                    if (!evs || evs.length === 0) return 'transparent';
+                    if (evs.some(e => e.tipo === 'STOP')) return '#ef4444'; // Stop Loss (Vermelho)
+                    if (evs.some(e => e.tipo === 'GAIN')) return '#f59e0b'; // Venda com Lucro (Dourado/Ambar)
+                    return isLight ? '#15803d' : '#10b981'; // Entradas E1, E2, E3 (Verde Esmeralda)
                 });
 
                 const pointBorderColors = evoList.map(pt => {
-                    return '#ffffff';
+                    const evs = eventsByDate[pt.data];
+                    return (evs && evs.length > 0) ? '#ffffff' : 'transparent';
                 });
 
                 const pointBorderWidths = evoList.map(pt => {
                     const evs = eventsByDate[pt.data];
-                    return (evs && evs.length > 0) ? 2.5 : 1;
+                    return (evs && evs.length > 0) ? 2.5 : 0;
                 });
 
                 chartInstance = new Chart(ctx, {
@@ -10631,7 +10667,7 @@ body.theme-light .event-tile-date {
                                         const pt = evoList[idx] || {};
                                         const evs = eventsByDate[pt.data] || [];
                                         if (evs.length > 0) {
-                                            return `📅 ${items[0].label} • ${evs.length} Evento(s) Operacional(is)`;
+                                            return `📅 ${items[0].label} • ${evs.length} Negociação(ões) Operacional(is)`;
                                         }
                                         return `📅 ${items[0].label}`;
                                     },
