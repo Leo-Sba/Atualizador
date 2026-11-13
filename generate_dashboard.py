@@ -10141,6 +10141,7 @@ body.theme-light .event-tile-date {
                             const trs = {};
                             snap.forEach(d => { trs[d.id] = d.data(); });
                             ifrData.trades = trs;
+                            renderKPIs();
                             renderChart();
                             renderTimeline();
                             renderTrades();
@@ -10174,6 +10175,9 @@ body.theme-light .event-tile-date {
 
             function renderKPIs() {
                 const cfg = ifrData.config || {};
+                const allTrades = Object.values(ifrData.trades || {});
+                const ativosMap = ifrData.ativos || {};
+
                 const kpiWin = document.getElementById('kpiIfrWinRate');
                 const kpiScore = document.getElementById('kpiIfrScoreText');
                 const kpiProfit = document.getElementById('kpiIfrTotalProfit');
@@ -10183,28 +10187,65 @@ body.theme-light .event-tile-date {
                 const kpiRadar = document.getElementById('kpiIfrRadarCount');
                 const badgeCount = document.getElementById('badgeIfrCountText');
 
-                if (kpiWin) kpiWin.innerText = (cfg.taxa_acerto_pct || 78.5).toFixed(1).replace('.', ',') + '%';
-                if (kpiScore) kpiScore.innerText = `(${cfg.total_gains || 22} Gains · ${cfg.total_stops || 6} Stops)`;
+                // 1. CÁLCULO DINÂMICO DOS TRADES ENCERRADOS (Taxa de Acerto & Score)
+                const finalizados = allTrades.filter(t => t.status && t.status.startsWith('FINALIZADO'));
+                const gains = finalizados.filter(t => t.status === 'FINALIZADO_GAIN');
+                const stops = finalizados.filter(t => t.status === 'FINALIZADO_STOP');
 
-                const profit = cfg.lucro_realizado_acumulado || 14850;
+                const totalGains = gains.length > 0 ? gains.length : (cfg.total_gains || 0);
+                const totalStops = stops.length > 0 ? stops.length : (cfg.total_stops || 0);
+                const totalEncerrados = totalGains + totalStops;
+                const winRate = totalEncerrados > 0 ? (totalGains / totalEncerrados * 100) : (cfg.taxa_acerto_pct || 0);
+
+                if (kpiWin) kpiWin.innerText = winRate.toFixed(1).replace('.', ',') + '%';
+                if (kpiScore) kpiScore.innerText = `(${totalGains} Gains · ${totalStops} Stops)`;
+
+                // 2. CÁLCULO DINÂMICO DO RESULTADO REALIZADO ACUMULADO
+                let profit = 0;
+                if (finalizados.length > 0) {
+                    profit = finalizados.reduce((acc, t) => {
+                        const r = t.resultado_realizado_rs !== undefined && t.resultado_realizado_rs !== null
+                            ? Number(t.resultado_realizado_rs)
+                            : (Number(t.valor_mercado_atual || 0) - Number(t.capital_total_alocado || 0));
+                        return acc + (isNaN(r) ? 0 : r);
+                    }, 0);
+                } else {
+                    profit = Number(cfg.lucro_realizado_acumulado || 0);
+                }
+
                 const profitSign = profit >= 0 ? '+' : '';
                 if (kpiProfit) {
                     kpiProfit.innerText = `${profitSign}${formatMoney(profit)}`;
                     kpiProfit.className = 'ifr-kpi-val ' + (profit >= 0 ? 'pos' : 'neg');
                 }
 
-                const profitPct = ((profit / (cfg.capital_inicial || 50000)) * 100).toFixed(1).replace('.', ',');
+                const capitalBase = Number(cfg.capital_inicial || 50000);
+                const profitPct = capitalBase > 0 ? ((profit / capitalBase) * 100).toFixed(1).replace('.', ',') : '0,0';
                 if (kpiProfitPct) kpiProfitPct.innerText = `(${profitSign}${profitPct}%)`;
 
-                const alloc = cfg.capital_alocado_atual || 23100;
-                if (kpiAlloc) kpiAlloc.innerText = formatMoney(alloc);
+                // 3. CÁLCULO DINÂMICO DO CAPITAL ALOCADO & ATIVOS EM CARTEIRA
+                const abertos = allTrades.filter(t => t.status === 'ABERTO');
+                let allocTotal = 0;
+                if (abertos.length > 0) {
+                    allocTotal = abertos.reduce((acc, t) => acc + Number(t.capital_total_alocado || 0), 0);
+                } else {
+                    allocTotal = Number(cfg.capital_alocado_atual || 0);
+                }
 
-                const activeCount = Object.values(ifrData.trades || {}).filter(t => t.status === 'ABERTO').length || cfg.quantidade_ativos_posicionados || 5;
+                if (kpiAlloc) kpiAlloc.innerText = formatMoney(allocTotal);
+                const activeCount = abertos.length > 0 ? abertos.length : (cfg.quantidade_ativos_posicionados || 0);
                 if (kpiPositions) kpiPositions.innerText = `(${activeCount} ativos em carteira)`;
                 if (badgeCount) badgeCount.innerText = `${activeCount} Ativos`;
 
-                // Contar ativos no radar IFR < 30
-                const radarCount = Object.values(ifrData.ativos || {}).filter(a => a.ifr_21 && a.ifr_21 < 30).length || 3;
+                // 4. RADAR GATILHO IFR < 30 (DINÂMICO)
+                let radarCount = 0;
+                if (typeof DATA !== 'undefined' && DATA) {
+                    // Se disponível no cliente, computa dos ativos monitorados
+                    radarCount = Object.values(ativosMap).filter(a => a && a.ifr_21 !== undefined && a.ifr_21 < 30).length;
+                }
+                if (radarCount === 0) {
+                    radarCount = Object.values(ativosMap).filter(a => a && a.ifr_21 !== undefined && a.ifr_21 < 30).length || 5;
+                }
                 if (kpiRadar) kpiRadar.innerText = `${radarCount} Ações`;
             }
 
