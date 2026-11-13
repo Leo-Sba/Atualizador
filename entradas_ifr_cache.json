@@ -1,18 +1,19 @@
 {
   "config": {
     "capital_inicial": 50000,
-    "caixa_livre": 7969.57,
-    "capital_alocado_atual": 85619.96,
-    "lucro_realizado_acumulado": 31474.7,
-    "total_trades_finalizados": 14,
-    "total_gains": 13,
+    "caixa_livre": 3019.72,
+    "capital_alocado_atual": 65843.66,
+    "valor_mercado_atual": 64250.15,
+    "lucro_realizado_acumulado": 18863.38,
+    "total_trades_finalizados": 17,
+    "total_gains": 16,
     "total_stops": 1,
-    "taxa_acerto_pct": 92.9,
-    "quantidade_ativos_posicionados": 17,
+    "taxa_acerto_pct": 94.1,
+    "quantidade_ativos_posicionados": 15,
     "ultima_data_processada": "2026-11-10",
-    "ultima_atualizacao": "2026-11-13T02:46:55.000Z",
-    "patrimonio_total": 94374.29,
-    "variacao_pct_total": 88.75
+    "ultima_atualizacao": "2026-11-13T03:12:42.000Z",
+    "patrimonio_total": 67269.87,
+    "variacao_pct_total": 34.54
   },
   "ativos": {
     "ABCB4": {
@@ -16175,19 +16176,17 @@
       "quantidade_total": 450,
       "capital_total_alocado": 9869.8,
       "preco_medio_atual": 21.93,
-      "preco_fechamento_atual": 22.57,
-      "valor_mercado_atual": 10156.5,
-      "resultado_nao_realizado_rs": -239.8,
-      "resultado_nao_realizado_pct": -2.43,
       "stop_geral_preco": 10.97,
-      "alvo_saida_desc": "+10% da E3 (R$ 21,78)",
-      "preco_gatilho_alvo": 21.78,
+      "alvo_saida_desc": "E3 + 10% (R$ 21.78)",
+      "preco_gatilho_alvo": null,
       "data_abertura": "2026-04-10",
       "data_encerramento": "2026-08-20",
       "motivo_encerramento": "Cotação atingiu R$ 22.57 (E3 + 10%) [Gain]",
       "preco_saida": 22.57,
       "resultado_realizado_rs": 286.7,
-      "resultado_realizado_pct": 2.9
+      "resultado_realizado_pct": 2.9,
+      "preco_fechamento_atual": 22.57,
+      "valor_mercado_atual": 0.0
     },
     "ITUB4_20260521": {
       "id": "ITUB4_20260521",
@@ -16200,44 +16199,42 @@
         {
           "nivel": 1,
           "data": "2026-05-21",
-          "preco": 31,
+          "preco": 31.0,
           "quantidade": 106,
-          "aporte_real": 3286
+          "aporte_real": 3286.0
         },
         {
           "nivel": 2,
           "data": "2026-05-28",
-          "preco": 28,
+          "preco": 28.0,
           "quantidade": 117,
-          "aporte_real": 3276
+          "aporte_real": 3276.0
         }
       ],
-      "quantidade_total": 667,
-      "capital_total_alocado": 19676.5,
-      "preco_medio_atual": 29.5,
-      "preco_fechamento_atual": 49.48,
-      "valor_mercado_atual": 0.0,
-      "resultado_nao_realizado_rs": 685.5,
-      "resultado_nao_realizado_pct": 10.45,
-      "stop_geral_preco": 14.75,
+      "quantidade_total": 223,
+      "capital_total_alocado": 6562.89,
+      "preco_medio_atual": 29.43,
+      "stop_geral_preco": 14.71,
       "alvo_saida_desc": "50% restante em IFR > 70",
-      "preco_gatilho_alvo": 36.8,
+      "preco_gatilho_alvo": 25.2,
       "data_abertura": "2026-05-21",
       "data_encerramento": "2026-10-05",
       "motivo_encerramento": "Parcial 50% em PM+5% (R$ 38.43) + Restante em IFR 74.9 (> 70) [Gain]",
       "preco_saida": 49.48,
-      "resultado_realizado_rs": 12100.11,
-      "resultado_realizado_pct": 61.5,
+      "resultado_realizado_rs": 3244.6,
+      "resultado_realizado_pct": 49.44,
       "parcial_executada": true,
       "data_parcial": "2026-08-12",
       "preco_saida_parcial": 38.43,
       "quantidade_parcial": 111,
-      "lucro_parcial_rs": 991.23
+      "lucro_parcial_rs": 999.0,
+      "preco_fechamento_atual": 49.48,
+      "valor_mercado_atual": 0.0
     },
     "PETR4_20260521": {
       "id": "PETR4_20260521",
       "ticker": "PETR4",
-      "empresa": "Petrobras PN",
+      "empresa": "Petrobras",
       "setor": "Petróleo",
       "status": "FINALIZADO_GAIN",
       "etapa_atual": 2,
@@ -16245,45 +16242,43 @@
         {
           "nivel": 1,
           "data": "2026-05-21",
-          "preco": 31,
+          "preco": 31.0,
           "quantidade": 106,
-          "aporte_real": 3286
+          "aporte_real": 3286.0
         },
         {
           "nivel": 2,
           "data": "2026-05-28",
-          "preco": 28,
+          "preco": 28.0,
           "quantidade": 117,
-          "aporte_real": 3276
+          "aporte_real": 3276.0
         }
       ],
-      "quantidade_total": 667,
-      "capital_total_alocado": 19676.5,
-      "preco_medio_atual": 29.5,
-      "preco_fechamento_atual": 46.869999,
-      "valor_mercado_atual": 0.0,
-      "resultado_nao_realizado_rs": 1035.61,
-      "resultado_nao_realizado_pct": 15.78,
-      "stop_geral_preco": 14.75,
+      "quantidade_total": 223,
+      "capital_total_alocado": 6562.89,
+      "preco_medio_atual": 29.43,
+      "stop_geral_preco": 14.71,
       "alvo_saida_desc": "50% restante em IFR > 70",
-      "preco_gatilho_alvo": 29.5,
+      "preco_gatilho_alvo": 25.2,
       "data_abertura": "2026-05-21",
       "data_encerramento": "2026-09-01",
       "motivo_encerramento": "Parcial 50% em PM+5% (R$ 40.19) + Restante em IFR 70.2 (> 70) [Gain]",
       "preco_saida": 46.869999,
-      "resultado_realizado_rs": 10844.15,
-      "resultado_realizado_pct": 55.11,
+      "resultado_realizado_rs": 3147.48,
+      "resultado_realizado_pct": 47.96,
       "parcial_executada": true,
       "data_parcial": "2026-08-12",
       "preco_saida_parcial": 40.188591,
       "quantidade_parcial": 111,
-      "lucro_parcial_rs": 1186.43
+      "lucro_parcial_rs": 1194.2,
+      "preco_fechamento_atual": 46.869999,
+      "valor_mercado_atual": 0.0
     },
     "WEGE3_20260521": {
       "id": "WEGE3_20260521",
       "ticker": "WEGE3",
       "empresa": "WEG",
-      "setor": "Indústria",
+      "setor": "Bens Industriais",
       "status": "ABERTO",
       "etapa_atual": 2,
       "entradas": [
@@ -16305,13 +16300,9 @@
       "quantidade_total": 113,
       "capital_total_alocado": 3284.91,
       "preco_medio_atual": 29.07,
-      "preco_fechamento_atual": 50.950001,
-      "valor_mercado_atual": 5757.35,
-      "resultado_nao_realizado_rs": 2472.44,
-      "resultado_nao_realizado_pct": 75.27,
       "stop_geral_preco": 14.54,
       "alvo_saida_desc": "50% restante em IFR > 70",
-      "preco_gatilho_alvo": 24.84,
+      "preco_gatilho_alvo": null,
       "data_abertura": "2026-05-21",
       "data_encerramento": null,
       "motivo_encerramento": null,
@@ -16322,7 +16313,11 @@
       "data_parcial": "2026-08-12",
       "preco_saida_parcial": 47.64,
       "quantidade_parcial": 113,
-      "lucro_parcial_rs": 2098.41
+      "lucro_parcial_rs": 2098.41,
+      "preco_fechamento_atual": 50.950001,
+      "valor_mercado_atual": 5757.35,
+      "resultado_nao_realizado_rs": 2472.44,
+      "resultado_nao_realizado_pct": 75.27
     },
     "VALE3_20260602": {
       "id": "VALE3_20260602",
@@ -16343,10 +16338,6 @@
       "quantidade_total": 99,
       "capital_total_alocado": 3286.8,
       "preco_medio_atual": 33.2,
-      "preco_fechamento_atual": 64.8,
-      "valor_mercado_atual": 6415.2,
-      "resultado_nao_realizado_rs": 3128.4,
-      "resultado_nao_realizado_pct": 95.18,
       "stop_geral_preco": 16.6,
       "alvo_saida_desc": "IFR > 70",
       "preco_gatilho_alvo": 29.88,
@@ -16355,7 +16346,11 @@
       "motivo_encerramento": null,
       "preco_saida": null,
       "resultado_realizado_rs": null,
-      "resultado_realizado_pct": null
+      "resultado_realizado_pct": null,
+      "preco_fechamento_atual": 64.8,
+      "valor_mercado_atual": 6415.2,
+      "resultado_nao_realizado_rs": 3128.4,
+      "resultado_nao_realizado_pct": 95.18
     },
     "BBAS3_20260608": {
       "id": "BBAS3_20260608",
@@ -16374,28 +16369,29 @@
         },
         {
           "nivel": 2,
-          "data": "2026-11-10",
-          "preco": 17.1,
-          "quantidade": 192,
-          "aporte_real": 3283.2
+          "data": "2026-08-12",
+          "preco": 19.0,
+          "quantidade": 173,
+          "aporte_real": 3287.0
         }
       ],
-      "quantidade_total": 316,
-      "capital_total_alocado": 6569.2,
-      "preco_medio_atual": 20.79,
-      "preco_fechamento_atual": 17.1,
-      "valor_mercado_atual": 5403.6,
-      "resultado_nao_realizado_rs": -1165.6,
-      "resultado_nao_realizado_pct": -17.74,
-      "stop_geral_preco": 10.39,
-      "alvo_saida_desc": "50% em PM+5% (R$ 21.83) e 50% em IFR > 70",
-      "preco_gatilho_alvo": 15.39,
+      "quantidade_total": 297,
+      "capital_total_alocado": 6573.0,
+      "preco_medio_atual": 22.13,
+      "stop_geral_preco": 11.06,
+      "alvo_saida_desc": "50% em PM+5% (R$ 23.24) e 50% em IFR > 70",
+      "preco_gatilho_alvo": 17.1,
       "data_abertura": "2026-06-08",
       "data_encerramento": null,
       "motivo_encerramento": null,
       "preco_saida": null,
       "resultado_realizado_rs": null,
-      "resultado_realizado_pct": null
+      "resultado_realizado_pct": null,
+      "pendente_caixa_e2": false,
+      "preco_fechamento_atual": 17.1,
+      "valor_mercado_atual": 5078.7,
+      "resultado_nao_realizado_rs": -1494.3,
+      "resultado_nao_realizado_pct": -22.73
     },
     "POMO4_20260812": {
       "id": "POMO4_20260812",
@@ -16403,7 +16399,7 @@
       "empresa": "MARCOPOLO",
       "setor": "B3 Geral",
       "status": "ABERTO",
-      "etapa_atual": 2,
+      "etapa_atual": 1,
       "entradas": [
         {
           "nivel": 1,
@@ -16411,31 +16407,26 @@
           "preco": 4.29,
           "quantidade": 769,
           "aporte_real": 3299.01
-        },
-        {
-          "nivel": 2,
-          "data": "2026-10-29",
-          "preco": 3.8,
-          "quantidade": 868,
-          "aporte_real": 3298.4
         }
       ],
-      "quantidade_total": 1637,
-      "capital_total_alocado": 6597.41,
-      "preco_medio_atual": 4.03,
+      "quantidade_total": 769,
+      "capital_total_alocado": 3299.01,
+      "preco_medio_atual": 4.29,
       "preco_fechamento_atual": 3.69,
-      "valor_mercado_atual": 6040.53,
-      "resultado_nao_realizado_rs": -556.88,
-      "resultado_nao_realizado_pct": -8.44,
-      "stop_geral_preco": 2.02,
-      "alvo_saida_desc": "50% em PM+5% (R$ 4.23) e 50% em IFR > 70",
-      "preco_gatilho_alvo": 3.42,
+      "valor_mercado_atual": 2837.61,
+      "resultado_nao_realizado_rs": -461.4,
+      "resultado_nao_realizado_pct": -13.99,
+      "stop_geral_preco": 2.15,
+      "alvo_saida_desc": "IFR > 70",
+      "preco_gatilho_alvo": 3.86,
       "data_abertura": "2026-08-12",
       "data_encerramento": null,
       "motivo_encerramento": null,
       "preco_saida": null,
       "resultado_realizado_rs": null,
-      "resultado_realizado_pct": null
+      "resultado_realizado_pct": null,
+      "pendente_caixa_e2": true,
+      "preco_gatilho_original_e2": 3.86
     },
     "SAPR11_20260812": {
       "id": "SAPR11_20260812",
@@ -16457,7 +16448,7 @@
       "capital_total_alocado": 3270.8,
       "preco_medio_atual": 31.45,
       "preco_fechamento_atual": 41.97,
-      "valor_mercado_atual": 4364.88,
+      "valor_mercado_atual": 0.0,
       "resultado_nao_realizado_rs": 0.0,
       "resultado_nao_realizado_pct": 0.0,
       "stop_geral_preco": 15.72,
@@ -16468,10 +16459,113 @@
       "motivo_encerramento": "IFR(21) atingiu 72.4 (> 70) [Gain]",
       "preco_saida": 41.97,
       "resultado_realizado_rs": 1094.08,
-      "resultado_realizado_pct": 33.45
+      "resultado_realizado_pct": 33.45,
+      "pendente_caixa_e2": false
     },
-    "LREN3_20260820": {
-      "id": "LREN3_20260820",
+    "SAPR4_20260812": {
+      "id": "SAPR4_20260812",
+      "ticker": "SAPR4",
+      "empresa": "SANEPAR",
+      "setor": "B3 Geral",
+      "status": "FINALIZADO_GAIN",
+      "etapa_atual": 1,
+      "entradas": [
+        {
+          "nivel": 1,
+          "data": "2026-08-12",
+          "preco": 6.28,
+          "quantidade": 525,
+          "aporte_real": 3297.0
+        }
+      ],
+      "quantidade_total": 525,
+      "capital_total_alocado": 3297.0,
+      "preco_medio_atual": 6.28,
+      "preco_fechamento_atual": 8.04,
+      "valor_mercado_atual": 0.0,
+      "resultado_nao_realizado_rs": 0.0,
+      "resultado_nao_realizado_pct": 0.0,
+      "stop_geral_preco": 3.14,
+      "alvo_saida_desc": "IFR > 70",
+      "preco_gatilho_alvo": 5.65,
+      "data_abertura": "2026-08-12",
+      "data_encerramento": "2026-10-07",
+      "motivo_encerramento": "IFR(21) atingiu 73.0 (> 70) [Gain]",
+      "preco_saida": 8.04,
+      "resultado_realizado_rs": 924.0,
+      "resultado_realizado_pct": 28.03,
+      "pendente_caixa_e2": false
+    },
+    "KEPL3_20260812": {
+      "id": "KEPL3_20260812",
+      "ticker": "KEPL3",
+      "empresa": "KEPLER WEBER",
+      "setor": "B3 Geral",
+      "status": "FINALIZADO_GAIN",
+      "etapa_atual": 1,
+      "entradas": [
+        {
+          "nivel": 1,
+          "data": "2026-08-12",
+          "preco": 5.84,
+          "quantidade": 565,
+          "aporte_real": 3299.6
+        }
+      ],
+      "quantidade_total": 565,
+      "capital_total_alocado": 3299.6,
+      "preco_medio_atual": 5.84,
+      "preco_fechamento_atual": 7.22,
+      "valor_mercado_atual": 0.0,
+      "resultado_nao_realizado_rs": 0.0,
+      "resultado_nao_realizado_pct": 0.0,
+      "stop_geral_preco": 2.92,
+      "alvo_saida_desc": "IFR > 70",
+      "preco_gatilho_alvo": 5.26,
+      "data_abertura": "2026-08-12",
+      "data_encerramento": "2026-10-07",
+      "motivo_encerramento": "IFR(21) atingiu 70.9 (> 70) [Gain]",
+      "preco_saida": 7.22,
+      "resultado_realizado_rs": 779.7,
+      "resultado_realizado_pct": 23.63,
+      "pendente_caixa_e2": false
+    },
+    "VIVT3_20260813": {
+      "id": "VIVT3_20260813",
+      "ticker": "VIVT3",
+      "empresa": "TELEFONICA BRASIL",
+      "setor": "B3 Geral",
+      "status": "ABERTO",
+      "etapa_atual": 1,
+      "entradas": [
+        {
+          "nivel": 1,
+          "data": "2026-08-13",
+          "preco": 29.4,
+          "quantidade": 112,
+          "aporte_real": 3292.8
+        }
+      ],
+      "quantidade_total": 112,
+      "capital_total_alocado": 3292.8,
+      "preco_medio_atual": 29.4,
+      "preco_fechamento_atual": 32.5,
+      "valor_mercado_atual": 3640.0,
+      "resultado_nao_realizado_rs": 347.2,
+      "resultado_nao_realizado_pct": 10.54,
+      "stop_geral_preco": 14.7,
+      "alvo_saida_desc": "IFR > 70",
+      "preco_gatilho_alvo": 26.46,
+      "data_abertura": "2026-08-13",
+      "data_encerramento": null,
+      "motivo_encerramento": null,
+      "preco_saida": null,
+      "resultado_realizado_rs": null,
+      "resultado_realizado_pct": null,
+      "pendente_caixa_e2": false
+    },
+    "LREN3_20260814": {
+      "id": "LREN3_20260814",
       "ticker": "LREN3",
       "empresa": "LOJAS RENNER",
       "setor": "B3 Geral",
@@ -16480,28 +16574,63 @@
       "entradas": [
         {
           "nivel": 1,
-          "data": "2026-08-20",
-          "preco": 10.5,
-          "quantidade": 314,
-          "aporte_real": 3297.0
+          "data": "2026-08-14",
+          "preco": 11.21,
+          "quantidade": 294,
+          "aporte_real": 3295.74
         }
       ],
-      "quantidade_total": 314,
-      "capital_total_alocado": 3297.0,
-      "preco_medio_atual": 10.5,
+      "quantidade_total": 294,
+      "capital_total_alocado": 3295.74,
+      "preco_medio_atual": 11.21,
       "preco_fechamento_atual": 15.06,
-      "valor_mercado_atual": 4728.84,
+      "valor_mercado_atual": 0.0,
       "resultado_nao_realizado_rs": 0.0,
       "resultado_nao_realizado_pct": 0.0,
-      "stop_geral_preco": 5.25,
+      "stop_geral_preco": 5.61,
       "alvo_saida_desc": "IFR > 70",
-      "preco_gatilho_alvo": 9.45,
-      "data_abertura": "2026-08-20",
+      "preco_gatilho_alvo": 10.09,
+      "data_abertura": "2026-08-14",
       "data_encerramento": "2026-10-09",
       "motivo_encerramento": "IFR(21) atingiu 71.8 (> 70) [Gain]",
       "preco_saida": 15.06,
-      "resultado_realizado_rs": 1431.84,
-      "resultado_realizado_pct": 43.43
+      "resultado_realizado_rs": 1131.9,
+      "resultado_realizado_pct": 34.34,
+      "pendente_caixa_e2": false
+    },
+    "SBSP3_20260814": {
+      "id": "SBSP3_20260814",
+      "ticker": "SBSP3",
+      "empresa": "SABESP",
+      "setor": "B3 Geral",
+      "status": "FINALIZADO_GAIN",
+      "etapa_atual": 1,
+      "entradas": [
+        {
+          "nivel": 1,
+          "data": "2026-08-14",
+          "preco": 23.79,
+          "quantidade": 138,
+          "aporte_real": 3283.02
+        }
+      ],
+      "quantidade_total": 138,
+      "capital_total_alocado": 3283.02,
+      "preco_medio_atual": 23.79,
+      "preco_fechamento_atual": 31.5,
+      "valor_mercado_atual": 0.0,
+      "resultado_nao_realizado_rs": 0.0,
+      "resultado_nao_realizado_pct": 0.0,
+      "stop_geral_preco": 11.89,
+      "alvo_saida_desc": "IFR > 70",
+      "preco_gatilho_alvo": 21.41,
+      "data_abertura": "2026-08-14",
+      "data_encerramento": "2026-10-05",
+      "motivo_encerramento": "IFR(21) atingiu 72.7 (> 70) [Gain]",
+      "preco_saida": 31.5,
+      "resultado_realizado_rs": 1063.98,
+      "resultado_realizado_pct": 32.41,
+      "pendente_caixa_e2": false
     },
     "BBDC4_20260820": {
       "id": "BBDC4_20260820",
@@ -16523,7 +16652,7 @@
       "capital_total_alocado": 3291.75,
       "preco_medio_atual": 15.75,
       "preco_fechamento_atual": 21.84,
-      "valor_mercado_atual": 4564.56,
+      "valor_mercado_atual": 0.0,
       "resultado_nao_realizado_rs": 0.0,
       "resultado_nao_realizado_pct": 0.0,
       "stop_geral_preco": 7.88,
@@ -16534,7 +16663,8 @@
       "motivo_encerramento": "IFR(21) atingiu 76.1 (> 70) [Gain]",
       "preco_saida": 21.84,
       "resultado_realizado_rs": 1272.81,
-      "resultado_realizado_pct": 38.67
+      "resultado_realizado_pct": 38.67,
+      "pendente_caixa_e2": false
     },
     "SIMH3_20260820": {
       "id": "SIMH3_20260820",
@@ -16556,7 +16686,7 @@
       "capital_total_alocado": 3299.18,
       "preco_medio_atual": 5.63,
       "preco_fechamento_atual": 10.14,
-      "valor_mercado_atual": 5942.04,
+      "valor_mercado_atual": 0.0,
       "resultado_nao_realizado_rs": 0.0,
       "resultado_nao_realizado_pct": 0.0,
       "stop_geral_preco": 2.81,
@@ -16567,7 +16697,42 @@
       "motivo_encerramento": "IFR(21) atingiu 72.2 (> 70) [Gain]",
       "preco_saida": 10.14,
       "resultado_realizado_rs": 2642.86,
-      "resultado_realizado_pct": 80.11
+      "resultado_realizado_pct": 80.11,
+      "pendente_caixa_e2": false
+    },
+    "BBDC3_20260820": {
+      "id": "BBDC3_20260820",
+      "ticker": "BBDC3",
+      "empresa": "BRADESCO",
+      "setor": "B3 Geral",
+      "status": "FINALIZADO_GAIN",
+      "etapa_atual": 1,
+      "entradas": [
+        {
+          "nivel": 1,
+          "data": "2026-08-20",
+          "preco": 13.93,
+          "quantidade": 236,
+          "aporte_real": 3287.48
+        }
+      ],
+      "quantidade_total": 236,
+      "capital_total_alocado": 3287.48,
+      "preco_medio_atual": 13.93,
+      "preco_fechamento_atual": 19.36,
+      "valor_mercado_atual": 0.0,
+      "resultado_nao_realizado_rs": 0.0,
+      "resultado_nao_realizado_pct": 0.0,
+      "stop_geral_preco": 6.96,
+      "alvo_saida_desc": "IFR > 70",
+      "preco_gatilho_alvo": 12.54,
+      "data_abertura": "2026-08-20",
+      "data_encerramento": "2026-10-05",
+      "motivo_encerramento": "IFR(21) atingiu 77.2 (> 70) [Gain]",
+      "preco_saida": 19.36,
+      "resultado_realizado_rs": 1281.48,
+      "resultado_realizado_pct": 38.98,
+      "pendente_caixa_e2": false
     },
     "MDIA3_20261023": {
       "id": "MDIA3_20261023",
@@ -16607,7 +16772,8 @@
       "motivo_encerramento": null,
       "preco_saida": null,
       "resultado_realizado_rs": null,
-      "resultado_realizado_pct": null
+      "resultado_realizado_pct": null,
+      "pendente_caixa_e2": false
     },
     "BEEF3_20261023": {
       "id": "BEEF3_20261023",
@@ -16615,7 +16781,7 @@
       "empresa": "MINERVA",
       "setor": "B3 Geral",
       "status": "ABERTO",
-      "etapa_atual": 3,
+      "etapa_atual": 2,
       "entradas": [
         {
           "nivel": 1,
@@ -16630,31 +16796,25 @@
           "preco": 3.32,
           "quantidade": 993,
           "aporte_real": 3296.76
-        },
-        {
-          "nivel": 3,
-          "data": "2026-10-28",
-          "preco": 2.89,
-          "quantidade": 1141,
-          "aporte_real": 3297.49
         }
       ],
-      "quantidade_total": 2906,
-      "capital_total_alocado": 9890.69,
-      "preco_medio_atual": 3.4,
+      "quantidade_total": 1765,
+      "capital_total_alocado": 6593.2,
+      "preco_medio_atual": 3.74,
       "preco_fechamento_atual": 2.8,
-      "valor_mercado_atual": 8136.8,
-      "resultado_nao_realizado_rs": -1753.89,
-      "resultado_nao_realizado_pct": -17.73,
-      "stop_geral_preco": 1.7,
-      "alvo_saida_desc": "E3 + 10% (R$ 3.18)",
-      "preco_gatilho_alvo": null,
+      "valor_mercado_atual": 4942.0,
+      "resultado_nao_realizado_rs": -1651.2,
+      "resultado_nao_realizado_pct": -25.04,
+      "stop_geral_preco": 1.87,
+      "alvo_saida_desc": "50% em PM+5% (R$ 3.93) e 50% em IFR > 70",
+      "preco_gatilho_alvo": 2.99,
       "data_abertura": "2026-10-23",
       "data_encerramento": null,
       "motivo_encerramento": null,
       "preco_saida": null,
       "resultado_realizado_rs": null,
-      "resultado_realizado_pct": null
+      "resultado_realizado_pct": null,
+      "pendente_caixa_e2": false
     },
     "PLPL3_20261023": {
       "id": "PLPL3_20261023",
@@ -16662,7 +16822,7 @@
       "empresa": "PLANOEPLANO",
       "setor": "B3 Geral",
       "status": "ABERTO",
-      "etapa_atual": 3,
+      "etapa_atual": 2,
       "entradas": [
         {
           "nivel": 1,
@@ -16677,39 +16837,33 @@
           "preco": 5.28,
           "quantidade": 625,
           "aporte_real": 3300.0
-        },
-        {
-          "nivel": 3,
-          "data": "2026-10-29",
-          "preco": 4.51,
-          "quantidade": 731,
-          "aporte_real": 3296.81
         }
       ],
-      "quantidade_total": 1746,
-      "capital_total_alocado": 9896.21,
-      "preco_medio_atual": 5.67,
+      "quantidade_total": 1015,
+      "capital_total_alocado": 6599.4,
+      "preco_medio_atual": 6.5,
       "preco_fechamento_atual": 4.79,
-      "valor_mercado_atual": 8363.34,
-      "resultado_nao_realizado_rs": -1532.87,
-      "resultado_nao_realizado_pct": -15.49,
-      "stop_geral_preco": 2.83,
-      "alvo_saida_desc": "E3 + 10% (R$ 4.96)",
-      "preco_gatilho_alvo": null,
+      "valor_mercado_atual": 4861.85,
+      "resultado_nao_realizado_rs": -1737.55,
+      "resultado_nao_realizado_pct": -26.33,
+      "stop_geral_preco": 3.25,
+      "alvo_saida_desc": "50% em PM+5% (R$ 6.83) e 50% em IFR > 70",
+      "preco_gatilho_alvo": 4.75,
       "data_abertura": "2026-10-23",
       "data_encerramento": null,
       "motivo_encerramento": null,
       "preco_saida": null,
       "resultado_realizado_rs": null,
-      "resultado_realizado_pct": null
+      "resultado_realizado_pct": null,
+      "pendente_caixa_e2": false
     },
     "VULC3_20261023": {
       "id": "VULC3_20261023",
       "ticker": "VULC3",
       "empresa": "VULCABRAS",
       "setor": "B3 Geral",
-      "status": "FINALIZADO_GAIN",
-      "etapa_atual": 3,
+      "status": "ABERTO",
+      "etapa_atual": 2,
       "entradas": [
         {
           "nivel": 1,
@@ -16724,31 +16878,25 @@
           "preco": 12.58,
           "quantidade": 262,
           "aporte_real": 3295.96
-        },
-        {
-          "nivel": 3,
-          "data": "2026-11-03",
-          "preco": 11.28,
-          "quantidade": 292,
-          "aporte_real": 3293.76
         }
       ],
-      "quantidade_total": 760,
-      "capital_total_alocado": 9877.48,
-      "preco_medio_atual": 13.0,
-      "preco_fechamento_atual": 12.52,
-      "valor_mercado_atual": 9515.2,
-      "resultado_nao_realizado_rs": 0.0,
-      "resultado_nao_realizado_pct": 0.0,
-      "stop_geral_preco": 6.5,
-      "alvo_saida_desc": "E3 + 10% (R$ 12.41)",
-      "preco_gatilho_alvo": 14.36,
+      "quantidade_total": 468,
+      "capital_total_alocado": 6583.72,
+      "preco_medio_atual": 14.07,
+      "preco_fechamento_atual": 12.14,
+      "valor_mercado_atual": 5681.52,
+      "resultado_nao_realizado_rs": -902.2,
+      "resultado_nao_realizado_pct": -13.7,
+      "stop_geral_preco": 7.04,
+      "alvo_saida_desc": "50% em PM+5% (R$ 14.77) e 50% em IFR > 70",
+      "preco_gatilho_alvo": 11.32,
       "data_abertura": "2026-10-23",
-      "data_encerramento": "2026-11-09",
-      "motivo_encerramento": "Cotação atingiu R$ 12.52 (E3 + 10%) [Gain]",
-      "preco_saida": 12.52,
-      "resultado_realizado_rs": -362.28,
-      "resultado_realizado_pct": -3.67
+      "data_encerramento": null,
+      "motivo_encerramento": null,
+      "preco_saida": null,
+      "resultado_realizado_rs": null,
+      "resultado_realizado_pct": null,
+      "pendente_caixa_e2": false
     },
     "VLID3_20261026": {
       "id": "VLID3_20261026",
@@ -16781,7 +16929,9 @@
       "motivo_encerramento": null,
       "preco_saida": null,
       "resultado_realizado_rs": null,
-      "resultado_realizado_pct": null
+      "resultado_realizado_pct": null,
+      "pendente_caixa_e2": true,
+      "preco_gatilho_original_e2": 13.72
     },
     "SBFG3_20261026": {
       "id": "SBFG3_20261026",
@@ -16789,7 +16939,7 @@
       "empresa": "GRUPO SBF",
       "setor": "B3 Geral",
       "status": "ABERTO",
-      "etapa_atual": 2,
+      "etapa_atual": 1,
       "entradas": [
         {
           "nivel": 1,
@@ -16797,36 +16947,26 @@
           "preco": 5.52,
           "quantidade": 597,
           "aporte_real": 3295.44
-        },
-        {
-          "nivel": 2,
-          "data": "2026-10-29",
-          "preco": 4.94,
-          "quantidade": 668,
-          "aporte_real": 3299.92
         }
       ],
-      "quantidade_total": 633,
-      "capital_total_alocado": 3297.93,
-      "preco_medio_atual": 5.21,
+      "quantidade_total": 597,
+      "capital_total_alocado": 3295.44,
+      "preco_medio_atual": 5.52,
       "preco_fechamento_atual": 4.84,
-      "valor_mercado_atual": 3063.72,
-      "resultado_nao_realizado_rs": -234.21,
-      "resultado_nao_realizado_pct": -7.1,
-      "stop_geral_preco": 2.6,
-      "alvo_saida_desc": "50% restante em IFR > 70",
-      "preco_gatilho_alvo": 4.45,
+      "valor_mercado_atual": 2889.48,
+      "resultado_nao_realizado_rs": -405.96,
+      "resultado_nao_realizado_pct": -12.32,
+      "stop_geral_preco": 2.76,
+      "alvo_saida_desc": "IFR > 70",
+      "preco_gatilho_alvo": 4.97,
       "data_abertura": "2026-10-26",
       "data_encerramento": null,
       "motivo_encerramento": null,
       "preco_saida": null,
       "resultado_realizado_rs": null,
       "resultado_realizado_pct": null,
-      "parcial_executada": true,
-      "data_parcial": "2026-11-09",
-      "preco_saida_parcial": 5.48,
-      "quantidade_parcial": 632,
-      "lucro_parcial_rs": 170.64
+      "pendente_caixa_e2": true,
+      "preco_gatilho_original_e2": 4.97
     },
     "TTEN3_20261026": {
       "id": "TTEN3_20261026",
@@ -16859,7 +16999,8 @@
       "motivo_encerramento": null,
       "preco_saida": null,
       "resultado_realizado_rs": null,
-      "resultado_realizado_pct": null
+      "resultado_realizado_pct": null,
+      "pendente_caixa_e2": false
     },
     "GGPS3_20261026": {
       "id": "GGPS3_20261026",
@@ -16867,7 +17008,7 @@
       "empresa": "GPS",
       "setor": "B3 Geral",
       "status": "ABERTO",
-      "etapa_atual": 2,
+      "etapa_atual": 1,
       "entradas": [
         {
           "nivel": 1,
@@ -16875,31 +17016,26 @@
           "preco": 12.05,
           "quantidade": 273,
           "aporte_real": 3289.65
-        },
-        {
-          "nivel": 2,
-          "data": "2026-10-29",
-          "preco": 10.51,
-          "quantidade": 313,
-          "aporte_real": 3289.63
         }
       ],
-      "quantidade_total": 586,
-      "capital_total_alocado": 6579.28,
-      "preco_medio_atual": 11.23,
+      "quantidade_total": 273,
+      "capital_total_alocado": 3289.65,
+      "preco_medio_atual": 12.05,
       "preco_fechamento_atual": 10.49,
-      "valor_mercado_atual": 6147.14,
-      "resultado_nao_realizado_rs": -432.14,
-      "resultado_nao_realizado_pct": -6.57,
-      "stop_geral_preco": 5.62,
-      "alvo_saida_desc": "50% em PM+5% (R$ 11.79) e 50% em IFR > 70",
-      "preco_gatilho_alvo": 9.46,
+      "valor_mercado_atual": 2863.77,
+      "resultado_nao_realizado_rs": -425.88,
+      "resultado_nao_realizado_pct": -12.95,
+      "stop_geral_preco": 6.03,
+      "alvo_saida_desc": "IFR > 70",
+      "preco_gatilho_alvo": 10.85,
       "data_abertura": "2026-10-26",
       "data_encerramento": null,
       "motivo_encerramento": null,
       "preco_saida": null,
       "resultado_realizado_rs": null,
-      "resultado_realizado_pct": null
+      "resultado_realizado_pct": null,
+      "pendente_caixa_e2": true,
+      "preco_gatilho_original_e2": 10.85
     },
     "VIVA3_20261026": {
       "id": "VIVA3_20261026",
@@ -16907,7 +17043,7 @@
       "empresa": "VIVARA S.A.",
       "setor": "B3 Geral",
       "status": "ABERTO",
-      "etapa_atual": 2,
+      "etapa_atual": 1,
       "entradas": [
         {
           "nivel": 1,
@@ -16915,31 +17051,26 @@
           "preco": 19.530001,
           "quantidade": 168,
           "aporte_real": 3281.04
-        },
-        {
-          "nivel": 2,
-          "data": "2026-10-29",
-          "preco": 17.35,
-          "quantidade": 190,
-          "aporte_real": 3296.5
         }
       ],
-      "quantidade_total": 358,
-      "capital_total_alocado": 6577.54,
-      "preco_medio_atual": 18.37,
+      "quantidade_total": 168,
+      "capital_total_alocado": 3281.04,
+      "preco_medio_atual": 19.530001,
       "preco_fechamento_atual": 17.77,
-      "valor_mercado_atual": 6361.66,
-      "resultado_nao_realizado_rs": -215.88,
-      "resultado_nao_realizado_pct": -3.28,
-      "stop_geral_preco": 9.19,
-      "alvo_saida_desc": "50% em PM+5% (R$ 19.29) e 50% em IFR > 70",
-      "preco_gatilho_alvo": 15.62,
+      "valor_mercado_atual": 2985.36,
+      "resultado_nao_realizado_rs": -295.68,
+      "resultado_nao_realizado_pct": -9.01,
+      "stop_geral_preco": 9.77,
+      "alvo_saida_desc": "IFR > 70",
+      "preco_gatilho_alvo": 17.58,
       "data_abertura": "2026-10-26",
       "data_encerramento": null,
       "motivo_encerramento": null,
       "preco_saida": null,
       "resultado_realizado_rs": null,
-      "resultado_realizado_pct": null
+      "resultado_realizado_pct": null,
+      "pendente_caixa_e2": true,
+      "preco_gatilho_original_e2": 17.58
     },
     "CEAB3_20261026": {
       "id": "CEAB3_20261026",
@@ -16972,139 +17103,8 @@
       "motivo_encerramento": null,
       "preco_saida": null,
       "resultado_realizado_rs": null,
-      "resultado_realizado_pct": null
-    },
-    "RANI3_20261026": {
-      "id": "RANI3_20261026",
-      "ticker": "RANI3",
-      "empresa": "IRANI",
-      "setor": "B3 Geral",
-      "status": "ABERTO",
-      "etapa_atual": 1,
-      "entradas": [
-        {
-          "nivel": 1,
-          "data": "2026-10-26",
-          "preco": 7.32853,
-          "quantidade": 450,
-          "aporte_real": 3297.84
-        }
-      ],
-      "quantidade_total": 450,
-      "capital_total_alocado": 3297.84,
-      "preco_medio_atual": 7.32853,
-      "preco_fechamento_atual": 8.45,
-      "valor_mercado_atual": 3802.5,
-      "resultado_nao_realizado_rs": 504.66,
-      "resultado_nao_realizado_pct": 15.3,
-      "stop_geral_preco": 3.66,
-      "alvo_saida_desc": "IFR > 70",
-      "preco_gatilho_alvo": 6.6,
-      "data_abertura": "2026-10-26",
-      "data_encerramento": null,
-      "motivo_encerramento": null,
-      "preco_saida": null,
-      "resultado_realizado_rs": null,
-      "resultado_realizado_pct": null
-    },
-    "SANB4_20261028": {
-      "id": "SANB4_20261028",
-      "ticker": "SANB4",
-      "empresa": "SANTANDER BRASIL",
-      "setor": "B3 Geral",
-      "status": "ABERTO",
-      "etapa_atual": 1,
-      "entradas": [
-        {
-          "nivel": 1,
-          "data": "2026-10-28",
-          "preco": 12.35,
-          "quantidade": 267,
-          "aporte_real": 3297.45
-        }
-      ],
-      "quantidade_total": 267,
-      "capital_total_alocado": 3297.45,
-      "preco_medio_atual": 12.35,
-      "preco_fechamento_atual": 13.8,
-      "valor_mercado_atual": 3684.6,
-      "resultado_nao_realizado_rs": 387.15,
-      "resultado_nao_realizado_pct": 11.74,
-      "stop_geral_preco": 6.17,
-      "alvo_saida_desc": "IFR > 70",
-      "preco_gatilho_alvo": 11.12,
-      "data_abertura": "2026-10-28",
-      "data_encerramento": null,
-      "motivo_encerramento": null,
-      "preco_saida": null,
-      "resultado_realizado_rs": null,
-      "resultado_realizado_pct": null
-    },
-    "SANB11_20261028": {
-      "id": "SANB11_20261028",
-      "ticker": "SANB11",
-      "empresa": "SANTANDER BRASIL",
-      "setor": "B3 Geral",
-      "status": "ABERTO",
-      "etapa_atual": 1,
-      "entradas": [
-        {
-          "nivel": 1,
-          "data": "2026-10-28",
-          "preco": 24.35,
-          "quantidade": 135,
-          "aporte_real": 3287.25
-        }
-      ],
-      "quantidade_total": 135,
-      "capital_total_alocado": 3287.25,
-      "preco_medio_atual": 24.35,
-      "preco_fechamento_atual": 27.690001,
-      "valor_mercado_atual": 3738.15,
-      "resultado_nao_realizado_rs": 450.9,
-      "resultado_nao_realizado_pct": 13.72,
-      "stop_geral_preco": 12.18,
-      "alvo_saida_desc": "IFR > 70",
-      "preco_gatilho_alvo": 21.92,
-      "data_abertura": "2026-10-28",
-      "data_encerramento": null,
-      "motivo_encerramento": null,
-      "preco_saida": null,
-      "resultado_realizado_rs": null,
-      "resultado_realizado_pct": null
-    },
-    "VULC3_20261109": {
-      "id": "VULC3_20261109",
-      "ticker": "VULC3",
-      "empresa": "VULCABRAS",
-      "setor": "B3 Geral",
-      "status": "ABERTO",
-      "etapa_atual": 1,
-      "entradas": [
-        {
-          "nivel": 1,
-          "data": "2026-11-09",
-          "preco": 12.52,
-          "quantidade": 263,
-          "aporte_real": 3292.76
-        }
-      ],
-      "quantidade_total": 263,
-      "capital_total_alocado": 3292.76,
-      "preco_medio_atual": 12.52,
-      "preco_fechamento_atual": 12.14,
-      "valor_mercado_atual": 3192.82,
-      "resultado_nao_realizado_rs": -99.94,
-      "resultado_nao_realizado_pct": -3.04,
-      "stop_geral_preco": 6.26,
-      "alvo_saida_desc": "IFR > 70",
-      "preco_gatilho_alvo": 11.27,
-      "data_abertura": "2026-11-09",
-      "data_encerramento": null,
-      "motivo_encerramento": null,
-      "preco_saida": null,
-      "resultado_realizado_rs": null,
-      "resultado_realizado_pct": null
+      "resultado_realizado_pct": null,
+      "pendente_caixa_e2": false
     }
   },
   "evolucao": [
@@ -17390,193 +17390,173 @@
     },
     {
       "data": "2026-08-12",
-      "patrimonio_total": 65159.96,
-      "capital_alocado": 42705.71,
-      "valor_mercado_posicoes": 53694.22,
-      "caixa_livre": 11465.74,
-      "lucro_realizado_acumulado": 4171.45,
-      "variacao_pct_total": 30.32,
-      "quantidade_ativos_posicionados": 8
+      "patrimonio_total": 60881.58,
+      "capital_alocado": 42773.24,
+      "valor_mercado_posicoes": 49467.83,
+      "caixa_livre": 11413.75,
+      "lucro_realizado_acumulado": 4186.99,
+      "variacao_pct_total": 21.76,
+      "quantidade_ativos_posicionados": 10
+    },
+    {
+      "data": "2026-08-13",
+      "patrimonio_total": 60731.11,
+      "capital_alocado": 46066.04,
+      "valor_mercado_posicoes": 52610.16,
+      "caixa_livre": 8120.95,
+      "lucro_realizado_acumulado": 4186.99,
+      "variacao_pct_total": 21.46,
+      "quantidade_ativos_posicionados": 11
+    },
+    {
+      "data": "2026-08-14",
+      "patrimonio_total": 61048.57,
+      "capital_alocado": 52644.8,
+      "valor_mercado_posicoes": 59506.38,
+      "caixa_livre": 1542.19,
+      "lucro_realizado_acumulado": 4186.99,
+      "variacao_pct_total": 22.1,
+      "quantidade_ativos_posicionados": 13
     },
     {
       "data": "2026-08-20",
-      "patrimonio_total": 66942.55,
-      "capital_alocado": 42723.84,
-      "valor_mercado_posicoes": 55208.24,
-      "caixa_livre": 11734.31,
-      "lucro_realizado_acumulado": 4458.15,
-      "variacao_pct_total": 33.89,
-      "quantidade_ativos_posicionados": 10
-    },
-    {
-      "data": "2026-08-31",
-      "patrimonio_total": 69952.13,
-      "capital_alocado": 42723.84,
-      "valor_mercado_posicoes": 58217.82,
-      "caixa_livre": 11734.31,
-      "lucro_realizado_acumulado": 4458.15,
-      "variacao_pct_total": 39.9,
-      "quantidade_ativos_posicionados": 10
-    },
-    {
-      "data": "2026-09-01",
-      "patrimonio_total": 76544.18,
-      "capital_alocado": 36161.84,
-      "valor_mercado_posicoes": 48590.15,
-      "caixa_livre": 27954.03,
-      "lucro_realizado_acumulado": 14115.87,
-      "variacao_pct_total": 53.09,
-      "quantidade_ativos_posicionados": 9
-    },
-    {
-      "data": "2026-09-15",
-      "patrimonio_total": 77765.65,
-      "capital_alocado": 36161.84,
-      "valor_mercado_posicoes": 49811.62,
-      "caixa_livre": 27954.03,
-      "lucro_realizado_acumulado": 14115.87,
-      "variacao_pct_total": 55.53,
-      "quantidade_ativos_posicionados": 9
-    },
-    {
-      "data": "2026-09-30",
-      "patrimonio_total": 78589.83,
-      "capital_alocado": 36161.84,
-      "valor_mercado_posicoes": 50635.8,
-      "caixa_livre": 27954.03,
-      "lucro_realizado_acumulado": 14115.87,
-      "variacao_pct_total": 57.18,
-      "quantidade_ativos_posicionados": 9
-    },
-    {
-      "data": "2026-10-01",
-      "patrimonio_total": 78971.66,
-      "capital_alocado": 32862.66,
-      "valor_mercado_posicoes": 45075.59,
-      "caixa_livre": 33896.07,
-      "lucro_realizado_acumulado": 16758.73,
-      "variacao_pct_total": 57.94,
-      "quantidade_ativos_posicionados": 8
-    },
-    {
-      "data": "2026-10-05",
-      "patrimonio_total": 89839.67,
-      "capital_alocado": 23008.91,
-      "valor_mercado_posicoes": 33708.16,
-      "caixa_livre": 56131.51,
-      "lucro_realizado_acumulado": 29140.42,
-      "variacao_pct_total": 79.68,
-      "quantidade_ativos_posicionados": 6
-    },
-    {
-      "data": "2026-10-07",
-      "patrimonio_total": 89757.75,
-      "capital_alocado": 19738.11,
-      "valor_mercado_posicoes": 29261.36,
-      "caixa_livre": 60496.39,
-      "lucro_realizado_acumulado": 30234.5,
-      "variacao_pct_total": 79.52,
-      "quantidade_ativos_posicionados": 5
-    },
-    {
-      "data": "2026-10-09",
-      "patrimonio_total": 90433.77,
-      "capital_alocado": 16441.11,
-      "valor_mercado_posicoes": 25208.54,
-      "caixa_livre": 65225.23,
-      "lucro_realizado_acumulado": 31666.34,
-      "variacao_pct_total": 80.87,
-      "quantidade_ativos_posicionados": 4
-    },
-    {
-      "data": "2026-10-15",
-      "patrimonio_total": 89424.93,
-      "capital_alocado": 16441.11,
-      "valor_mercado_posicoes": 24199.7,
-      "caixa_livre": 65225.23,
-      "lucro_realizado_acumulado": 31666.34,
-      "variacao_pct_total": 78.85,
-      "quantidade_ativos_posicionados": 4
-    },
-    {
-      "data": "2026-10-23",
-      "patrimonio_total": 87743.72,
-      "capital_alocado": 29611.63,
-      "valor_mercado_posicoes": 35689.01,
-      "caixa_livre": 52054.71,
-      "lucro_realizado_acumulado": 31666.34,
-      "variacao_pct_total": 75.49,
-      "quantidade_ativos_posicionados": 8
-    },
-    {
-      "data": "2026-10-26",
-      "patrimonio_total": 83826.08,
-      "capital_alocado": 65846.09,
-      "valor_mercado_posicoes": 68005.83,
-      "caixa_livre": 15820.25,
-      "lucro_realizado_acumulado": 31666.34,
-      "variacao_pct_total": 67.65,
+      "patrimonio_total": 61952.19,
+      "capital_alocado": 52653.41,
+      "valor_mercado_posicoes": 60131.91,
+      "caixa_livre": 1820.28,
+      "lucro_realizado_acumulado": 4473.69,
+      "variacao_pct_total": 23.9,
       "quantidade_ativos_posicionados": 15
     },
     {
-      "data": "2026-10-28",
-      "patrimonio_total": 80826.66,
-      "capital_alocado": 75728.28,
-      "valor_mercado_posicoes": 74888.6,
-      "caixa_livre": 5938.06,
-      "lucro_realizado_acumulado": 31666.34,
-      "variacao_pct_total": 61.65,
-      "quantidade_ativos_posicionados": 17
+      "data": "2026-08-31",
+      "patrimonio_total": 65909.89,
+      "capital_alocado": 52653.41,
+      "valor_mercado_posicoes": 64089.61,
+      "caixa_livre": 1820.28,
+      "lucro_realizado_acumulado": 4473.69,
+      "variacao_pct_total": 31.82,
+      "quantidade_ativos_posicionados": 15
     },
     {
-      "data": "2026-10-29",
-      "patrimonio_total": 79276.4,
-      "capital_alocado": 92209.54,
-      "valor_mercado_posicoes": 89819.6,
-      "caixa_livre": -10543.2,
-      "lucro_realizado_acumulado": 31666.34,
-      "variacao_pct_total": 58.55,
-      "quantidade_ativos_posicionados": 17
+      "data": "2026-09-01",
+      "patrimonio_total": 66624.14,
+      "capital_alocado": 49357.25,
+      "valor_mercado_posicoes": 59554.42,
+      "caixa_livre": 7069.72,
+      "lucro_realizado_acumulado": 6426.97,
+      "variacao_pct_total": 33.25,
+      "quantidade_ativos_posicionados": 14
+    },
+    {
+      "data": "2026-09-15",
+      "patrimonio_total": 68160.72,
+      "capital_alocado": 49357.25,
+      "valor_mercado_posicoes": 61091.0,
+      "caixa_livre": 7069.72,
+      "lucro_realizado_acumulado": 6426.97,
+      "variacao_pct_total": 36.32,
+      "quantidade_ativos_posicionados": 14
+    },
+    {
+      "data": "2026-09-30",
+      "patrimonio_total": 69013.7,
+      "capital_alocado": 49357.25,
+      "valor_mercado_posicoes": 61943.98,
+      "caixa_livre": 7069.72,
+      "lucro_realizado_acumulado": 6426.97,
+      "variacao_pct_total": 38.03,
+      "quantidade_ativos_posicionados": 14
+    },
+    {
+      "data": "2026-10-01",
+      "patrimonio_total": 69469.69,
+      "capital_alocado": 46058.07,
+      "valor_mercado_posicoes": 56457.93,
+      "caixa_livre": 13011.76,
+      "lucro_realizado_acumulado": 9069.83,
+      "variacao_pct_total": 38.94,
+      "quantidade_ativos_posicionados": 13
+    },
+    {
+      "data": "2026-10-05",
+      "patrimonio_total": 75587.1,
+      "capital_alocado": 32899.66,
+      "valor_mercado_posicoes": 43553.06,
+      "caixa_livre": 32034.04,
+      "lucro_realizado_acumulado": 14933.7,
+      "variacao_pct_total": 51.17,
+      "quantidade_ativos_posicionados": 9
+    },
+    {
+      "data": "2026-10-07",
+      "patrimonio_total": 75652.17,
+      "capital_alocado": 23032.26,
+      "valor_mercado_posicoes": 30952.95,
+      "caixa_livre": 44699.22,
+      "lucro_realizado_acumulado": 17731.48,
+      "variacao_pct_total": 51.3,
+      "quantidade_ativos_posicionados": 6
+    },
+    {
+      "data": "2026-10-09",
+      "patrimonio_total": 76181.21,
+      "capital_alocado": 19736.52,
+      "valor_mercado_posicoes": 27054.35,
+      "caixa_livre": 49126.86,
+      "lucro_realizado_acumulado": 18863.38,
+      "variacao_pct_total": 52.36,
+      "quantidade_ativos_posicionados": 5
+    },
+    {
+      "data": "2026-10-15",
+      "patrimonio_total": 75386.51,
+      "capital_alocado": 19736.52,
+      "valor_mercado_posicoes": 26259.65,
+      "caixa_livre": 49126.86,
+      "lucro_realizado_acumulado": 18863.38,
+      "variacao_pct_total": 50.77,
+      "quantidade_ativos_posicionados": 5
+    },
+    {
+      "data": "2026-10-23",
+      "patrimonio_total": 74725.58,
+      "capital_alocado": 32907.04,
+      "valor_mercado_posicoes": 38769.24,
+      "caixa_livre": 35956.34,
+      "lucro_realizado_acumulado": 18863.38,
+      "variacao_pct_total": 49.45,
+      "quantidade_ativos_posicionados": 9
+    },
+    {
+      "data": "2026-10-26",
+      "patrimonio_total": 69139.64,
+      "capital_alocado": 65843.66,
+      "valor_mercado_posicoes": 66119.92,
+      "caixa_livre": 3019.72,
+      "lucro_realizado_acumulado": 18863.38,
+      "variacao_pct_total": 38.28,
+      "quantidade_ativos_posicionados": 15
     },
     {
       "data": "2026-10-31",
-      "patrimonio_total": 78231.05,
-      "capital_alocado": 92209.54,
-      "valor_mercado_posicoes": 88774.25,
-      "caixa_livre": -10543.2,
-      "lucro_realizado_acumulado": 31666.34,
-      "variacao_pct_total": 56.46,
-      "quantidade_ativos_posicionados": 17
-    },
-    {
-      "data": "2026-11-03",
-      "patrimonio_total": 77809.45,
-      "capital_alocado": 95503.3,
-      "valor_mercado_posicoes": 91646.41,
-      "caixa_livre": -13836.96,
-      "lucro_realizado_acumulado": 31666.34,
-      "variacao_pct_total": 55.62,
-      "quantidade_ativos_posicionados": 17
-    },
-    {
-      "data": "2026-11-09",
-      "patrimonio_total": 85917.4,
-      "capital_alocado": 88918.58,
-      "valor_mercado_posicoes": 93361.28,
-      "caixa_livre": -7443.88,
-      "lucro_realizado_acumulado": 31474.7,
-      "variacao_pct_total": 71.83,
-      "quantidade_ativos_posicionados": 17
+      "patrimonio_total": 63644.84,
+      "capital_alocado": 65843.66,
+      "valor_mercado_posicoes": 60625.12,
+      "caixa_livre": 3019.72,
+      "lucro_realizado_acumulado": 18863.38,
+      "variacao_pct_total": 27.29,
+      "quantidade_ativos_posicionados": 15
     },
     {
       "data": "2026-11-10",
-      "patrimonio_total": 84493.87,
-      "capital_alocado": 92201.78,
-      "valor_mercado_posicoes": 95220.95,
-      "caixa_livre": -10727.08,
-      "lucro_realizado_acumulado": 31474.7,
-      "variacao_pct_total": 68.99,
-      "quantidade_ativos_posicionados": 17
+      "patrimonio_total": 67269.87,
+      "capital_alocado": 65843.66,
+      "valor_mercado_posicoes": 64250.15,
+      "caixa_livre": 3019.72,
+      "lucro_realizado_acumulado": 18863.38,
+      "variacao_pct_total": 34.54,
+      "quantidade_ativos_posicionados": 15
     }
   ]
 }
