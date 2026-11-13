@@ -1,7 +1,7 @@
 {
   "config": {
     "capital_inicial": 50000,
-    "caixa_livre": 41750,
+    "caixa_livre": 38466.8,
     "capital_alocado_atual": 23100,
     "lucro_realizado_acumulado": 14850,
     "total_trades_finalizados": 28,
@@ -1513,7 +1513,7 @@
           "preco": 17.1
         }
       ],
-      "status_trade": "ABERTO_E1",
+      "status_trade": "ABERTO_E2",
       "trade_ativo_id": "BBAS3_20260608",
       "ultima_atualizacao": "2026-11-11T19:46:14.382Z"
     },
@@ -16070,7 +16070,7 @@
       "empresa": "Banco do Brasil",
       "setor": "Financeiro",
       "status": "ABERTO",
-      "etapa_atual": 1,
+      "etapa_atual": 2,
       "entradas": [
         {
           "nivel": 1,
@@ -16078,17 +16078,24 @@
           "preco": 26.5,
           "quantidade": 124,
           "aporte_real": 3286
+        },
+        {
+          "nivel": 2,
+          "data": "2026-11-10",
+          "preco": 17.1,
+          "quantidade": 192,
+          "aporte_real": 3283.2
         }
       ],
-      "quantidade_total": 124,
-      "capital_total_alocado": 3286,
-      "preco_medio_atual": 26.5,
-      "preco_fechamento_atual": 27.8,
-      "valor_mercado_atual": 3447.2,
-      "resultado_nao_realizado_rs": 161.2,
-      "resultado_nao_realizado_pct": 4.91,
-      "stop_geral_preco": 13.25,
-      "alvo_saida_desc": "IFR > 70",
+      "quantidade_total": 316,
+      "capital_total_alocado": 6569.2,
+      "preco_medio_atual": 20.79,
+      "preco_fechamento_atual": 17.1,
+      "valor_mercado_atual": 5403.6,
+      "resultado_nao_realizado_rs": -1165.6,
+      "resultado_nao_realizado_pct": -17.74,
+      "stop_geral_preco": 10.39,
+      "alvo_saida_desc": "IFR >= 50 e Preço > PM",
       "preco_gatilho_alvo": null,
       "data_abertura": "2026-06-08",
       "data_encerramento": null
