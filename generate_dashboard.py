@@ -10206,13 +10206,14 @@ body.theme-light .event-tile-date {
             let currentFilter = 'TODOS';
             let currentViewMode = 'comfort'; // 'comfort' ou 'compact'
             let chartMode = 'nav'; // 'nav' ou 'twr'
+            let isMobileScreen = typeof window !== 'undefined' && window.innerWidth ? window.innerWidth <= 768 : false;
             let visibleEventTypes = {
-                COMPRA: true,
+                COMPRA: !isMobileScreen,
                 GAIN: true,
-                STOP: true,
-                PROVENTO: typeof window !== 'undefined' && window.innerWidth ? window.innerWidth > 768 : true,
-                APORTE: true,
-                EVENTO_SOCIETARIO: true
+                STOP: !isMobileScreen,
+                PROVENTO: !isMobileScreen,
+                APORTE: !isMobileScreen,
+                EVENTO_SOCIETARIO: !isMobileScreen
             };
             let searchQuery = '';
             let chartInstance = null;
@@ -10262,7 +10263,12 @@ body.theme-light .event-tile-date {
 
             function initData() {
                 if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+                    visibleEventTypes.COMPRA = false;
+                    visibleEventTypes.GAIN = true;
+                    visibleEventTypes.STOP = false;
                     visibleEventTypes.PROVENTO = false;
+                    visibleEventTypes.APORTE = false;
+                    visibleEventTypes.EVENTO_SOCIETARIO = false;
                 }
                 syncLegendButtons();
                 if (typeof IFR_CACHE_DATA !== 'undefined' && IFR_CACHE_DATA && IFR_CACHE_DATA.config) {
