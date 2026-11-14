@@ -5239,6 +5239,11 @@ body.theme-light .event-tile-date {
     @media (max-width: 640px) {
         .ifr-kpi-grid-6 { grid-template-columns: 1fr; }
         .ifr-delta-box { grid-template-columns: 1fr; }
+        .ifr-timeline-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
     }
 
     /* Card do Gráfico de Evolução Patrimonial */
@@ -10205,7 +10210,7 @@ body.theme-light .event-tile-date {
                 COMPRA: true,
                 GAIN: true,
                 STOP: true,
-                PROVENTO: true,
+                PROVENTO: typeof window !== 'undefined' && window.innerWidth ? window.innerWidth > 768 : true,
                 APORTE: true,
                 EVENTO_SOCIETARIO: true
             };
@@ -10244,7 +10249,22 @@ body.theme-light .event-tile-date {
                 'PRIO3': { bg: '#111319', color: '#00e676', text: 'PRIO' }
             };
 
+            function syncLegendButtons() {
+                const legendEl = document.getElementById('ifrTimelineLegend');
+                if (!legendEl) return;
+                legendEl.querySelectorAll('.ifr-legend-item').forEach(btn => {
+                    const type = btn.getAttribute('data-ev-type');
+                    if (type && type in visibleEventTypes) {
+                        btn.classList.toggle('inactive', !visibleEventTypes[type]);
+                    }
+                });
+            }
+
             function initData() {
+                if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+                    visibleEventTypes.PROVENTO = false;
+                }
+                syncLegendButtons();
                 if (typeof IFR_CACHE_DATA !== 'undefined' && IFR_CACHE_DATA && IFR_CACHE_DATA.config) {
                     ifrData = IFR_CACHE_DATA;
                 }
@@ -10685,14 +10705,15 @@ body.theme-light .event-tile-date {
                     gradient.addColorStop(1, 'rgba(0, 230, 118, 0.00)');
                 }
 
+                const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
                 const pointRadii = evoList.map(pt => {
                     const evs = eventsByDate[pt.d];
-                    return (evs && evs.length > 0) ? 6 : 0;
+                    return (evs && evs.length > 0) ? (isMobile ? 4.5 : 6) : 0;
                 });
 
                 const pointHoverRadii = evoList.map(pt => {
                     const evs = eventsByDate[pt.d];
-                    return (evs && evs.length > 0) ? 9.5 : 5;
+                    return (evs && evs.length > 0) ? (isMobile ? 7 : 9.5) : (isMobile ? 3.5 : 5);
                 });
 
                 const pointBgColors = evoList.map(pt => {
@@ -11472,6 +11493,7 @@ body.theme-light .event-tile-date {
                     renderLedger();
                 },
                 onResize: function () {
+                    syncLegendButtons();
                     if (chartInstance) chartInstance.resize();
                 },
                 setChartMode: function (mode, btnEl) {
