@@ -4997,10 +4997,6 @@ body.theme-light .event-tile-date {
         align-items: center;
         justify-content: space-between;
     }
-    .ifr-kpi-title span:last-child {
-        filter: grayscale(100%) opacity(0.6);
-        font-size: 16px;
-    }
 
     .ifr-kpi-val {
         font-size: 26px;
