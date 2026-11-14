@@ -70,6 +70,14 @@ if os.path.exists("macro_data.json"):
     except Exception:
         pass
 
+macro_fiscal_cache = {}
+if os.path.exists("macro_fiscal_cache.json"):
+    try:
+        with open("macro_fiscal_cache.json", "r", encoding="utf-8") as f:
+            macro_fiscal_cache = json.load(f)
+    except Exception:
+        pass
+
 
 
 template = """<!DOCTYPE html>
@@ -80,7 +88,7 @@ template = """<!DOCTYPE html>
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Dashboard Fundamentalista IBOV / B3</title>
 
@@ -88,10 +96,10 @@ template = """<!DOCTYPE html>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" integrity="sha384-vsrfeLOOY6KuIYKDlmVH5UiBmgIdB1oEf7p01YgWHuqmOHfZr374+odEv96n9tNC" crossorigin="anonymous"></script>
     <!-- Firebase SDK (Compat) para Leitura Pública em Tempo Real do Firestore -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js" integrity="sha384-4gq9w/AGf72FXdNQ3Kn3EqWP7633NbCMjpYHt8YCZyXf23o2opcuAr4cif41tLrC" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js" integrity="sha384-Qgqc/HETq5lqJnRDqWnV1AZGw3pgMYNUVaqLLN1W/55XuWK94epwbCQrOvdoh1Zo" crossorigin="anonymous"></script>
 
     <style>
 
@@ -2243,7 +2251,7 @@ body.theme-light {
 * { font-family: var(--font-sans); box-sizing: border-box; }
 html, body {
     background: var(--bg);
-    overflow-x: hidden;
+    overflow-x: clip;
     max-width: 100vw;
 }
 body {
@@ -2900,19 +2908,32 @@ footer strong { font-variant-numeric: tabular-nums; }
     .app-tab-divider { display: none; }
     .app-tab-nav {
         top: 6px;
-        padding: 4px;
-        gap: 4px;
+        padding: 4px 6px;
+        gap: 6px;
         margin-bottom: 12px;
-        flex-wrap: nowrap;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+    .app-tab-nav::-webkit-scrollbar {
+        height: 4px;
+    }
+    .app-tab-nav::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .app-tab-nav::-webkit-scrollbar-thumb {
+        background: rgba(148, 163, 184, 0.35);
+        border-radius: 999px;
     }
     .app-tab-btn {
-        flex: 1 1 auto;
+        flex: 0 0 auto;
         justify-content: center;
-        padding: 7px 6px;
-        font-size: 11.5px;
+        padding: 6px 10px;
+        font-size: 12px;
         gap: 5px;
         white-space: nowrap;
-        min-width: 0;
     }
     .app-tab-btn .sector-count-badge {
         font-size: 9.5px;
@@ -3162,9 +3183,6 @@ body.theme-light .event-tile-date {
     background: rgba(0, 0, 0, 0.06);
 }
 @media (max-width: 640px) {
-    .app-tab-nav {
-        flex-wrap: wrap !important;
-    }
     .events-cards-grid {
         grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
         gap: 8px;
@@ -3207,12 +3225,9 @@ body.theme-light .event-tile-date {
                 </span>
             </button>
 
-            <!-- Alternador Global de Tema (🌙 Escuro / ☀️ Claro) -->
+            <!-- Alternador Global de Tema (Botão Único: 🌙 Escuro / ☀️ Claro) -->
             <div class="app-tab-theme-toggle">
-                <div class="period-selector" style="padding: 2px;">
-                    <button class="period-btn active" id="btnThemeObsidian" onclick="setTheme('obsidian', this)" title="Modo Escuro (Obsidian)" style="font-size: 14px; padding: 6px 12px;">🌙</button>
-                    <button class="period-btn" id="btnThemeLight" onclick="setTheme('light', this)" title="Modo Claro" style="font-size: 14px; padding: 6px 12px;">☀️</button>
-                </div>
+                <button class="period-btn" id="btnThemeToggle" onclick="toggleTheme()" title="Alternar para Modo Claro" aria-label="Alternar para Modo Claro" style="font-size: 14px; padding: 6px 10px;">☀️</button>
             </div>
         </div>
     
@@ -3850,6 +3865,7 @@ body.theme-light .event-tile-date {
                     <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecCurva')">📈 Vértices DI1 &amp; Curva de Juros</button>
                     <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecRegimes')">🧭 Regimes de Risco</button>
                     <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecEse')">🔀 Mapa "E se…?"</button>
+                    <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecFiscal')">🏛️ Fiscal &amp; Dívida/PIB</button>
                 </div>
             </div>
 
@@ -4045,6 +4061,59 @@ body.theme-light .event-tile-date {
                         </table>
                     </div>
                 </div>
+            </div>
+
+            <!-- Bloco 5: Receitas e Despesas do Governo Central vs. Dívida/PIB (%) -->
+            <div id="macroSecFiscal" class="macro-panel macro-section">
+                <div class="macro-panel-head">
+                    <div>
+                        <span class="macro-kicker green">POLÍTICA FISCAL · TESOURO NACIONAL (RTN) &amp; BCB</span>
+                        <h3>Receitas e Despesas do Governo Central vs. Dívida/PIB (%)</h3>
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+                        <div class="macro-live-pill" id="mcFiscalSyncBadge" title="Sincronizado diariamente às 03:00 BRT via GitHub Actions + Cloud Firestore">
+                            <span class="macro-live-dot"></span>
+                            <span id="mcFiscalSyncText">Sincronizado · Firebase Firestore (03:00 BRT)</span>
+                        </div>
+                        <div class="period-selector" style="padding: 2px;" id="mcFiscalPeriodBtns">
+                            <button type="button" class="period-btn" onclick="MacroModule.setFiscalRange(5, this)">5A</button>
+                            <button type="button" class="period-btn" onclick="MacroModule.setFiscalRange(10, this)">10A</button>
+                            <button type="button" class="period-btn" onclick="MacroModule.setFiscalRange(20, this)">20A</button>
+                            <button type="button" class="period-btn active" onclick="MacroModule.setFiscalRange(0, this)">MÁX (2003–2026)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="macro-kpi-strip" style="margin-top: 8px; margin-bottom: 16px;">
+                    <div class="macro-kpi-chip" style="border-color: rgba(16, 185, 129, 0.35); background: rgba(16, 185, 129, 0.06);">
+                        <span class="lbl">Receita Total (MM12M)</span>
+                        <strong id="mcFiscalKpiRec" style="color: #10b981;">R$ -- bi</strong>
+                        <small id="mcFiscalKpiRecSub">Deflacionado IPCA</small>
+                    </div>
+                    <div class="macro-kpi-chip" style="border-color: rgba(239, 68, 68, 0.35); background: rgba(239, 68, 68, 0.06);">
+                        <span class="lbl">Despesa Primária (MM12M)</span>
+                        <strong id="mcFiscalKpiDesp" style="color: #ef4444;">R$ -- bi</strong>
+                        <small id="mcFiscalKpiDespSub">Deflacionado IPCA</small>
+                    </div>
+                    <div class="macro-kpi-chip" id="mcFiscalKpiPrimCard">
+                        <span class="lbl">Resultado Primário</span>
+                        <strong id="mcFiscalKpiPrim">R$ -- bi / mês</strong>
+                        <small id="mcFiscalKpiPrimSub">Balanço Fiscal Mensal</small>
+                    </div>
+                    <div class="macro-kpi-chip copom">
+                        <span class="lbl">Dívida Bruta / PIB</span>
+                        <strong id="mcFiscalKpiDiv" style="color: #f59e0b;">--%</strong>
+                        <small id="mcFiscalKpiDivSub">Série Encadeada FMI &amp; DBGG BCB</small>
+                    </div>
+                </div>
+
+                <div style="position: relative; width: 100%; height: 390px;">
+                    <canvas id="chartMacroFiscal"></canvas>
+                </div>
+
+                <p class="macro-note" id="mcFiscalFooterNote" style="margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 11px;">
+                    Fonte: Tesouro Transparente (RTN - Série Histórica Mensal IPCA) e Banco Central do Brasil (SGS 4537 / 13762) · Valores mensais em média móvel de 12 meses corrigidos pelo IPCA (escala base constante 2003 de 0 a 80 bi e valores equivalentes atuais no tooltip).
+                </p>
             </div>
         </div>
 
@@ -6042,6 +6111,7 @@ body.theme-light .event-tile-date {
         const CORPORATE_EVENTS_MAP = __CORPORATE_EVENTS_PLACEHOLDER__;
         const EVENTS_ALL_DATA = __EVENTS_ALL_DATA_PLACEHOLDER__;
         const MACRO_DATA = __MACRO_PLACEHOLDER__;
+        const MACRO_FISCAL_DATA = __MACRO_FISCAL_PLACEHOLDER__;
 
         // Glass Pro: tipografia e tooltips flutuantes dos gráficos alinhados ao design system (zinc-900/80 + border-zinc-800)
         function applyGlassChartTheme() {
@@ -6110,19 +6180,32 @@ body.theme-light .event-tile-date {
             'VULC3': 'vulcabras.com.br', 'VVEO3': 'viveo.com.br', 'WEGE3': 'weg.net', 'YDUQ3': 'yduqs.com.br'
         };
 
+        function escHtml(v) {
+            return String(v === null || v === undefined ? '' : v)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         function getHeaderBrandIconHtml(ticker, size = 38) {
             if (!ticker) return '';
+            const safeTicker = escHtml(ticker);
             if (ticker === 'IBOV') return `<span class="header-brand-badge" style="display:inline-flex; align-items:center; justify-content:center; width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; background:rgba(56,189,248,0.15); border:1.5px solid rgba(56,189,248,0.4); font-size:18px; vertical-align:middle;">📊</span>`;
             if (ticker === 'IFNC') return `<span class="header-brand-badge" style="display:inline-flex; align-items:center; justify-content:center; width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; background:rgba(245,158,11,0.15); border:1.5px solid rgba(245,158,11,0.4); font-size:18px; vertical-align:middle;">🏦</span>`;
             if (ticker === 'SEGUROS') return `<span class="header-brand-badge" style="display:inline-flex; align-items:center; justify-content:center; width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; background:rgba(0,230,118,0.15); border:1.5px solid rgba(0,230,118,0.4); font-size:18px; vertical-align:middle;">🛡️</span>`;
 
-            const domain = COMPANY_DOMAINS[ticker] || (ticker.toLowerCase() + '.com.br');
-            const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
-            const fallbackUrl = `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://${domain}&size=128`;
+            const domain = COMPANY_DOMAINS[ticker] || (String(ticker).toLowerCase().replace(/[^a-z0-9.-]/g, '') + '.com.br');
+            const logoUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`;
+            const monogram = escHtml(String(ticker).slice(0, 4));
 
-            return `<img src="${logoUrl}" alt="${ticker}" class="header-brand-logo-img" 
-                         style="width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; object-fit:contain; background:#ffffff; padding:3px; box-shadow:0 2px 8px rgba(0,0,0,0.22); border:1.5px solid var(--border); vertical-align:middle; display:inline-block;" 
-                         onerror="if(this.src!=='${fallbackUrl}') { this.src='${fallbackUrl}'; } else { this.style.display='none'; }">`;
+            return `<span style="position:relative; display:inline-flex; align-items:center; justify-content:center; width:${size}px; height:${size}px; min-width:${size}px; vertical-align:middle;">` +
+                `<img src="${logoUrl}" alt="${safeTicker}" class="header-brand-logo-img" ` +
+                `style="width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; object-fit:contain; background:#ffffff; padding:3px; box-shadow:0 2px 8px rgba(0,0,0,0.22); border:1.5px solid var(--border); display:inline-block;" ` +
+                `onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';">` +
+                `<span class="header-brand-badge" style="display:none; align-items:center; justify-content:center; width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; background:rgba(56,189,248,0.15); border:1.5px solid rgba(56,189,248,0.35); color:var(--text-main); font-family:var(--font-mono); font-size:10px; font-weight:700;">${monogram}</span>` +
+                `</span>`;
         }
 
         function updateHeaderSubtitle(ticker) {
@@ -7818,7 +7901,7 @@ body.theme-light .event-tile-date {
             // Renderizar Proventos
             if (contentDivs) {
                 if (divs.length === 0) {
-                    contentDivs.innerHTML = '<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:12px;">Nenhum provento em dinheiro registrado na B3 para ' + ticker + ' no período selecionado (' + periodLabel + ').</div>';
+                    contentDivs.innerHTML = '<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:12px;">Nenhum provento em dinheiro registrado na B3 para ' + escHtml(ticker) + ' no período selecionado (' + escHtml(periodLabel) + ').</div>';
                 } else {
                     let html = '<table class="events-table"><thead><tr>';
                     html += '<th style="width: 140px;">Tipo de Provento</th>';
@@ -7834,15 +7917,15 @@ body.theme-light .event-tile-date {
                         if (typeUpper.includes('DIVIDENDO')) badgeClass = 'badge-div';
                         else if (typeUpper.includes('JRS') || typeUpper.includes('JCP') || typeUpper.includes('JUROS')) badgeClass = 'badge-jcp';
 
-                        const valStr = (typeof d.value === 'number') ? 'R$ ' + d.value.toFixed(4) : (d.value || '-');
-                        const pgtoStr = (d.date_payment && d.date_payment !== '-') ? `<strong style="color:var(--text-main);">${d.date_payment}</strong>` : '<span style="color:var(--text-muted); opacity:0.65;">Não informada</span>';
+                        const valStr = (typeof d.value === 'number') ? 'R$ ' + d.value.toFixed(4) : escHtml(d.value || '-');
+                        const pgtoStr = (d.date_payment && d.date_payment !== '-') ? `<strong style="color:var(--text-main);">${escHtml(d.date_payment)}</strong>` : '<span style="color:var(--text-muted); opacity:0.65;">Não informada</span>';
 
                         html += `<tr>
-                            <td><span class="event-badge ${badgeClass}">${d.type}</span></td>
+                            <td><span class="event-badge ${badgeClass}">${escHtml(d.type)}</span></td>
                             <td style="text-align: right; font-weight: 700; color: #22c55e;">${valStr}</td>
-                            <td style="text-align: center; font-weight: 500;">${d.date_com || '-'}</td>
+                            <td style="text-align: center; font-weight: 500;">${escHtml(d.date_com || '-')}</td>
                             <td style="text-align: center;">${pgtoStr}</td>
-                            <td style="text-align: center; color: var(--text-muted);">${d.date_approval || '-'}</td>
+                            <td style="text-align: center; color: var(--text-muted);">${escHtml(d.date_approval || '-')}</td>
                         </tr>`;
                     });
 
@@ -7854,7 +7937,7 @@ body.theme-light .event-tile-date {
             // Renderizar Splits, Inplits e Bonificações
             if (contentSplits) {
                 if (corporateActions.length === 0) {
-                    contentSplits.innerHTML = '<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:12px;">Nenhum evento de split, inplit ou bonificação registrado para ' + ticker + ' no período selecionado (' + periodLabel + ').</div>';
+                    contentSplits.innerHTML = '<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:12px;">Nenhum evento de split, inplit ou bonificação registrado para ' + escHtml(ticker) + ' no período selecionado (' + escHtml(periodLabel) + ').</div>';
                 } else {
                     let html = '<table class="events-table"><thead><tr>';
                     html += '<th style="width: 170px;">Evento Societário</th>';
@@ -7880,11 +7963,11 @@ body.theme-light .event-tile-date {
                         }
 
                         html += `<tr>
-                            <td><span class="event-badge ${badgeClass}">${labelText}</span></td>
-                            <td style="text-align: center; font-weight: 700; color: var(--text-main);">${ev.ratio || '-'}</td>
-                            <td style="color: var(--text-muted); font-weight: 500;">${ev.description || '-'}</td>
-                            <td style="text-align: center; font-weight: 600;">${ev.date_com || '-'}</td>
-                            <td style="text-align: center; color: var(--text-muted);">${ev.date_approval || '-'}</td>
+                            <td><span class="event-badge ${badgeClass}">${escHtml(labelText)}</span></td>
+                            <td style="text-align: center; font-weight: 700; color: var(--text-main);">${escHtml(ev.ratio || '-')}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">${escHtml(ev.description || '-')}</td>
+                            <td style="text-align: center; font-weight: 600;">${escHtml(ev.date_com || '-')}</td>
+                            <td style="text-align: center; color: var(--text-muted);">${escHtml(ev.date_approval || '-')}</td>
                         </tr>`;
                     });
 
@@ -7895,15 +7978,22 @@ body.theme-light .event-tile-date {
         }
 
 
-        function setTheme(theme, btn) {
+        function updateThemeToggleButton(theme) {
+            const btn = document.getElementById('btnThemeToggle');
+            if (!btn) return;
+            const isLight = theme === 'light';
+            btn.textContent = isLight ? '🌙' : '☀️';
+            btn.title = isLight ? 'Alternar para Modo Escuro (Obsidian)' : 'Alternar para Modo Claro';
+            btn.setAttribute('aria-label', btn.title);
+        }
+
+        function setTheme(theme) {
             document.body.classList.remove('theme-light', 'theme-obsidian', 'theme-bloomberg', 'theme-emerald');
             if (theme === 'light') {
                 document.body.classList.add('theme-light');
             }
 
-            document.querySelectorAll('#btnThemeObsidian, #btnThemeLight').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-
+            updateThemeToggleButton(theme);
             localStorage.setItem('fundamentalista_theme', theme);
 
             setTimeout(() => {
@@ -7911,6 +8001,11 @@ body.theme-light .event-tile-date {
                 if (typeof MacroModule !== 'undefined' && MacroModule.onThemeChange) MacroModule.onThemeChange();
                 if (typeof IfrModule !== 'undefined' && IfrModule.onThemeChange) IfrModule.onThemeChange();
             }, 50);
+        }
+
+        function toggleTheme() {
+            const isLight = document.body.classList.contains('theme-light');
+            setTheme(isLight ? 'obsidian' : 'light');
         }
 
         // Inicializa o tema salvo (padrão Obsidian)
@@ -7921,11 +8016,7 @@ body.theme-light .event-tile-date {
             }
 
             window.addEventListener('DOMContentLoaded', () => {
-                const btn = (savedTheme === 'light') ? document.getElementById('btnThemeLight') : document.getElementById('btnThemeObsidian');
-                if (btn) {
-                    document.querySelectorAll('#btnThemeObsidian, #btnThemeLight').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                }
+                updateThemeToggleButton(savedTheme);
             });
         })();
 
@@ -7980,6 +8071,25 @@ body.theme-light .event-tile-date {
                 if (typeof renderCharts === 'function') renderCharts();
             }, 100);
         }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const openCards = document.querySelectorAll('.chart-box.fullscreen-card');
+                if (openCards.length > 0) {
+                    openCards.forEach(c => {
+                        c.classList.remove('fullscreen-card');
+                        const b = c.querySelector('.btn-fullscreen');
+                        if (b) {
+                            b.textContent = '⛶';
+                            b.title = 'Maximizar este gráfico em tela cheia';
+                        }
+                    });
+                    setTimeout(() => {
+                        if (typeof renderCharts === 'function') renderCharts();
+                    }, 100);
+                }
+            }
+        });
 
         // Recupera o modo de layout salvo
         (function initLayoutMode() {
@@ -9713,6 +9823,229 @@ body.theme-light .event-tile-date {
                 renderAll();
             }
 
+            let fiscalData = (typeof MACRO_FISCAL_DATA !== "undefined" && MACRO_FISCAL_DATA && Array.isArray(MACRO_FISCAL_DATA.series))
+                ? MACRO_FISCAL_DATA
+                : { kpis: {}, series: [] };
+            let fiscalYearsRange = 0;
+            let fiscalChartInstance = null;
+
+            function formatFiscalMonth(ym) {
+                if (!ym || ym.length < 7) return ym || "";
+                const parts = ym.split("-");
+                return parts[1] + "/" + parts[0];
+            }
+
+            function renderFiscalSection() {
+                const seriesAll = (fiscalData && Array.isArray(fiscalData.series)) ? fiscalData.series : [];
+                if (!seriesAll.length) return;
+
+                const latest = seriesAll[seriesAll.length - 1];
+                const kpis = fiscalData.kpis || {};
+                const recBi = (kpis.receita_bi !== undefined) ? kpis.receita_bi : latest.rec;
+                const despBi = (kpis.despesa_bi !== undefined) ? kpis.despesa_bi : latest.desp;
+                const primBi = (kpis.resultado_primario_bi !== undefined) ? kpis.resultado_primario_bi : (recBi - despBi);
+                const divPct = (kpis.divida_pib_pct !== undefined) ? kpis.divida_pib_pct : latest.div;
+                const divBcb = (kpis.divida_bcb_pct !== undefined) ? kpis.divida_bcb_pct : latest.div_bcb;
+                const refMonth = formatFiscalMonth(fiscalData.reference_month || latest.m);
+
+                const elRec = document.getElementById("mcFiscalKpiRec");
+                const elRecSub = document.getElementById("mcFiscalKpiRecSub");
+                const elDesp = document.getElementById("mcFiscalKpiDesp");
+                const elDespSub = document.getElementById("mcFiscalKpiDespSub");
+                const elPrim = document.getElementById("mcFiscalKpiPrim");
+                const elPrimSub = document.getElementById("mcFiscalKpiPrimSub");
+                const elPrimCard = document.getElementById("mcFiscalKpiPrimCard");
+                const elDiv = document.getElementById("mcFiscalKpiDiv");
+                const elDivSub = document.getElementById("mcFiscalKpiDivSub");
+
+                if (elRec) elRec.textContent = "R$ " + Number(recBi).toFixed(1).replace(".", ",") + " bi";
+                if (elRecSub) elRecSub.textContent = "Deflacionado IPCA (" + refMonth + ")";
+                if (elDesp) elDesp.textContent = "R$ " + Number(despBi).toFixed(1).replace(".", ",") + " bi";
+                if (elDespSub) elDespSub.textContent = "Deflacionado IPCA (" + refMonth + ")";
+
+                if (elPrim) {
+                    const sign = primBi >= 0 ? "+" : "-";
+                    elPrim.textContent = sign + "R$ " + Math.abs(primBi).toFixed(1).replace(".", ",") + " bi / mês";
+                    elPrim.style.color = primBi >= 0 ? "#10b981" : "#ef4444";
+                }
+                if (elPrimSub) {
+                    elPrimSub.textContent = primBi >= 0 ? "Superávit Primário (MM12M)" : "Déficit Primário (MM12M)";
+                }
+                if (elPrimCard) {
+                    elPrimCard.style.borderColor = primBi >= 0 ? "rgba(16, 185, 129, 0.35)" : "rgba(239, 68, 68, 0.35)";
+                    elPrimCard.style.background = primBi >= 0 ? "rgba(16, 185, 129, 0.06)" : "rgba(239, 68, 68, 0.06)";
+                }
+                if (elDiv) elDiv.textContent = Number(divPct).toFixed(1).replace(".", ",") + "%";
+                if (elDivSub) {
+                    elDivSub.textContent = divBcb ? ("FMI: " + Number(divPct).toFixed(1).replace(".", ",") + "% · DBGG BCB: " + Number(divBcb).toFixed(1).replace(".", ",") + "%") : "Série Histórica BCB";
+                }
+
+                const filtered = fiscalYearsRange > 0
+                    ? seriesAll.slice(-Math.min(seriesAll.length, fiscalYearsRange * 12))
+                    : seriesAll;
+
+                const labels = filtered.map(item => formatFiscalMonth(item.m));
+                const dataRec = filtered.map(item => item.rec);
+                const dataDesp = filtered.map(item => item.desp);
+                const dataDiv = filtered.map(item => item.div);
+
+                const canvas = document.getElementById("chartMacroFiscal");
+                if (!canvas || typeof Chart === "undefined") return;
+
+                const isLight = document.body.classList.contains("theme-light");
+                const gridColor = isLight ? "rgba(15, 23, 42, 0.07)" : "rgba(148, 163, 184, 0.1)";
+                const tickColor = isLight ? "#475569" : "#94a3b8";
+
+                // Escala dinâmica do eixo Y esquerdo (evita vácuo inferior conforme a janela temporal)
+                let yMinVal = 20;
+                if (fiscalYearsRange === 5) {
+                    yMinVal = 45;
+                } else if (fiscalYearsRange === 10) {
+                    yMinVal = 40;
+                }
+
+                if (fiscalChartInstance) {
+                    fiscalChartInstance.destroy();
+                    fiscalChartInstance = null;
+                }
+
+                fiscalChartInstance = new Chart(canvas.getContext("2d"), {
+                    type: "line",
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: "Receita",
+                                data: dataRec,
+                                borderColor: "#10b981",
+                                backgroundColor: "rgba(16, 185, 129, 0.12)",
+                                borderWidth: 2.4,
+                                pointRadius: 0,
+                                pointHoverRadius: 5,
+                                pointHoverBackgroundColor: "#10b981",
+                                tension: 0.25,
+                                yAxisID: "y"
+                            },
+                            {
+                                label: "Despesa",
+                                data: dataDesp,
+                                borderColor: "#ef4444",
+                                backgroundColor: "rgba(239, 68, 68, 0.12)",
+                                borderWidth: 2.4,
+                                pointRadius: 0,
+                                pointHoverRadius: 5,
+                                pointHoverBackgroundColor: "#ef4444",
+                                tension: 0.25,
+                                yAxisID: "y"
+                            },
+                            {
+                                label: "Dívida/PIB (%)",
+                                data: dataDiv,
+                                borderColor: "#f59e0b",
+                                backgroundColor: "rgba(245, 158, 11, 0.1)",
+                                borderWidth: 2.0,
+                                borderDash: [5, 4],
+                                pointRadius: 0,
+                                pointHoverRadius: 5,
+                                pointHoverBackgroundColor: "#f59e0b",
+                                tension: 0.25,
+                                yAxisID: "y1"
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: "index",
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: "top",
+                                labels: {
+                                    color: isLight ? "#0f172a" : "#e2e8f0",
+                                    usePointStyle: true,
+                                    pointStyle: "circle",
+                                    padding: 18,
+                                    font: { family: "Inter, sans-serif", size: 12, weight: "600" }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const val = context.parsed.y;
+                                        if (val === null || val === undefined) return "";
+                                        const idx = context.dataIndex;
+                                        const item = filtered[idx] || {};
+                                        if (context.dataset.label === "Receita") {
+                                            const extra = item.rec_atual ? " (Preços atuais: R$ " + Number(item.rec_atual).toFixed(1).replace(".", ",") + " bi)" : "";
+                                            return "Receita: R$ " + Number(val).toFixed(1).replace(".", ",") + " bi" + extra;
+                                        }
+                                        if (context.dataset.label === "Despesa") {
+                                            const extra = item.desp_atual ? " (Preços atuais: R$ " + Number(item.desp_atual).toFixed(1).replace(".", ",") + " bi)" : "";
+                                            return "Despesa: R$ " + Number(val).toFixed(1).replace(".", ",") + " bi" + extra;
+                                        }
+                                        return "Dívida/PIB (%): " + Number(val).toFixed(1).replace(".", ",") + "%";
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: {
+                                    color: tickColor,
+                                    maxTicksLimit: 14,
+                                    font: { family: "JetBrains Mono, monospace", size: 10.5 }
+                                }
+                            },
+                            y: {
+                                type: "linear",
+                                display: true,
+                                position: "left",
+                                min: yMinVal,
+                                max: 80,
+                                title: {
+                                    display: true,
+                                    text: "R$ (bilhões – deflacionado)",
+                                    color: tickColor,
+                                    font: { family: "Inter, sans-serif", size: 11, weight: "600" }
+                                },
+                                grid: { color: gridColor },
+                                ticks: {
+                                    color: tickColor,
+                                    stepSize: (yMinVal >= 40) ? 5 : 10,
+                                    callback: function(v) { return v + " bi"; },
+                                    font: { family: "JetBrains Mono, monospace", size: 10.5 }
+                                }
+                            },
+                            y1: {
+                                type: "linear",
+                                display: true,
+                                position: "right",
+                                min: 0,
+                                max: 100,
+                                title: {
+                                    display: true,
+                                    text: "Dívida / PIB (%)",
+                                    color: tickColor,
+                                    font: { family: "Inter, sans-serif", size: 11, weight: "600" }
+                                },
+                                grid: { drawOnChartArea: false },
+                                ticks: {
+                                    color: tickColor,
+                                    stepSize: 20,
+                                    callback: function(v) { return v + "%"; },
+                                    font: { family: "JetBrains Mono, monospace", size: 10.5 }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
             function renderAll() {
                 renderTopBadgeAndKPIs();
                 renderCopomChart();
@@ -9721,6 +10054,7 @@ body.theme-light .event-tile-date {
                 renderCurveSection();
                 setRegime(regimeSelected);
                 renderTxScenario(false);
+                renderFiscalSection();
             }
 
             return {
@@ -9734,6 +10068,7 @@ body.theme-light .event-tile-date {
                     } else {
                         renderCopomChart();
                         renderCurveSection();
+                        renderFiscalSection();
                     }
                     if (!liveLoaded) {
                         liveLoaded = true;
@@ -9745,11 +10080,27 @@ body.theme-light .event-tile-date {
                         renderCopomChart();
                         renderCurveSection();
                         renderTxScenario(false);
+                        renderFiscalSection();
                     }
                 },
                 onResize: function () {
                     if (initialized && typeof currentAppTab !== 'undefined' && currentAppTab === 'macro') {
                         renderCurveSection();
+                        if (fiscalChartInstance) fiscalChartInstance.resize();
+                    }
+                },
+                setFiscalRange: function (yrs, btn) {
+                    fiscalYearsRange = yrs;
+                    document.querySelectorAll('#mcFiscalPeriodBtns .period-btn').forEach(b => b.classList.remove('active'));
+                    if (btn) btn.classList.add('active');
+                    renderFiscalSection();
+                },
+                updateFiscalFromFirestore: function (docData) {
+                    if (docData && Array.isArray(docData.series) && docData.series.length > 0) {
+                        fiscalData = docData;
+                        const syncEl = document.getElementById('mcFiscalSyncText');
+                        if (syncEl) syncEl.textContent = 'Sincronizado Ao Vivo · Firebase Firestore (03:00 BRT)';
+                        if (initialized) renderFiscalSection();
                     }
                 },
                 setCopomYear: function (yr, btn) {
@@ -9875,19 +10226,32 @@ body.theme-light .event-tile-date {
             };
 
             function initFirebaseClient() {
+                const onFirestoreError = (scope, err) => {
+                    console.warn(`Aviso Firebase (${scope}):`, err && err.message ? err.message : err);
+                    const syncEl = document.getElementById('ifrSyncStatusText');
+                    if (syncEl) {
+                        syncEl.textContent = '🟡 Cache Local (Firebase offline)';
+                    }
+                };
                 try {
                     if (window.FIREBASE_CONFIG && typeof firebase !== 'undefined' && !firebase.apps.length) {
                         firebase.initializeApp(window.FIREBASE_CONFIG);
                         firestoreDb = firebase.firestore();
                         console.log('⚡ Firebase Firestore conectado no cliente web!');
 
-                        // Listeners em tempo real
+                        // Listeners em tempo real com proteção contra sobrescrita vazia e tratamento de erro
+                        firestoreDb.collection('macro_fiscal').doc('governo_central_historico').onSnapshot(doc => {
+                            if (doc.exists && typeof MacroModule !== 'undefined' && MacroModule.updateFiscalFromFirestore) {
+                                MacroModule.updateFiscalFromFirestore(doc.data());
+                            }
+                        }, err => onFirestoreError('macro_fiscal', err));
+
                         firestoreDb.collection('configuracao_ifr').doc('estado_global').onSnapshot(doc => {
-                            if (doc.exists) {
-                                ifrData.config = doc.data();
+                            if (doc.exists && doc.data()) {
+                                ifrData.config = Object.assign({}, ifrData.config || {}, doc.data());
                                 renderKPIs();
                             }
-                        });
+                        }, err => onFirestoreError('configuracao_ifr', err));
 
                         firestoreDb.collection('fechamentos_resumo').onSnapshot(snap => {
                             const serie = [];
@@ -9895,14 +10259,14 @@ body.theme-light .event-tile-date {
                                 const data = d.data();
                                 if (Array.isArray(data.serie)) serie.push(...data.serie);
                             });
-                            serie.sort((a, b) => a.d.localeCompare(b.d));
+                            serie.sort((a, b) => String(a.d || '').localeCompare(String(b.d || '')));
                             if (serie.length > 0) {
                                 ifrData.fechamentos_resumo = serie;
                                 renderChart();
                                 renderTimeline();
                                 renderAccountingDetails();
                             }
-                        });
+                        }, err => onFirestoreError('fechamentos_resumo', err));
 
                         firestoreDb.collection('fechamentos_ifr').orderBy('data', 'desc').limit(1).onSnapshot(snap => {
                             if (!snap.empty) {
@@ -9910,7 +10274,7 @@ body.theme-light .event-tile-date {
                                 renderKPIs();
                                 renderAccountingDetails();
                             }
-                        });
+                        }, err => onFirestoreError('fechamentos_ifr', err));
 
                         firestoreDb.collection('ledger_ifr').onSnapshot(snap => {
                             const items = [];
@@ -9919,19 +10283,22 @@ body.theme-light .event-tile-date {
                                 ifrData.ledger = items;
                                 renderLedger();
                             }
-                        });
+                        }, err => onFirestoreError('ledger_ifr', err));
 
                         firestoreDb.collection('trades_ifr').onSnapshot(snap => {
                             const trs = {};
                             snap.forEach(d => { trs[d.id] = d.data(); });
-                            ifrData.trades = trs;
-                            renderChart();
-                            renderTimeline();
-                            renderTrades();
-                        });
+                            if (Object.keys(trs).length > 0) {
+                                ifrData.trades = trs;
+                                renderKPIs();
+                                renderChart();
+                                renderTimeline();
+                                renderTrades();
+                            }
+                        }, err => onFirestoreError('trades_ifr', err));
                     }
                 } catch (e) {
-                    console.warn('Aviso Firebase Web:', e.message);
+                    onFirestoreError('init', e);
                 }
             }
 
@@ -10220,14 +10587,14 @@ body.theme-light .event-tile-date {
                         desc = `${ev.ticker} • ${ev.tipo}`;
                     }
 
-                    const clickAttr = ev.tradeId
-                        ? `IfrModule.onTimelinePillClick('${ev.tradeId}', '${ev.data}')`
-                        : `IfrModule.inspectDay('${ev.data}', true)`;
+                    const safeTradeId = escHtml(ev.tradeId || '');
+                    const safeData = escHtml(ev.data || '');
+                    const safeDesc = escHtml(desc);
 
                     html += `
-                        <div class="ifr-timeline-pill ${pillClass}" data-trade-id="${ev.tradeId || ''}" data-date="${ev.data}" onclick="${clickAttr}" title="${ev.data}: ${desc}">
-                            <span>${fmtShort(ev.data)}</span>
-                            <strong>${desc}</strong>
+                        <div class="ifr-timeline-pill ${pillClass}" data-trade-id="${safeTradeId}" data-date="${safeData}" onclick="if(this.dataset.tradeId){IfrModule.onTimelinePillClick(this.dataset.tradeId,this.dataset.date)}else{IfrModule.inspectDay(this.dataset.date,true)}" title="${safeData}: ${safeDesc}">
+                            <span>${escHtml(fmtShort(ev.data))}</span>
+                            <strong>${safeDesc}</strong>
                             <span style="font-size:11px; opacity:0.85;">↗</span>
                         </div>
                     `;
@@ -10841,8 +11208,8 @@ body.theme-light .event-tile-date {
                             const cls = p.nao_realizado >= 0 ? 'color:#10b981;' : 'color:#ef4444;';
                             return `
                                 <tr>
-                                    <td><strong>${p.ticker}</strong></td>
-                                    <td class="num">${p.quantidade}</td>
+                                    <td><strong>${escHtml(p.ticker)}</strong></td>
+                                    <td class="num">${escHtml(p.quantidade)}</td>
                                     <td class="num">${formatMoney(p.preco_medio)}</td>
                                     <td class="num">${formatMoney(p.preco)}</td>
                                     <td class="num">${formatMoney(p.custo)}</td>
@@ -10965,17 +11332,19 @@ body.theme-light .event-tile-date {
 
                 tbody.innerHTML = list.map(l => {
                     const cls = l.valor_caixa >= 0 ? 'color:#10b981;' : 'color:#ef4444;';
+                    const safeTipo = escHtml(String(l.tipo || '').replace(/[^A-Za-z0-9_-]/g, ''));
+                    const safeData = escHtml(l.data || '');
                     return `
                         <tr>
-                            <td style="font-family:'JetBrains Mono', monospace;">${fmtDateBr(l.data)}</td>
-                            <td><span class="ifr-tag-tipo ifr-tag-${l.tipo}">${l.tipo}</span></td>
-                            <td><strong>${l.ticker || 'CAIXA'}</strong></td>
-                            <td style="max-width:260px; white-space:normal;">${l.descricao || ''}</td>
-                            <td class="num">${l.quantidade || '--'}</td>
+                            <td style="font-family:'JetBrains Mono', monospace;">${escHtml(fmtDateBr(l.data))}</td>
+                            <td><span class="ifr-tag-tipo ifr-tag-${safeTipo}">${escHtml(l.tipo)}</span></td>
+                            <td><strong>${escHtml(l.ticker || 'CAIXA')}</strong></td>
+                            <td style="max-width:260px; white-space:normal;">${escHtml(l.descricao || '')}</td>
+                            <td class="num">${escHtml(l.quantidade || '--')}</td>
                             <td class="num">${l.preco ? formatMoney(l.preco) : '--'}</td>
                             <td class="num" style="font-weight:700; ${cls}">${formatSignedMoney(l.valor_caixa)}</td>
                             <td class="num">${formatMoney(l.caixa_depois)}</td>
-                            <td class="num"><button class="ifr-filter-btn" style="padding:3px 8px; font-size:11px;" onclick="IfrModule.inspectDay('${l.data}', false)">🔍</button></td>
+                            <td class="num"><button class="ifr-filter-btn" style="padding:3px 8px; font-size:11px;" data-date="${safeData}" onclick="IfrModule.inspectDay(this.dataset.date, false)">🔍</button></td>
                         </tr>
                     `;
                 }).join('');
@@ -11032,7 +11401,11 @@ body.theme-light .event-tile-date {
                 const header = ['seq', 'data', 'tipo', 'ticker', 'trade_id', 'quantidade', 'preco', 'valor_caixa', 'caixa_antes', 'caixa_depois', 'descricao'];
                 const lines = [header.join(';')];
                 list.forEach(l => {
-                    lines.push(header.map(k => `"${String(l[k] ?? '').replace(/"/g, '""')}"`).join(';'));
+                    lines.push(header.map(k => {
+                        let s = String(l[k] ?? '');
+                        if (/^[=+\-@\\t\\r]/.test(s)) s = "'" + s;
+                        return `"${s.replace(/"/g, '""')}"`;
+                    }).join(';'));
                 });
                 const blob = new Blob([String.fromCharCode(0xFEFF) + lines.join('\\n')], { type: 'text/csv;charset=utf-8;' });
                 const url = URL.createObjectURL(blob);
@@ -11131,6 +11504,7 @@ html_final = html_final.replace("__EARNINGS_PLACEHOLDER__", json.dumps(earnings_
 html_final = html_final.replace("__CORPORATE_EVENTS_PLACEHOLDER__", json.dumps(corporate_events_summary, ensure_ascii=False))
 html_final = html_final.replace("__EVENTS_ALL_DATA_PLACEHOLDER__", json.dumps(corporate_events_full, ensure_ascii=False))
 html_final = html_final.replace("__MACRO_PLACEHOLDER__", json.dumps(macro_snapshot, ensure_ascii=False))
+html_final = html_final.replace("__MACRO_FISCAL_PLACEHOLDER__", json.dumps(macro_fiscal_cache, ensure_ascii=False))
 html_final = html_final.replace("__IFR_PLACEHOLDER__", json.dumps(ifr_cache, ensure_ascii=False))
 
 ibov_val = ibov_info.get("aggregated_pe_all") or ibov_info.get("weighted_pe", 10.16)
