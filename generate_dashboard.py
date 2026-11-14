@@ -9912,11 +9912,10 @@ body.theme-light .event-tile-date {
                             }
                         });
 
-                        firestoreDb.collection('ledger_ifr').orderBy('seq', 'desc').limit(300).onSnapshot(snap => {
+                        firestoreDb.collection('ledger_ifr').onSnapshot(snap => {
                             const items = [];
                             snap.forEach(d => items.push(d.data()));
                             if (items.length > 0) {
-                                items.sort((a, b) => a.seq - b.seq);
                                 ifrData.ledger = items;
                                 renderLedger();
                             }
@@ -10919,6 +10918,26 @@ body.theme-light .event-tile-date {
                 }
             }
 
+            function getSortedLedgerWithBalance() {
+                const ordemTipo = { APORTE_INICIAL: 0, APORTE: 1, RETIRADA: 2, PROVENTO: 3, EVENTO_SOCIETARIO: 4, VENDA: 5, COMPRA: 6 };
+                const raw = [...(ifrData.ledger || [])];
+                raw.sort((a, b) => {
+                    const da = (a.data || '').localeCompare(b.data || '');
+                    if (da !== 0) return da;
+                    const oa = ordemTipo[a.tipo] ?? 9;
+                    const ob = ordemTipo[b.tipo] ?? 9;
+                    if (oa !== ob) return oa - ob;
+                    return (a.id || '').localeCompare(b.id || '');
+                });
+                let saldo = 0;
+                return raw.map((l, idx) => {
+                    const vc = Number(l.valor_caixa !== undefined ? l.valor_caixa : (l.valor || 0));
+                    const antes = saldo;
+                    saldo = Number((saldo + vc).toFixed(2));
+                    return { ...l, seq: l.seq || (idx + 1), valor_caixa: vc, caixa_antes: antes, caixa_depois: saldo };
+                });
+            }
+
             function renderLedger() {
                 const tbody = document.getElementById('ifrLedgerTableBody');
                 const sumEl = document.getElementById('ifrAuditSummaryText');
@@ -10927,7 +10946,7 @@ body.theme-light .event-tile-date {
                 const typeFilter = (document.getElementById('ifrLedgerTypeFilter') || {}).value || 'TODOS';
                 const q = ((document.getElementById('ifrLedgerSearch') || {}).value || '').trim().toUpperCase();
 
-                let list = [...(ifrData.ledger || [])].sort((a, b) => (b.seq || 0) - (a.seq || 0));
+                let list = getSortedLedgerWithBalance().reverse();
                 if (sumEl) sumEl.innerText = `${list.length} lançamentos imutáveis no livro diário`;
 
                 if (typeFilter !== 'TODOS') list = list.filter(l => l.tipo === typeFilter);
@@ -10945,7 +10964,7 @@ body.theme-light .event-tile-date {
                 }
 
                 tbody.innerHTML = list.map(l => {
-                    const cls = l.valor >= 0 ? 'color:#10b981;' : 'color:#ef4444;';
+                    const cls = l.valor_caixa >= 0 ? 'color:#10b981;' : 'color:#ef4444;';
                     return `
                         <tr>
                             <td style="font-family:'JetBrains Mono', monospace;">${fmtDateBr(l.data)}</td>
@@ -10954,7 +10973,7 @@ body.theme-light .event-tile-date {
                             <td style="max-width:260px; white-space:normal;">${l.descricao || ''}</td>
                             <td class="num">${l.quantidade || '--'}</td>
                             <td class="num">${l.preco ? formatMoney(l.preco) : '--'}</td>
-                            <td class="num" style="font-weight:700; ${cls}">${formatSignedMoney(l.valor)}</td>
+                            <td class="num" style="font-weight:700; ${cls}">${formatSignedMoney(l.valor_caixa)}</td>
                             <td class="num">${formatMoney(l.caixa_depois)}</td>
                             <td class="num"><button class="ifr-filter-btn" style="padding:3px 8px; font-size:11px;" onclick="IfrModule.inspectDay('${l.data}', false)">🔍</button></td>
                         </tr>
@@ -11008,9 +11027,9 @@ body.theme-light .event-tile-date {
             }
 
             function exportAuditCsv() {
-                const list = [...(ifrData.ledger || [])].sort((a, b) => (a.seq || 0) - (b.seq || 0));
+                const list = getSortedLedgerWithBalance();
                 if (!list.length) return;
-                const header = ['seq', 'data', 'tipo', 'ticker', 'trade_id', 'quantidade', 'preco', 'valor', 'caixa_antes', 'caixa_depois', 'descricao'];
+                const header = ['seq', 'data', 'tipo', 'ticker', 'trade_id', 'quantidade', 'preco', 'valor_caixa', 'caixa_antes', 'caixa_depois', 'descricao'];
                 const lines = [header.join(';')];
                 list.forEach(l => {
                     lines.push(header.map(k => `"${String(l[k] ?? '').replace(/"/g, '""')}"`).join(';'));
