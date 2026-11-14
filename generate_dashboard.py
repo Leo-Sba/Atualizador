@@ -10208,9 +10208,9 @@ body.theme-light .event-tile-date {
             let chartMode = 'nav'; // 'nav' ou 'twr'
             let isMobileScreen = typeof window !== 'undefined' && window.innerWidth ? window.innerWidth <= 768 : false;
             let visibleEventTypes = {
-                COMPRA: true,
+                COMPRA: !isMobileScreen,
                 GAIN: true,
-                STOP: true,
+                STOP: !isMobileScreen,
                 PROVENTO: !isMobileScreen,
                 APORTE: !isMobileScreen,
                 EVENTO_SOCIETARIO: !isMobileScreen
@@ -10262,13 +10262,24 @@ body.theme-light .event-tile-date {
             }
 
             function initData() {
-                if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-                    visibleEventTypes.COMPRA = true;
-                    visibleEventTypes.GAIN = true;
-                    visibleEventTypes.STOP = true;
-                    visibleEventTypes.PROVENTO = false;
-                    visibleEventTypes.APORTE = false;
-                    visibleEventTypes.EVENTO_SOCIETARIO = false;
+                if (typeof window !== 'undefined') {
+                    if (window.innerWidth <= 768) {
+                        // No Mobile (<= 768px): somente Gain ligado; todos os demais desligados
+                        visibleEventTypes.COMPRA = false;
+                        visibleEventTypes.GAIN = true;
+                        visibleEventTypes.STOP = false;
+                        visibleEventTypes.PROVENTO = false;
+                        visibleEventTypes.APORTE = false;
+                        visibleEventTypes.EVENTO_SOCIETARIO = false;
+                    } else {
+                        // Em outras resoluções (Desktop / Tablet > 768px): Gain, Compra e Stop ligados
+                        visibleEventTypes.COMPRA = true;
+                        visibleEventTypes.GAIN = true;
+                        visibleEventTypes.STOP = true;
+                        visibleEventTypes.PROVENTO = true;
+                        visibleEventTypes.APORTE = true;
+                        visibleEventTypes.EVENTO_SOCIETARIO = true;
+                    }
                 }
                 syncLegendButtons();
                 if (typeof IFR_CACHE_DATA !== 'undefined' && IFR_CACHE_DATA && IFR_CACHE_DATA.config) {
