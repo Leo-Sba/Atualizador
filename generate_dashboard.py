@@ -10208,9 +10208,9 @@ body.theme-light .event-tile-date {
             let chartMode = 'nav'; // 'nav' ou 'twr'
             let isMobileScreen = typeof window !== 'undefined' && window.innerWidth ? window.innerWidth <= 768 : false;
             let visibleEventTypes = {
-                COMPRA: !isMobileScreen,
+                COMPRA: true,
                 GAIN: true,
-                STOP: !isMobileScreen,
+                STOP: true,
                 PROVENTO: !isMobileScreen,
                 APORTE: !isMobileScreen,
                 EVENTO_SOCIETARIO: !isMobileScreen
@@ -10263,9 +10263,9 @@ body.theme-light .event-tile-date {
 
             function initData() {
                 if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-                    visibleEventTypes.COMPRA = false;
+                    visibleEventTypes.COMPRA = true;
                     visibleEventTypes.GAIN = true;
-                    visibleEventTypes.STOP = false;
+                    visibleEventTypes.STOP = true;
                     visibleEventTypes.PROVENTO = false;
                     visibleEventTypes.APORTE = false;
                     visibleEventTypes.EVENTO_SOCIETARIO = false;
