@@ -6196,14 +6196,16 @@ body.theme-light .event-tile-date {
             if (ticker === 'IFNC') return `<span class="header-brand-badge" style="display:inline-flex; align-items:center; justify-content:center; width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; background:rgba(245,158,11,0.15); border:1.5px solid rgba(245,158,11,0.4); font-size:18px; vertical-align:middle;">🏦</span>`;
             if (ticker === 'SEGUROS') return `<span class="header-brand-badge" style="display:inline-flex; align-items:center; justify-content:center; width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; background:rgba(0,230,118,0.15); border:1.5px solid rgba(0,230,118,0.4); font-size:18px; vertical-align:middle;">🛡️</span>`;
 
+            const cleanTicker = String(ticker).toUpperCase().replace(/[^A-Z0-9]/g, '');
+            const fintzUrl = `https://raw.githubusercontent.com/thefintz/icones-b3/main/icones/${encodeURIComponent(cleanTicker)}.png`;
             const domain = COMPANY_DOMAINS[ticker] || (String(ticker).toLowerCase().replace(/[^a-z0-9.-]/g, '') + '.com.br');
-            const logoUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`;
+            const fallbackUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`;
             const monogram = escHtml(String(ticker).slice(0, 4));
 
             return `<span style="position:relative; display:inline-flex; align-items:center; justify-content:center; width:${size}px; height:${size}px; min-width:${size}px; vertical-align:middle;">` +
-                `<img src="${logoUrl}" alt="${safeTicker}" class="header-brand-logo-img" ` +
+                `<img src="${fintzUrl}" alt="${safeTicker}" class="header-brand-logo-img" ` +
                 `style="width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; object-fit:contain; background:#ffffff; padding:3px; box-shadow:0 2px 8px rgba(0,0,0,0.22); border:1.5px solid var(--border); display:inline-block;" ` +
-                `onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';">` +
+                `onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='${fallbackUrl}';}else{this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='inline-flex';}">` +
                 `<span class="header-brand-badge" style="display:none; align-items:center; justify-content:center; width:${size}px; height:${size}px; min-width:${size}px; border-radius:50%; background:rgba(56,189,248,0.15); border:1.5px solid rgba(56,189,248,0.35); color:var(--text-main); font-family:var(--font-mono); font-size:10px; font-weight:700;">${monogram}</span>` +
                 `</span>`;
         }
