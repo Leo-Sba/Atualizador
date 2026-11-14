@@ -141,6 +141,6 @@ O bloco `#macroSecFiscal` (**Receitas e Despesas do Governo Central vs. Dívida/
 8. **Configuração de CI/CD GitHub Actions & Secrets (Rastreador IFR):**
    - **Node.js 24 Nativo:** Os workflows do GitHub Actions (`rastreador-ifr.yml`) devem usar `actions/checkout@v7` e `actions/setup-node@v7` para evitar avisos de depreciação do Node.js 20.
    - **Secrets Obrigatórios em Ambientes de CI (`Fundamentalista` e `Atualizador`):**
-     - `FIREBASE_SERVICE_ACCOUNT_KEY`: JSON completo das credenciais do Firebase Admin SDK do projeto `dashboard-b3-estrategia-448bd` (necessário para ler/gravar em `configuracao_ifr`, `ativos_ifr`, `trades_ifr` e `fechamentos_ifr`).
+     - `FIREBASE_SERVICE_ACCOUNT_KEY`: JSON puro e completo das credenciais do Firebase Admin SDK do projeto `dashboard-b3-estrategia-448bd` (deve ser colado estritamente como JSON iniciando em { e terminando em }, sem aspas externas ou caracteres extras que provoquem `Unexpected non-whitespace character after JSON`), necessário para ler/gravar em `configuracao_ifr`, `ativos_ifr`, `trades_ifr` e `fechamentos_ifr`).
      - `DATABASE_URL`: Connection string PostgreSQL direta para o pooler do Supabase (`postgresql://postgres.[ref]:[senha]@[pooler-host]:5432/postgres`), necessária para `pg-pool` carregar cotações, proventos e eventos societários sem tentar conexão padrão em `localhost:5432`.
    - **Execução do Workflow:** No disparo manual via `workflow_dispatch`, deixar `run_migration` e `force_run` desmarcados por padrão, a menos que haja necessidade explícita de reconstrução do histórico contábil.
