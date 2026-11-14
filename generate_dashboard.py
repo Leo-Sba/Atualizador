@@ -70,14 +70,6 @@ if os.path.exists("macro_data.json"):
     except Exception:
         pass
 
-macro_fiscal_cache = {}
-if os.path.exists("macro_fiscal_cache.json"):
-    try:
-        with open("macro_fiscal_cache.json", "r", encoding="utf-8") as f:
-            macro_fiscal_cache = json.load(f)
-    except Exception:
-        pass
-
 
 
 template = """<!DOCTYPE html>
@@ -1925,60 +1917,60 @@ select:focus {
             color: #1e293b;
         }
 
-        /* Cores das Faixas — Harmonizadas com o padrão de Splits / Eventos B3 */
-        /* 0 - 8 Verde Esmeralda / Split (Excelente Desconto) */
+        /* Cores das Faixas — Sugestão A: Obsidian Velvet / TradingView Pro */
+        /* 0 - 8 Esmeralda Profundo (Excelente Desconto) */
         .color-pl-limao {
-            background: linear-gradient(135deg, rgba(0, 230, 118, 0.18), rgba(16, 185, 129, 0.26));
-            border-color: rgba(0, 230, 118, 0.55) !important;
+            background: linear-gradient(160deg, rgba(16, 185, 129, 0.14), rgba(5, 150, 105, 0.08));
+            border-color: rgba(16, 185, 129, 0.32) !important;
             color: #34d399 !important;
         }
         body.theme-light .color-pl-limao {
-            background: linear-gradient(135deg, rgba(0, 200, 83, 0.14), rgba(16, 185, 129, 0.22));
-            border-color: #16a34a !important;
-            color: #15803d !important;
+            background: linear-gradient(135deg, rgba(0, 200, 83, 0.15), rgba(16, 185, 129, 0.22));
+            border-color: #00c853 !important;
+            color: #008738 !important;
         }
 
-        /* 8 - 15 Verde Esmeralda / Split (Atrativo) */
+        /* 8 - 15 Teal / Verde-Água Suave (Atrativo) */
         .color-pl-verde {
-            background: linear-gradient(135deg, rgba(0, 230, 118, 0.18), rgba(16, 185, 129, 0.26));
-            border-color: rgba(0, 230, 118, 0.55) !important;
-            color: #34d399 !important;
+            background: linear-gradient(160deg, rgba(20, 184, 166, 0.12), rgba(13, 148, 136, 0.06));
+            border-color: rgba(20, 184, 166, 0.28) !important;
+            color: #2dd4bf !important;
         }
         body.theme-light .color-pl-verde {
-            background: linear-gradient(135deg, rgba(0, 200, 83, 0.14), rgba(16, 185, 129, 0.22));
+            background: linear-gradient(135deg, rgba(22, 163, 74, 0.12), rgba(21, 128, 61, 0.18));
             border-color: #16a34a !important;
             color: #15803d !important;
         }
 
-        /* 15 - 25 Azul-Ciano / Bonificação (Neutro Intermediário) */
+        /* 15 - 25 Azul-Ciano Calmo / Neutro Intermediário */
         .color-pl-claro {
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.18), rgba(20, 184, 166, 0.25));
-            border-color: rgba(56, 189, 248, 0.55) !important;
+            background: linear-gradient(160deg, rgba(56, 189, 248, 0.11), rgba(14, 165, 233, 0.05));
+            border-color: rgba(56, 189, 248, 0.26) !important;
             color: #38bdf8 !important;
         }
         body.theme-light .color-pl-claro {
-            background: linear-gradient(135deg, rgba(2, 132, 199, 0.13), rgba(13, 148, 136, 0.20));
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.10), rgba(2, 132, 199, 0.16));
             border-color: #0284c7 !important;
             color: #0369a1 !important;
         }
 
-        /* 25 - 50 Âmbar / Outros Eventos (Esticado) */
+        /* 25 - 50 Âmbar Dourado Suave (Esticado) */
         .color-pl-vm-claro {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(217, 119, 6, 0.25));
-            border-color: rgba(245, 158, 11, 0.55) !important;
+            background: linear-gradient(160deg, rgba(245, 158, 11, 0.12), rgba(217, 119, 6, 0.06));
+            border-color: rgba(245, 158, 11, 0.28) !important;
             color: #fbbf24 !important;
         }
         body.theme-light .color-pl-vm-claro {
-            background: linear-gradient(135deg, rgba(217, 119, 6, 0.13), rgba(180, 83, 9, 0.20));
-            border-color: #d97706 !important;
-            color: #b45309 !important;
+            background: linear-gradient(135deg, rgba(234, 88, 12, 0.12), rgba(220, 38, 38, 0.16));
+            border-color: #ea580c !important;
+            color: #c2410c !important;
         }
 
-        /* > 50 ou Prejuízo Vermelho-Rubi / Inplit (Alerta) */
+        /* > 50 ou Prejuízo Rosa-Rubi Suave / Alerta */
         .color-pl-vm-forte {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.20), rgba(185, 28, 28, 0.30));
-            border-color: rgba(239, 68, 68, 0.60) !important;
-            color: #f87171 !important;
+            background: linear-gradient(160deg, rgba(244, 63, 94, 0.13), rgba(190, 18, 60, 0.07));
+            border-color: rgba(244, 63, 94, 0.30) !important;
+            color: #fb7185 !important;
         }
         body.theme-light .color-pl-vm-forte {
             background: linear-gradient(135deg, rgba(220, 38, 38, 0.14), rgba(185, 28, 28, 0.22));
@@ -2251,7 +2243,7 @@ body.theme-light {
 * { font-family: var(--font-sans); box-sizing: border-box; }
 html, body {
     background: var(--bg);
-    overflow-x: clip;
+    overflow-x: hidden;
     max-width: 100vw;
 }
 body {
@@ -2382,82 +2374,21 @@ body.theme-light::after {
     to   { opacity: 1; }
 }
 
-/* ---------- Container da Barra de navegação superior (menu flutuante em vidro) ---------- */
-.app-tab-nav-wrapper {
+/* ---------- Barra de navegação superior (menu flutuante em vidro) ---------- */
+.app-tab-nav {
     position: sticky;
     top: 10px;
     z-index: 900;
+    gap: 4px;
+    padding: 5px;
     margin-bottom: 20px;
+    flex-wrap: wrap;
     background: var(--glass-bg);
     -webkit-backdrop-filter: var(--glass-blur) saturate(150%);
     backdrop-filter: var(--glass-blur) saturate(150%);
     border: 1px solid var(--glass-border);
     border-radius: 14px;
     box-shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.65), var(--surface-highlight);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-body.theme-light .app-tab-nav-wrapper {
-    box-shadow: 0 10px 30px -14px rgba(9, 9, 11, 0.18), var(--surface-highlight);
-}
-
-.app-tab-nav {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 8px 4px 8px;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Oculta a scrollbar nativa fugaz para dar lugar à barra visual permanente */
-}
-.app-tab-nav::-webkit-scrollbar {
-    display: none;
-    height: 0;
-    width: 0;
-}
-
-/* Barra de Rolagem Visual Permanente (Nunca Desaparece!) */
-.app-tab-scroll-indicator {
-    height: 4px;
-    margin: 0 12px 4px 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 999px;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    flex-shrink: 0;
-}
-body.theme-light .app-tab-scroll-indicator {
-    background: rgba(0, 0, 0, 0.05);
-}
-.app-tab-scroll-thumb {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 25%;
-    background: rgba(255, 255, 255, 0.28);
-    border-radius: 999px;
-    transition: background 0.2s ease, transform 0.05s ease-out;
-    pointer-events: none;
-}
-body.theme-light .app-tab-scroll-thumb {
-    background: rgba(0, 0, 0, 0.25);
-}
-.app-tab-scroll-indicator:hover .app-tab-scroll-thumb {
-    background: rgba(255, 255, 255, 0.48);
-}
-body.theme-light .app-tab-scroll-indicator:hover .app-tab-scroll-thumb {
-    background: rgba(0, 0, 0, 0.42);
-}
-.app-tab-nav .brand,
-.app-tab-nav .app-tab-divider,
-.app-tab-nav .app-tab-btn,
-.app-tab-nav .app-tab-theme-toggle {
-    flex-shrink: 0;
 }
 body.theme-light .app-tab-nav { box-shadow: 0 10px 30px -14px rgba(9, 9, 11, 0.18), var(--surface-highlight); }
 .app-tab-theme-toggle {
@@ -2526,23 +2457,6 @@ body.theme-light .app-tab-btn.active {
 
 /* ---------- Header ---------- */
 .header { border-bottom: 1px solid var(--border); padding-bottom: 18px; margin-bottom: 20px; }
-
-/* ---------- Cabeçalho do ativo fixo no desktop (congelar painel, estilo Excel) ---------- */
-@media (min-width: 1024px) and (min-height: 640px) {
-    #tabDetailContent > .header {
-        position: sticky;
-        top: calc(var(--nav-h, 64px) + 18px);
-        z-index: 800;
-        margin-top: 0;
-        padding: 12px 16px 12px 16px;
-        background: var(--glass-bg);
-        -webkit-backdrop-filter: var(--glass-blur) saturate(150%);
-        backdrop-filter: var(--glass-blur) saturate(150%);
-        border: 1px solid var(--glass-border);
-        border-radius: 14px;
-        box-shadow: 0 10px 30px -16px rgba(0, 0, 0, 0.6), var(--surface-highlight);
-    }
-}
 .title-area h1 { font-weight: 700; letter-spacing: -0.025em; }
 .badge {
     font-size: 10.5px;
@@ -3249,8 +3163,7 @@ body.theme-light .event-tile-date {
 }
 @media (max-width: 640px) {
     .app-tab-nav {
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
+        flex-wrap: wrap !important;
     }
     .events-cards-grid {
         grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
@@ -3269,42 +3182,37 @@ body.theme-light .event-tile-date {
 
 
         <!-- Barra de Navegação Superior (Abas: Detalhada vs Heatmap Geral) -->
-        <div class="app-tab-nav-wrapper">
-            <div class="app-tab-nav" id="appTabNavScrollContainer">
-                <div class="brand" title="Dashboard Fundamentalista B3 / CVM"><span class="brand-mark">P/L</span><span class="brand-text"><strong>Fundamentalista</strong><small>B3 · CVM</small></span></div><span class="app-tab-divider"></span>
-                <button class="app-tab-btn active" id="btnTabDetail" onclick="switchAppTab('detail')">
-                    📈 <span>Visão Detalhada do Ativo</span>
-                </button>
-                <button class="app-tab-btn" id="btnTabHeatmap" onclick="switchAppTab('heatmap')">
-                    🗺️ <span>Heatmap de Mercado (P/L)</span>
-                    <span class="sector-count-badge" id="badgeTotalStocksHeatmap">126 Ações</span>
-                </button>
-                <button class="app-tab-btn" id="btnTabEvents" onclick="switchAppTab('events')">
-                    🔄 <span>Splits, Inplits & Eventos</span>
-                    <span class="sector-count-badge" id="badgeTotalEventsTab">233 Eventos</span>
-                </button>
-                <button class="app-tab-btn" id="btnTabMacro" onclick="switchAppTab('macro')">
-                    🏛️ <span>Macro & Juros</span>
-                    <span class="sector-count-badge" id="badgeMacroSelic">--%</span>
-                </button>
-                <button class="app-tab-btn" id="btnTabIfr" onclick="switchAppTab('ifr')">
-                    ⚡ <span>Entradas &gt; IFR</span>
-                    <span class="sector-count-badge" id="badgeTotalAtivosIfr" style="display:inline-flex; align-items:center; gap:6px;">
-                        <span class="ifr-pulse-dot"></span>
-                        <span id="badgeIfrCountText">5 Ativos</span>
-                    </span>
-                </button>
+        <div class="app-tab-nav">
+            <div class="brand" title="Dashboard Fundamentalista B3 / CVM"><span class="brand-mark">P/L</span><span class="brand-text"><strong>Fundamentalista</strong><small>B3 · CVM</small></span></div><span class="app-tab-divider"></span>
+            <button class="app-tab-btn active" id="btnTabDetail" onclick="switchAppTab('detail')">
+                📈 <span>Visão Detalhada do Ativo</span>
+            </button>
+            <button class="app-tab-btn" id="btnTabHeatmap" onclick="switchAppTab('heatmap')">
+                🗺️ <span>Heatmap de Mercado (P/L)</span>
+                <span class="sector-count-badge" id="badgeTotalStocksHeatmap">126 Ações</span>
+            </button>
+            <button class="app-tab-btn" id="btnTabEvents" onclick="switchAppTab('events')">
+                🔄 <span>Splits, Inplits & Eventos</span>
+                <span class="sector-count-badge" id="badgeTotalEventsTab">233 Eventos</span>
+            </button>
+            <button class="app-tab-btn" id="btnTabMacro" onclick="switchAppTab('macro')">
+                🏛️ <span>Macro & Juros</span>
+                <span class="sector-count-badge" id="badgeMacroSelic">--%</span>
+            </button>
+            <button class="app-tab-btn" id="btnTabIfr" onclick="switchAppTab('ifr')">
+                ⚡ <span>Entradas &gt; IFR</span>
+                <span class="sector-count-badge" id="badgeTotalAtivosIfr" style="display:inline-flex; align-items:center; gap:6px;">
+                    <span class="ifr-pulse-dot"></span>
+                    <span id="badgeIfrCountText">5 Ativos</span>
+                </span>
+            </button>
 
-                <!-- Alternador Global de Tema (Único botão alternável) -->
-                <div class="app-tab-theme-toggle">
-                    <button class="period-btn theme-toggle-btn" id="btnThemeToggle" onclick="toggleTheme()" title="Alternar para Modo Claro" aria-label="Alternar tema" style="font-size: 15px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); display: inline-flex; align-items: center; justify-content: center; min-width: 38px; min-height: 32px; cursor: pointer; transition: all 0.2s ease;">
-                        <span id="themeToggleIcon">☀️</span>
-                    </button>
+            <!-- Alternador Global de Tema (🌙 Escuro / ☀️ Claro) -->
+            <div class="app-tab-theme-toggle">
+                <div class="period-selector" style="padding: 2px;">
+                    <button class="period-btn active" id="btnThemeObsidian" onclick="setTheme('obsidian', this)" title="Modo Escuro (Obsidian)" style="font-size: 14px; padding: 6px 12px;">🌙</button>
+                    <button class="period-btn" id="btnThemeLight" onclick="setTheme('light', this)" title="Modo Claro" style="font-size: 14px; padding: 6px 12px;">☀️</button>
                 </div>
-            </div>
-            <!-- Indicador Visual Permanente de Posição de Rolagem (Nunca some!) -->
-            <div class="app-tab-scroll-indicator" id="appTabScrollIndicator" title="Posição de rolagem das abas">
-                <div class="app-tab-scroll-thumb" id="appTabScrollThumb"></div>
             </div>
         </div>
     
@@ -3942,7 +3850,6 @@ body.theme-light .event-tile-date {
                     <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecCurva')">📈 Vértices DI1 &amp; Curva de Juros</button>
                     <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecRegimes')">🧭 Regimes de Risco</button>
                     <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecEse')">🔀 Mapa "E se…?"</button>
-                    <button type="button" class="macro-subnav-btn" onclick="MacroModule.scrollToSection('macroSecFiscal')">🏛️ Fiscal &amp; Dívida/PIB</button>
                 </div>
             </div>
 
@@ -4139,59 +4046,6 @@ body.theme-light .event-tile-date {
                     </div>
                 </div>
             </div>
-
-            <!-- Bloco 5: Receitas e Despesas do Governo Central vs. Dívida/PIB (%) -->
-            <div id="macroSecFiscal" class="macro-panel macro-section">
-                <div class="macro-panel-head">
-                    <div>
-                        <span class="macro-kicker green">POLÍTICA FISCAL · TESOURO NACIONAL (RTN) &amp; BCB</span>
-                        <h3>Receitas e Despesas do Governo Central vs. Dívida/PIB (%)</h3>
-                    </div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
-                        <div class="macro-live-pill" id="mcFiscalSyncBadge" title="Sincronizado diariamente às 03:00 BRT via GitHub Actions + Cloud Firestore">
-                            <span class="macro-live-dot"></span>
-                            <span id="mcFiscalSyncText">Sincronizado · Firebase Firestore (03:00 BRT)</span>
-                        </div>
-                        <div class="period-selector" style="padding: 2px;" id="mcFiscalPeriodBtns">
-                            <button type="button" class="period-btn" onclick="MacroModule.setFiscalRange(5, this)">5A</button>
-                            <button type="button" class="period-btn" onclick="MacroModule.setFiscalRange(10, this)">10A</button>
-                            <button type="button" class="period-btn" onclick="MacroModule.setFiscalRange(20, this)">20A</button>
-                            <button type="button" class="period-btn active" onclick="MacroModule.setFiscalRange(0, this)">MÁX (2003–2026)</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="macro-kpi-strip" style="margin-top: 8px; margin-bottom: 16px;">
-                    <div class="macro-kpi-chip" style="border-color: rgba(16, 185, 129, 0.35); background: rgba(16, 185, 129, 0.06);">
-                        <span class="lbl">Receita Total (MM12M)</span>
-                        <strong id="mcFiscalKpiRec" style="color: #10b981;">R$ -- bi</strong>
-                        <small id="mcFiscalKpiRecSub">Deflacionado IPCA</small>
-                    </div>
-                    <div class="macro-kpi-chip" style="border-color: rgba(239, 68, 68, 0.35); background: rgba(239, 68, 68, 0.06);">
-                        <span class="lbl">Despesa Primária (MM12M)</span>
-                        <strong id="mcFiscalKpiDesp" style="color: #ef4444;">R$ -- bi</strong>
-                        <small id="mcFiscalKpiDespSub">Deflacionado IPCA</small>
-                    </div>
-                    <div class="macro-kpi-chip" id="mcFiscalKpiPrimCard">
-                        <span class="lbl">Resultado Primário</span>
-                        <strong id="mcFiscalKpiPrim">R$ -- bi / mês</strong>
-                        <small id="mcFiscalKpiPrimSub">Balanço Fiscal Mensal</small>
-                    </div>
-                    <div class="macro-kpi-chip copom">
-                        <span class="lbl">Dívida Bruta / PIB</span>
-                        <strong id="mcFiscalKpiDiv" style="color: #f59e0b;">--%</strong>
-                        <small id="mcFiscalKpiDivSub">Série Encadeada FMI &amp; DBGG BCB</small>
-                    </div>
-                </div>
-
-                <div style="position: relative; width: 100%; height: 390px;">
-                    <canvas id="chartMacroFiscal"></canvas>
-                </div>
-
-                <p class="macro-note" id="mcFiscalFooterNote" style="margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 11px;">
-                    Fonte: Tesouro Transparente (RTN - Série Histórica Mensal IPCA) e Banco Central do Brasil (SGS 4537 / 13762) · Valores mensais em média móvel de 12 meses corrigidos pelo IPCA (escala base constante 2003 de 0 a 80 bi e valores equivalentes atuais no tooltip).
-                </p>
-            </div>
         </div>
 
 
@@ -4200,52 +4054,79 @@ body.theme-light .event-tile-date {
         ===================================================================== -->
         <div id="tabIfrContent">
 
-            <!-- KPIs no Topo -->
-            <div class="ifr-kpi-grid">
+            <!-- Selo de Conciliação Contábil Diária -->
+            <div class="ifr-conciliacao-bar" id="ifrConciliacaoBar">
+                <div class="ifr-conciliacao-left">
+                    <span class="ifr-conciliacao-badge ok" id="ifrConciliacaoBadge">✅ Conciliado</span>
+                    <span class="ifr-conciliacao-eq" id="ifrConciliacaoEq">NAV = Caixa + Valor de Mercado das Ações</span>
+                </div>
+                <div class="ifr-conciliacao-right">
+                    <span id="ifrConciliacaoResiduo">Resíduo: R$ 0,00</span>
+                    <span>•</span>
+                    <span id="ifrConciliacaoHash" style="font-family: 'JetBrains Mono', monospace;">Hash: --</span>
+                </div>
+            </div>
+
+            <!-- KPIs Contábeis no Topo (6 Blocos) -->
+            <div class="ifr-kpi-grid ifr-kpi-grid-6">
                 <div class="ifr-kpi-card">
                     <div class="ifr-kpi-title">
-                        <span>Taxa de Acerto</span>
-                        <span>🎯</span>
+                        <span>Patrimônio Total (NAV)</span>
+                        <span>🏦</span>
                     </div>
-                    <div class="ifr-kpi-val pos" id="kpiIfrWinRate">78,5%</div>
-                    <div class="ifr-kpi-sub">
-                        <span id="kpiIfrScoreText">(22 Gains · 6 Stops)</span>
-                        <span class="tag-up">▲</span>
-                    </div>
+                    <div class="ifr-kpi-val" id="kpiIfrNav">R$ --</div>
+                    <div class="ifr-kpi-sub" id="kpiIfrNavSub">Inicial: R$ 50.000,00</div>
+                    <div class="ifr-kpi-micro" id="kpiIfrNavSplit">Resultado: -- · Aportes: --</div>
                 </div>
 
                 <div class="ifr-kpi-card">
                     <div class="ifr-kpi-title">
-                        <span>Resultado Acumulado</span>
-                        <span>💰</span>
+                        <span>Caixa Livre (D+0)</span>
+                        <span>💵</span>
                     </div>
-                    <div class="ifr-kpi-val pos" id="kpiIfrTotalProfit">+R$ 14.850,00</div>
-                    <div class="ifr-kpi-sub">
-                        <span class="tag-up" id="kpiIfrProfitPct">(+18,4%)</span>
-                        <span>sobre capital base</span>
-                    </div>
+                    <div class="ifr-kpi-val" id="kpiIfrCaixa">R$ --</div>
+                    <div class="ifr-kpi-sub" id="kpiIfrCaixaSub">Comprometido: R$ 0,00 · A receber: R$ 0,00</div>
+                    <div class="ifr-kpi-micro" id="kpiIfrCaixaMov">Hoje: +R$ 0,00 / -R$ 0,00</div>
                 </div>
 
                 <div class="ifr-kpi-card">
                     <div class="ifr-kpi-title">
-                        <span>Capital Alocado</span>
+                        <span>Capital Investido</span>
                         <span>💼</span>
                     </div>
-                    <div class="ifr-kpi-val" id="kpiIfrAllocated">R$ 23.100,00</div>
-                    <div class="ifr-kpi-sub" id="kpiIfrPositionsCount">
-                        (5 ativos em carteira)
-                    </div>
+                    <div class="ifr-kpi-val" id="kpiIfrAllocated">R$ --</div>
+                    <div class="ifr-kpi-sub" id="kpiIfrPositionsCount">(0 posições · 0% do NAV)</div>
+                    <div class="ifr-kpi-micro" id="kpiIfrCostSub">Custo de aquisição: R$ --</div>
                 </div>
 
                 <div class="ifr-kpi-card">
                     <div class="ifr-kpi-title">
-                        <span>Radar Gatilho IFR &lt; 30</span>
-                        <span>📡</span>
+                        <span>Resultado Líquido</span>
+                        <span>💰</span>
                     </div>
-                    <div class="ifr-kpi-val" id="kpiIfrRadarCount" style="color: #38bdf8;">3 Ações</div>
-                    <div class="ifr-kpi-sub">
-                        <span>Monitoramento Diário B3</span>
+                    <div class="ifr-kpi-val" id="kpiIfrTotalProfit">R$ --</div>
+                    <div class="ifr-kpi-sub" id="kpiIfrProfitBreakdown">Realiz: -- · Não Realiz: -- · Prov: --</div>
+                    <div class="ifr-kpi-micro" id="kpiIfrDayResult">Resultado hoje: -- (Taxas: R$ 0,00)</div>
+                </div>
+
+                <div class="ifr-kpi-card">
+                    <div class="ifr-kpi-title">
+                        <span>Rentabilidade (Cota vs IBOV)</span>
+                        <span>📈</span>
                     </div>
+                    <div class="ifr-kpi-val" id="kpiIfrRentAcum">--%</div>
+                    <div class="ifr-kpi-sub" id="kpiIfrRentSub">Dia: -- · Mês: -- · IBOV: --</div>
+                    <div class="ifr-kpi-micro" id="kpiIfrDrawdownSub">Max Drawdown: --</div>
+                </div>
+
+                <div class="ifr-kpi-card">
+                    <div class="ifr-kpi-title">
+                        <span>Eficiência &amp; Radar</span>
+                        <span>🎯</span>
+                    </div>
+                    <div class="ifr-kpi-val" id="kpiIfrWinRate">--%</div>
+                    <div class="ifr-kpi-sub" id="kpiIfrScoreText">(0 Gains · 0 Stops)</div>
+                    <div class="ifr-kpi-micro" id="kpiIfrProfitFactor">PF: -- · Radar IFR&lt;30: <strong id="kpiIfrRadarCount" style="color:#38bdf8;">0 Ações</strong></div>
                 </div>
             </div>
 
@@ -4255,64 +4136,61 @@ body.theme-light .event-tile-date {
                     <div>
                         <div class="ifr-chart-title">
                             📈 Curva de Evolução Patrimonial
-                            <span class="ifr-chart-badge" id="ifrPatrimonioCurrentBadge">Patrimônio: R$ 61.278,73 (+22,6%)</span>
-                            <span class="ifr-chart-badge" id="ifrPatrimonioCaixaBadge" style="background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.25); margin-left: 8px;">Caixa: R$ 10.476,28</span>
-                            <span class="ifr-chart-badge" id="ifrPatrimonioAlocBadge" style="background: rgba(168, 85, 247, 0.12); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.25); margin-left: 6px;">Alocado: R$ 39.419,10</span>
+                            <span class="ifr-chart-badge" id="ifrPatrimonioCurrentBadge">Patrimônio: R$ --</span>
                         </div>
                         <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
-                            Painel de trading em tempo real: todas as operações (entradas, aportes e saídas) registradas com marcação a mercado oficial B3.
+                            Fechamento contábil diário imutável desde 02/01/2026 com aportes mensais de R$ 500,00, proventos e marcação a mercado B3.
                         </div>
                     </div>
-                    <div style="font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;" id="ifrSyncStatusText">
-                        🟢 Sincronizado com Firebase Firestore
+                    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <div class="ifr-view-toggle">
+                            <button class="ifr-view-btn active" id="btnIfrChartNav" onclick="IfrModule.setChartMode('nav', this)">💰 Patrimônio (R$)</button>
+                            <button class="ifr-view-btn" id="btnIfrChartTwr" onclick="IfrModule.setChartMode('twr', this)">📊 Cota % vs IBOV</button>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;" id="ifrSyncStatusText">
+                            🟢 Sincronizado com Firebase Firestore
+                        </div>
                     </div>
                 </div>
                 <div class="ifr-chart-container">
                     <canvas id="chartIfrEvolucao"></canvas>
                 </div>
 
-                <!-- Linha do Tempo Operacional (Variação 1) -->
+                <!-- Linha do Tempo Operacional -->
                 <div class="ifr-timeline-wrapper">
                     <div class="ifr-timeline-bar-header">
                         <div class="ifr-timeline-title">
-                            <span>📍 Linha do Tempo Operacional</span>
+                            <span>📍 Linha do Tempo Operacional &amp; Contábil</span>
                             <span class="ifr-timeline-count" id="ifrTimelineCount">0 Eventos</span>
-                            <span class="ifr-timeline-sub">Clique em qualquer evento para navegar e destacar o trade correspondente</span>
+                            <span class="ifr-timeline-sub">Clique em qualquer evento para navegar ao trade ou inspecionar o dia</span>
                         </div>
-                        <div class="ifr-timeline-legend">
-                            <span class="ifr-legend-item"><span class="ifr-legend-dot dot-buy"></span>Entrada (E1/E2/E3)</span>
-                            <span class="ifr-legend-item"><span class="ifr-legend-dot dot-gain"></span>Venda Gain</span>
-                            <span class="ifr-legend-item"><span class="ifr-legend-dot dot-stop"></span>Stop Loss</span>
+                        <div class="ifr-timeline-legend" id="ifrTimelineLegend">
+                            <button type="button" class="ifr-legend-item" data-ev-type="COMPRA" onclick="IfrModule.toggleEventType('COMPRA', this)" title="Clique para ligar/desligar bolinhas de Compra"><span class="ifr-legend-dot dot-buy"></span>Compra</button>
+                            <button type="button" class="ifr-legend-item" data-ev-type="GAIN" onclick="IfrModule.toggleEventType('GAIN', this)" title="Clique para ligar/desligar bolinhas de Gain"><span class="ifr-legend-dot dot-gain"></span>Gain</button>
+                            <button type="button" class="ifr-legend-item" data-ev-type="STOP" onclick="IfrModule.toggleEventType('STOP', this)" title="Clique para ligar/desligar bolinhas de Stop"><span class="ifr-legend-dot dot-stop"></span>Stop</button>
+                            <button type="button" class="ifr-legend-item" data-ev-type="PROVENTO" onclick="IfrModule.toggleEventType('PROVENTO', this)" title="Clique para ligar/desligar bolinhas de Provento"><span class="ifr-legend-dot dot-prov"></span>Provento</button>
+                            <button type="button" class="ifr-legend-item" data-ev-type="APORTE" onclick="IfrModule.toggleEventType('APORTE', this)" title="Clique para ligar/desligar bolinhas de Aporte"><span class="ifr-legend-dot dot-aporte"></span>Aporte</button>
+                            <button type="button" class="ifr-legend-item" data-ev-type="EVENTO_SOCIETARIO" onclick="IfrModule.toggleEventType('EVENTO_SOCIETARIO', this)" title="Clique para ligar/desligar bolinhas de Evento Societário"><span class="ifr-legend-dot dot-corp"></span>Ev. Societário</button>
                         </div>
                     </div>
                     <div class="ifr-timeline-scroll" id="ifrTimelineScroll">
                         <!-- Pílulas operacionais geradas dinamicamente -->
-                    </div>
-                    <!-- Indicador Visual Permanente de Rolagem (Nunca some!) -->
-                    <div class="ifr-timeline-scroll-indicator" id="ifrTimelineScrollIndicator" title="Posição de rolagem da linha do tempo">
-                        <div class="ifr-timeline-scroll-thumb" id="ifrTimelineScrollThumb"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Barra de Filtros e Alternador Compacto vs Conforto -->
             <div class="ifr-toolbar">
-                <div class="ifr-filter-scroll-wrapper">
-                    <div class="ifr-filter-group" id="ifrFilterScrollContainer">
-                        <button class="ifr-filter-btn active" onclick="IfrModule.setFilter('TODOS', this)">🌐 Todos</button>
-                        <button class="ifr-filter-btn" onclick="IfrModule.setFilter('E1', this)">🟢 Em Andamento 1/3</button>
-                        <button class="ifr-filter-btn" onclick="IfrModule.setFilter('E2', this)">🟡 Preço Médio 2/3</button>
-                        <button class="ifr-filter-btn" onclick="IfrModule.setFilter('E3', this)">🟠 Alerta 3/3</button>
-                        <button class="ifr-filter-btn" onclick="IfrModule.setFilter('GAIN', this)">🟢 Encerrados (Gain)</button>
-                        <button class="ifr-filter-btn" onclick="IfrModule.setFilter('STOP', this)">🔴 Encerrados (Stop)</button>
-                    </div>
-                    <!-- Indicador Visual Permanente de Rolagem dos Filtros (Nunca Some!) -->
-                    <div class="ifr-filter-scroll-indicator" id="ifrFilterScrollIndicator" title="Posição de rolagem dos filtros">
-                        <div class="ifr-filter-scroll-thumb" id="ifrFilterScrollThumb"></div>
-                    </div>
+                <div class="ifr-filter-group">
+                    <button class="ifr-filter-btn active" onclick="IfrModule.setFilter('TODOS', this)">🌐 Todos</button>
+                    <button class="ifr-filter-btn" onclick="IfrModule.setFilter('E1', this)">🟢 Em Andamento 1/3</button>
+                    <button class="ifr-filter-btn" onclick="IfrModule.setFilter('E2', this)">🟡 Preço Médio 2/3</button>
+                    <button class="ifr-filter-btn" onclick="IfrModule.setFilter('E3', this)">🟠 Alerta 3/3</button>
+                    <button class="ifr-filter-btn" onclick="IfrModule.setFilter('GAIN', this)">🟢 Encerrados (Gain)</button>
+                    <button class="ifr-filter-btn" onclick="IfrModule.setFilter('STOP', this)">🔴 Encerrados (Stop)</button>
                 </div>
 
-                <div style="display:flex; align-items:center; gap: 12px; flex-shrink: 0; white-space: nowrap;">
+                <div style="display:flex; align-items:center; gap: 12px; flex-wrap: wrap;">
                     <div style="position:relative;">
                         <input type="text" id="ifrSearchInput" placeholder="Buscar ticker..." oninput="IfrModule.onSearch(this.value)" style="padding: 7px 12px 7px 30px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text-main); font-size: 13px; outline: none; width: 140px;">
                         <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:12px; color:var(--text-muted);">🔍</span>
@@ -4328,6 +4206,97 @@ body.theme-light .event-tile-date {
             <!-- Lista de Cards de Operações -->
             <div class="ifr-trades-list" id="ifrTradesList">
                 <!-- Renderizado dinamicamente por IfrModule -->
+            </div>
+
+            <!-- Painel Contábil: Posições & Concentração + Decomposição do NAV & Mensal -->
+            <div class="ifr-accounting-grid">
+                <div class="ifr-panel-card">
+                    <div class="ifr-panel-header">
+                        <div class="ifr-panel-title">💼 Capital Investido &amp; Concentração por Ativo</div>
+                        <span class="ifr-panel-sub" id="ifrPosicoesResumo">0 posições</span>
+                    </div>
+                    <div class="ifr-table-wrap">
+                        <table class="ifr-table">
+                            <thead>
+                                <tr>
+                                    <th>Ativo</th>
+                                    <th class="num">Qtd</th>
+                                    <th class="num">PM</th>
+                                    <th class="num">Atual</th>
+                                    <th class="num">Custo</th>
+                                    <th class="num">Mercado</th>
+                                    <th class="num">% NAV</th>
+                                    <th class="num">Não Realizado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ifrPosicoesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="ifr-panel-card">
+                    <div class="ifr-panel-header">
+                        <div class="ifr-panel-title">⚖️ Explicação da Variação do NAV &amp; Mensal vs IBOV</div>
+                        <span class="ifr-panel-sub" id="ifrDeltaNavDiaSub">Variação diária conciliada</span>
+                    </div>
+                    <div class="ifr-delta-box" id="ifrDeltaNavBox"></div>
+                    <div class="ifr-table-wrap" style="margin-top: 14px;">
+                        <table class="ifr-table">
+                            <thead>
+                                <tr>
+                                    <th>Mês</th>
+                                    <th class="num">Carteira</th>
+                                    <th class="num">IBOV</th>
+                                    <th class="num">Alpha</th>
+                                    <th class="num">Aportes</th>
+                                    <th class="num">NAV Fim</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ifrMensalTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Livro Diário & Auditoria Contábil -->
+            <div class="ifr-panel-card ifr-audit-card" id="ifrAuditCard">
+                <div class="ifr-panel-header">
+                    <div>
+                        <div class="ifr-panel-title">📒 Livro Diário &amp; Auditoria Contábil</div>
+                        <div class="ifr-panel-sub" id="ifrAuditSummaryText">Lançamentos imutáveis encadeados por hash SHA-256</div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                        <select id="ifrLedgerTypeFilter" onchange="IfrModule.renderLedger()" class="ifr-select">
+                            <option value="TODOS">Todos os Lançamentos</option>
+                            <option value="COMPRA">Compras</option>
+                            <option value="VENDA">Vendas</option>
+                            <option value="PROVENTO">Proventos / JCP</option>
+                            <option value="APORTE">Aportes</option>
+                            <option value="EVENTO_SOCIETARIO">Eventos Societários</option>
+                        </select>
+                        <input type="text" id="ifrLedgerSearch" placeholder="Ticker ou data..." oninput="IfrModule.renderLedger()" class="ifr-input-sm">
+                        <button class="ifr-filter-btn" onclick="IfrModule.exportAuditCsv()">📥 Exportar CSV</button>
+                    </div>
+                </div>
+                <div class="ifr-day-inspector" id="ifrDayInspector" style="display:none;"></div>
+                <div class="ifr-table-wrap" style="max-height: 360px; overflow-y: auto;">
+                    <table class="ifr-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Tipo</th>
+                                <th>Ativo</th>
+                                <th>Descrição</th>
+                                <th class="num">Qtd</th>
+                                <th class="num">Preço</th>
+                                <th class="num">Valor (R$)</th>
+                                <th class="num">Caixa Depois</th>
+                                <th class="num">Dia</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ifrLedgerTableBody"></tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
@@ -4985,6 +4954,224 @@ body.theme-light .event-tile-date {
         font-weight: 700;
     }
 
+    /* Selo de Conciliação Contábil */
+    .ifr-conciliacao-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px 18px;
+        margin-bottom: 18px;
+        border-radius: var(--radius);
+        background: rgba(16, 185, 129, 0.08);
+        border: 1px solid rgba(16, 185, 129, 0.28);
+        font-size: 13px;
+    }
+    .ifr-conciliacao-bar.err {
+        background: rgba(239, 68, 68, 0.12);
+        border-color: rgba(239, 68, 68, 0.45);
+    }
+    .ifr-conciliacao-left, .ifr-conciliacao-right {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .ifr-conciliacao-badge {
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+    }
+    .ifr-conciliacao-badge.ok {
+        background: rgba(16, 185, 129, 0.18);
+        color: #10b981;
+    }
+    .ifr-conciliacao-badge.err {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+    }
+    .ifr-conciliacao-eq {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12.5px;
+        color: var(--text-main);
+    }
+    .ifr-conciliacao-right {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .ifr-kpi-grid-6 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .ifr-kpi-micro {
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--text-muted);
+        font-family: 'JetBrains Mono', monospace;
+        opacity: 0.9;
+    }
+
+    .ifr-timeline-legend .ifr-legend-item {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 4px 10px;
+        color: var(--text-main);
+        font-size: 12px;
+        font-family: inherit;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.18s ease;
+    }
+    .ifr-timeline-legend .ifr-legend-item:hover {
+        border-color: rgba(56, 189, 248, 0.55);
+        transform: translateY(-1px);
+    }
+    .ifr-timeline-legend .ifr-legend-item.inactive {
+        opacity: 0.38;
+        text-decoration: line-through;
+        background: transparent;
+    }
+
+    .ifr-legend-dot.dot-prov { background: #06b6d4; }
+    .ifr-legend-dot.dot-aporte { background: #3b82f6; }
+    .ifr-legend-dot.dot-corp { background: #a855f7; }
+    .ifr-timeline-pill.pill-prov { border-color: rgba(6, 182, 212, 0.45); background: rgba(6, 182, 212, 0.10); color: #22d3ee; }
+    .ifr-timeline-pill.pill-aporte { border-color: rgba(59, 130, 246, 0.45); background: rgba(59, 130, 246, 0.10); color: #60a5fa; }
+    .ifr-timeline-pill.pill-corp { border-color: rgba(168, 85, 247, 0.45); background: rgba(168, 85, 247, 0.10); color: #c084fc; }
+    body.theme-light .ifr-timeline-pill.pill-prov { color: #0e7490; }
+    body.theme-light .ifr-timeline-pill.pill-aporte { color: #1d4ed8; }
+    body.theme-light .ifr-timeline-pill.pill-corp { color: #7e22ce; }
+
+    /* Painel Contábil & Livro Diário */
+    .ifr-accounting-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 18px;
+        margin-top: 24px;
+    }
+    .ifr-panel-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px 22px;
+    }
+    .ifr-audit-card {
+        margin-top: 20px;
+    }
+    .ifr-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+    .ifr-panel-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+    .ifr-panel-sub {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+    .ifr-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+    }
+    .ifr-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12.5px;
+    }
+    .ifr-table th {
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-muted);
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--border);
+        font-size: 11.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+    }
+    .ifr-table td {
+        padding: 8px 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        color: var(--text-main);
+        white-space: nowrap;
+    }
+    body.theme-light .ifr-table td {
+        border-bottom-color: rgba(15, 23, 42, 0.06);
+    }
+    .ifr-table th.num, .ifr-table td.num {
+        text-align: right;
+        font-family: 'JetBrains Mono', monospace;
+    }
+    .ifr-delta-box {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px;
+        font-size: 12px;
+    }
+    .ifr-delta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+    }
+    .ifr-delta-row span { color: var(--text-muted); }
+    .ifr-delta-row strong { font-family: 'JetBrains Mono', monospace; }
+    .ifr-day-inspector {
+        margin-bottom: 14px;
+        padding: 12px 16px;
+        border-radius: 10px;
+        background: rgba(56, 189, 248, 0.08);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        font-size: 12.5px;
+    }
+    .ifr-select, .ifr-input-sm {
+        padding: 6px 10px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.04);
+        color: var(--text-main);
+        font-size: 12.5px;
+        outline: none;
+    }
+    body.theme-light .ifr-select, body.theme-light .ifr-input-sm {
+        background: #f8fafc;
+    }
+    .ifr-tag-tipo {
+        display: inline-block;
+        padding: 2px 7px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+    }
+    .ifr-tag-COMPRA { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .ifr-tag-VENDA { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .ifr-tag-PROVENTO { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+    .ifr-tag-APORTE, .ifr-tag-APORTE_INICIAL { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+    .ifr-tag-EVENTO_SOCIETARIO { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+
+    @media (max-width: 1100px) {
+        .ifr-kpi-grid-6 { grid-template-columns: repeat(2, 1fr); }
+        .ifr-accounting-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+        .ifr-kpi-grid-6 { grid-template-columns: 1fr; }
+        .ifr-delta-box { grid-template-columns: 1fr; }
+    }
+
     /* Card do Gráfico de Evolução Patrimonial */
     .ifr-chart-card {
         background: var(--card-bg);
@@ -5103,57 +5290,19 @@ body.theme-light .event-tile-date {
         align-items: center;
         gap: 8px;
         overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 4px;
+        padding-bottom: 8px;
         padding-top: 4px;
-        scrollbar-width: none; /* Oculta a scrollbar nativa que some automaticamente */
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
     }
 
     .ifr-timeline-scroll::-webkit-scrollbar {
-        display: none;
-        height: 0;
-        width: 0;
+        height: 6px;
     }
 
-    /* Indicador Visual Permanente de Rolagem da Timeline IFR */
-    .ifr-timeline-scroll-indicator {
-        height: 4px;
-        margin: 6px 4px 2px 4px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 999px;
-        position: relative;
-        overflow: hidden;
-        cursor: pointer;
-        flex-shrink: 0;
-    }
-
-    body.theme-light .ifr-timeline-scroll-indicator {
-        background: rgba(0, 0, 0, 0.05);
-    }
-
-    .ifr-timeline-scroll-thumb {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        width: 25%;
-        background: rgba(255, 255, 255, 0.28);
-        border-radius: 999px;
-        transition: background 0.2s ease, transform 0.05s ease-out;
-        pointer-events: none;
-    }
-
-    body.theme-light .ifr-timeline-scroll-thumb {
-        background: rgba(0, 0, 0, 0.25);
-    }
-
-    .ifr-timeline-scroll-indicator:hover .ifr-timeline-scroll-thumb {
-        background: rgba(255, 255, 255, 0.48);
-    }
-
-    body.theme-light .ifr-timeline-scroll-indicator:hover .ifr-timeline-scroll-thumb {
-        background: rgba(0, 0, 0, 0.42);
+    .ifr-timeline-scroll::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
     }
 
     .ifr-timeline-pill {
@@ -5324,79 +5473,15 @@ body.theme-light .event-tile-date {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        flex-wrap: nowrap;
-        gap: 16px;
-    }
-
-    /* Container wrapper dos filtros com indicador permanente */
-    .ifr-filter-scroll-wrapper {
-        flex: 1 1 auto;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
+        flex-wrap: wrap;
+        gap: 14px;
     }
 
     .ifr-filter-group {
         display: flex;
         align-items: center;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
+        flex-wrap: wrap;
         gap: 8px;
-        padding-bottom: 4px;
-        scrollbar-width: none;
-    }
-
-    .ifr-filter-group::-webkit-scrollbar {
-        display: none;
-        height: 0;
-        width: 0;
-    }
-
-    /* Barra / Indicador Visual Permanente de Rolagem dos Filtros IFR */
-    .ifr-filter-scroll-indicator {
-        height: 4px;
-        margin: 4px 2px 0 2px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 999px;
-        position: relative;
-        overflow: hidden;
-        cursor: pointer;
-        flex-shrink: 0;
-    }
-
-    body.theme-light .ifr-filter-scroll-indicator {
-        background: rgba(0, 0, 0, 0.05);
-    }
-
-    .ifr-filter-scroll-thumb {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        width: 25%;
-        background: rgba(255, 255, 255, 0.28);
-        border-radius: 999px;
-        transition: background 0.2s ease, transform 0.05s ease-out;
-        pointer-events: none;
-    }
-
-    body.theme-light .ifr-filter-scroll-thumb {
-        background: rgba(0, 0, 0, 0.25);
-    }
-
-    .ifr-filter-scroll-indicator:hover .ifr-filter-scroll-thumb {
-        background: rgba(255, 255, 255, 0.48);
-    }
-
-    body.theme-light .ifr-filter-scroll-indicator:hover .ifr-filter-scroll-thumb {
-        background: rgba(0, 0, 0, 0.42);
-    }
-
-    .ifr-filter-btn {
-        flex-shrink: 0;
-        white-space: nowrap;
     }
 
     .ifr-filter-btn {
@@ -5638,23 +5723,6 @@ body.theme-light .event-tile-date {
         opacity: 0.6;
     }
 
-    .ifr-step-node.gatilho {
-        background: rgba(245, 158, 11, 0.12);
-        border: 1.5px solid #f59e0b;
-        box-shadow: 0 0 14px rgba(245, 158, 11, 0.25);
-        opacity: 1;
-        animation: pulseIfrGatilho 2.2s infinite ease-in-out;
-    }
-
-    .ifr-step-node.gatilho .ifr-step-badge {
-        color: #f59e0b;
-    }
-
-    @keyframes pulseIfrGatilho {
-        0%, 100% { box-shadow: 0 0 8px rgba(245, 158, 11, 0.2); }
-        50% { box-shadow: 0 0 16px rgba(245, 158, 11, 0.45); }
-    }
-
     .ifr-step-badge {
         font-size: 12px;
         font-weight: 700;
@@ -5768,7 +5836,6 @@ body.theme-light .event-tile-date {
     @media (max-width: 650px) {
         .ifr-kpi-grid { grid-template-columns: 1fr; }
         .ifr-toolbar { flex-direction: column; align-items: stretch; }
-        .ifr-filter-scroll-wrapper { width: 100%; }
     }
 
     /* --- Alto Contraste no Modo Claro (Tema Clean) para Entradas > IFR --- */
@@ -5975,7 +6042,6 @@ body.theme-light .event-tile-date {
         const CORPORATE_EVENTS_MAP = __CORPORATE_EVENTS_PLACEHOLDER__;
         const EVENTS_ALL_DATA = __EVENTS_ALL_DATA_PLACEHOLDER__;
         const MACRO_DATA = __MACRO_PLACEHOLDER__;
-        const MACRO_FISCAL_DATA = __MACRO_FISCAL_PLACEHOLDER__;
 
         // Glass Pro: tipografia e tooltips flutuantes dos gráficos alinhados ao design system (zinc-900/80 + border-zinc-800)
         function applyGlassChartTheme() {
@@ -6100,67 +6166,6 @@ body.theme-light .event-tile-date {
         }
 
 
-
-        // Mede a altura da barra de abas para posicionar o cabeçalho fixo logo abaixo dela
-        function syncStickyNavHeight() {
-            const nav = document.querySelector('.app-tab-nav-wrapper') || document.querySelector('.app-tab-nav');
-            if (nav) document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
-        }
-        window.addEventListener('resize', syncStickyNavHeight);
-        window.addEventListener('load', syncStickyNavHeight);
-        setTimeout(syncStickyNavHeight, 300);
-
-        // Sincroniza o indicador permanente de rolagem da barra de abas
-        function syncTabNavScrollIndicator() {
-            const container = document.getElementById('appTabNavScrollContainer');
-            const track = document.getElementById('appTabScrollIndicator');
-            const thumb = document.getElementById('appTabScrollThumb');
-            if (!container || !track || !thumb) return;
-
-            const scrollWidth = container.scrollWidth;
-            const clientWidth = container.clientWidth;
-            const scrollLeft = container.scrollLeft;
-
-            if (scrollWidth <= clientWidth + 2) {
-                // Conteúdo cabe 100% sem rolagem
-                track.style.display = 'none';
-                return;
-            }
-            track.style.display = 'block';
-
-            const ratio = clientWidth / scrollWidth;
-            const thumbWidthPct = Math.max(12, Math.min(100, ratio * 100));
-            thumb.style.width = thumbWidthPct + '%';
-
-            const maxScroll = scrollWidth - clientWidth;
-            const scrollFraction = maxScroll > 0 ? (scrollLeft / maxScroll) : 0;
-            const maxTranslate = 100 - thumbWidthPct;
-            const translateX = scrollFraction * maxTranslate;
-
-            // Translação relativa percentual ao track
-            thumb.style.left = (translateX * (track.clientWidth / 100) / (track.clientWidth || 1) * 100) + '%';
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const container = document.getElementById('appTabNavScrollContainer');
-            const track = document.getElementById('appTabScrollIndicator');
-            if (container) {
-                container.addEventListener('scroll', syncTabNavScrollIndicator, { passive: true });
-                window.addEventListener('resize', syncTabNavScrollIndicator);
-                setTimeout(syncTabNavScrollIndicator, 100);
-                setTimeout(syncTabNavScrollIndicator, 500);
-            }
-            if (track && container) {
-                // Permite clicar no trilho permanente para pular direto para a posição
-                track.addEventListener('click', (e) => {
-                    const rect = track.getBoundingClientRect();
-                    const clickX = e.clientX - rect.left;
-                    const fraction = Math.max(0, Math.min(1, clickX / rect.width));
-                    const maxScroll = container.scrollWidth - container.clientWidth;
-                    container.scrollTo({ left: fraction * maxScroll, behavior: 'smooth' });
-                });
-            }
-        });
         let charts = {};
 
         let currentTicker = 'ITUB4';
@@ -7890,31 +7895,15 @@ body.theme-light .event-tile-date {
         }
 
 
-        function updateThemeToggleButton(theme) {
-            const btn = document.getElementById('btnThemeToggle');
-            const iconSpan = document.getElementById('themeToggleIcon');
-            if (!btn || !iconSpan) return;
-
-            // Quando está no modo claro, exibe a opção e ícone para ir para o escuro (🌙)
-            // Quando está no modo escuro, exibe a opção e ícone para ir para o claro (☀️)
-            if (theme === 'light') {
-                iconSpan.textContent = '🌙';
-                btn.title = 'Alternar para Modo Escuro (Obsidian)';
-                btn.setAttribute('aria-label', 'Alternar para Modo Escuro (Obsidian)');
-            } else {
-                iconSpan.textContent = '☀️';
-                btn.title = 'Alternar para Modo Claro';
-                btn.setAttribute('aria-label', 'Alternar para Modo Claro');
-            }
-        }
-
-        function setTheme(theme) {
+        function setTheme(theme, btn) {
             document.body.classList.remove('theme-light', 'theme-obsidian', 'theme-bloomberg', 'theme-emerald');
             if (theme === 'light') {
                 document.body.classList.add('theme-light');
             }
 
-            updateThemeToggleButton(theme);
+            document.querySelectorAll('#btnThemeObsidian, #btnThemeLight').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
             localStorage.setItem('fundamentalista_theme', theme);
 
             setTimeout(() => {
@@ -7922,12 +7911,6 @@ body.theme-light .event-tile-date {
                 if (typeof MacroModule !== 'undefined' && MacroModule.onThemeChange) MacroModule.onThemeChange();
                 if (typeof IfrModule !== 'undefined' && IfrModule.onThemeChange) IfrModule.onThemeChange();
             }, 50);
-        }
-
-        function toggleTheme() {
-            const currentTheme = document.body.classList.contains('theme-light') ? 'light' : 'obsidian';
-            const nextTheme = (currentTheme === 'light') ? 'obsidian' : 'light';
-            setTheme(nextTheme);
         }
 
         // Inicializa o tema salvo (padrão Obsidian)
@@ -7938,7 +7921,11 @@ body.theme-light .event-tile-date {
             }
 
             window.addEventListener('DOMContentLoaded', () => {
-                updateThemeToggleButton(savedTheme);
+                const btn = (savedTheme === 'light') ? document.getElementById('btnThemeLight') : document.getElementById('btnThemeObsidian');
+                if (btn) {
+                    document.querySelectorAll('#btnThemeObsidian, #btnThemeLight').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                }
             });
         })();
 
@@ -9726,229 +9713,6 @@ body.theme-light .event-tile-date {
                 renderAll();
             }
 
-            let fiscalData = (typeof MACRO_FISCAL_DATA !== "undefined" && MACRO_FISCAL_DATA && Array.isArray(MACRO_FISCAL_DATA.series))
-                ? MACRO_FISCAL_DATA
-                : { kpis: {}, series: [] };
-            let fiscalYearsRange = 0;
-            let fiscalChartInstance = null;
-
-            function formatFiscalMonth(ym) {
-                if (!ym || ym.length < 7) return ym || "";
-                const parts = ym.split("-");
-                return parts[1] + "/" + parts[0];
-            }
-
-            function renderFiscalSection() {
-                const seriesAll = (fiscalData && Array.isArray(fiscalData.series)) ? fiscalData.series : [];
-                if (!seriesAll.length) return;
-
-                const latest = seriesAll[seriesAll.length - 1];
-                const kpis = fiscalData.kpis || {};
-                const recBi = (kpis.receita_bi !== undefined) ? kpis.receita_bi : latest.rec;
-                const despBi = (kpis.despesa_bi !== undefined) ? kpis.despesa_bi : latest.desp;
-                const primBi = (kpis.resultado_primario_bi !== undefined) ? kpis.resultado_primario_bi : (recBi - despBi);
-                const divPct = (kpis.divida_pib_pct !== undefined) ? kpis.divida_pib_pct : latest.div;
-                const divBcb = (kpis.divida_bcb_pct !== undefined) ? kpis.divida_bcb_pct : latest.div_bcb;
-                const refMonth = formatFiscalMonth(fiscalData.reference_month || latest.m);
-
-                const elRec = document.getElementById("mcFiscalKpiRec");
-                const elRecSub = document.getElementById("mcFiscalKpiRecSub");
-                const elDesp = document.getElementById("mcFiscalKpiDesp");
-                const elDespSub = document.getElementById("mcFiscalKpiDespSub");
-                const elPrim = document.getElementById("mcFiscalKpiPrim");
-                const elPrimSub = document.getElementById("mcFiscalKpiPrimSub");
-                const elPrimCard = document.getElementById("mcFiscalKpiPrimCard");
-                const elDiv = document.getElementById("mcFiscalKpiDiv");
-                const elDivSub = document.getElementById("mcFiscalKpiDivSub");
-
-                if (elRec) elRec.textContent = "R$ " + Number(recBi).toFixed(1).replace(".", ",") + " bi";
-                if (elRecSub) elRecSub.textContent = "Deflacionado IPCA (" + refMonth + ")";
-                if (elDesp) elDesp.textContent = "R$ " + Number(despBi).toFixed(1).replace(".", ",") + " bi";
-                if (elDespSub) elDespSub.textContent = "Deflacionado IPCA (" + refMonth + ")";
-
-                if (elPrim) {
-                    const sign = primBi >= 0 ? "+" : "-";
-                    elPrim.textContent = sign + "R$ " + Math.abs(primBi).toFixed(1).replace(".", ",") + " bi / mês";
-                    elPrim.style.color = primBi >= 0 ? "#10b981" : "#ef4444";
-                }
-                if (elPrimSub) {
-                    elPrimSub.textContent = primBi >= 0 ? "Superávit Primário (MM12M)" : "Déficit Primário (MM12M)";
-                }
-                if (elPrimCard) {
-                    elPrimCard.style.borderColor = primBi >= 0 ? "rgba(16, 185, 129, 0.35)" : "rgba(239, 68, 68, 0.35)";
-                    elPrimCard.style.background = primBi >= 0 ? "rgba(16, 185, 129, 0.06)" : "rgba(239, 68, 68, 0.06)";
-                }
-                if (elDiv) elDiv.textContent = Number(divPct).toFixed(1).replace(".", ",") + "%";
-                if (elDivSub) {
-                    elDivSub.textContent = divBcb ? ("FMI: " + Number(divPct).toFixed(1).replace(".", ",") + "% · DBGG BCB: " + Number(divBcb).toFixed(1).replace(".", ",") + "%") : "Série Histórica BCB";
-                }
-
-                const filtered = fiscalYearsRange > 0
-                    ? seriesAll.slice(-Math.min(seriesAll.length, fiscalYearsRange * 12))
-                    : seriesAll;
-
-                const labels = filtered.map(item => formatFiscalMonth(item.m));
-                const dataRec = filtered.map(item => item.rec);
-                const dataDesp = filtered.map(item => item.desp);
-                const dataDiv = filtered.map(item => item.div);
-
-                const canvas = document.getElementById("chartMacroFiscal");
-                if (!canvas || typeof Chart === "undefined") return;
-
-                const isLight = document.body.classList.contains("theme-light");
-                const gridColor = isLight ? "rgba(15, 23, 42, 0.07)" : "rgba(148, 163, 184, 0.1)";
-                const tickColor = isLight ? "#475569" : "#94a3b8";
-
-                // Escala dinâmica do eixo Y esquerdo (evita vácuo inferior conforme a janela temporal)
-                let yMinVal = 20;
-                if (fiscalYearsRange === 5) {
-                    yMinVal = 45;
-                } else if (fiscalYearsRange === 10) {
-                    yMinVal = 40;
-                }
-
-                if (fiscalChartInstance) {
-                    fiscalChartInstance.destroy();
-                    fiscalChartInstance = null;
-                }
-
-                fiscalChartInstance = new Chart(canvas.getContext("2d"), {
-                    type: "line",
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: "Receita",
-                                data: dataRec,
-                                borderColor: "#10b981",
-                                backgroundColor: "rgba(16, 185, 129, 0.12)",
-                                borderWidth: 2.4,
-                                pointRadius: 0,
-                                pointHoverRadius: 5,
-                                pointHoverBackgroundColor: "#10b981",
-                                tension: 0.25,
-                                yAxisID: "y"
-                            },
-                            {
-                                label: "Despesa",
-                                data: dataDesp,
-                                borderColor: "#ef4444",
-                                backgroundColor: "rgba(239, 68, 68, 0.12)",
-                                borderWidth: 2.4,
-                                pointRadius: 0,
-                                pointHoverRadius: 5,
-                                pointHoverBackgroundColor: "#ef4444",
-                                tension: 0.25,
-                                yAxisID: "y"
-                            },
-                            {
-                                label: "Dívida/PIB (%)",
-                                data: dataDiv,
-                                borderColor: "#f59e0b",
-                                backgroundColor: "rgba(245, 158, 11, 0.1)",
-                                borderWidth: 2.0,
-                                borderDash: [5, 4],
-                                pointRadius: 0,
-                                pointHoverRadius: 5,
-                                pointHoverBackgroundColor: "#f59e0b",
-                                tension: 0.25,
-                                yAxisID: "y1"
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            mode: "index",
-                            intersect: false
-                        },
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: "top",
-                                labels: {
-                                    color: isLight ? "#0f172a" : "#e2e8f0",
-                                    usePointStyle: true,
-                                    pointStyle: "circle",
-                                    padding: 18,
-                                    font: { family: "Inter, sans-serif", size: 12, weight: "600" }
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        const val = context.parsed.y;
-                                        if (val === null || val === undefined) return "";
-                                        const idx = context.dataIndex;
-                                        const item = filtered[idx] || {};
-                                        if (context.dataset.label === "Receita") {
-                                            const extra = item.rec_atual ? " (Preços atuais: R$ " + Number(item.rec_atual).toFixed(1).replace(".", ",") + " bi)" : "";
-                                            return "Receita: R$ " + Number(val).toFixed(1).replace(".", ",") + " bi" + extra;
-                                        }
-                                        if (context.dataset.label === "Despesa") {
-                                            const extra = item.desp_atual ? " (Preços atuais: R$ " + Number(item.desp_atual).toFixed(1).replace(".", ",") + " bi)" : "";
-                                            return "Despesa: R$ " + Number(val).toFixed(1).replace(".", ",") + " bi" + extra;
-                                        }
-                                        return "Dívida/PIB (%): " + Number(val).toFixed(1).replace(".", ",") + "%";
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                grid: { display: false },
-                                ticks: {
-                                    color: tickColor,
-                                    maxTicksLimit: 14,
-                                    font: { family: "JetBrains Mono, monospace", size: 10.5 }
-                                }
-                            },
-                            y: {
-                                type: "linear",
-                                display: true,
-                                position: "left",
-                                min: yMinVal,
-                                max: 80,
-                                title: {
-                                    display: true,
-                                    text: "R$ (bilhões – deflacionado)",
-                                    color: tickColor,
-                                    font: { family: "Inter, sans-serif", size: 11, weight: "600" }
-                                },
-                                grid: { color: gridColor },
-                                ticks: {
-                                    color: tickColor,
-                                    stepSize: (yMinVal >= 40) ? 5 : 10,
-                                    callback: function(v) { return v + " bi"; },
-                                    font: { family: "JetBrains Mono, monospace", size: 10.5 }
-                                }
-                            },
-                            y1: {
-                                type: "linear",
-                                display: true,
-                                position: "right",
-                                min: 0,
-                                max: 100,
-                                title: {
-                                    display: true,
-                                    text: "Dívida / PIB (%)",
-                                    color: tickColor,
-                                    font: { family: "Inter, sans-serif", size: 11, weight: "600" }
-                                },
-                                grid: { drawOnChartArea: false },
-                                ticks: {
-                                    color: tickColor,
-                                    stepSize: 20,
-                                    callback: function(v) { return v + "%"; },
-                                    font: { family: "JetBrains Mono, monospace", size: 10.5 }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
             function renderAll() {
                 renderTopBadgeAndKPIs();
                 renderCopomChart();
@@ -9957,7 +9721,6 @@ body.theme-light .event-tile-date {
                 renderCurveSection();
                 setRegime(regimeSelected);
                 renderTxScenario(false);
-                renderFiscalSection();
             }
 
             return {
@@ -9971,7 +9734,6 @@ body.theme-light .event-tile-date {
                     } else {
                         renderCopomChart();
                         renderCurveSection();
-                        renderFiscalSection();
                     }
                     if (!liveLoaded) {
                         liveLoaded = true;
@@ -9983,27 +9745,11 @@ body.theme-light .event-tile-date {
                         renderCopomChart();
                         renderCurveSection();
                         renderTxScenario(false);
-                        renderFiscalSection();
                     }
                 },
                 onResize: function () {
                     if (initialized && typeof currentAppTab !== 'undefined' && currentAppTab === 'macro') {
                         renderCurveSection();
-                        if (fiscalChartInstance) fiscalChartInstance.resize();
-                    }
-                },
-                setFiscalRange: function (yrs, btn) {
-                    fiscalYearsRange = yrs;
-                    document.querySelectorAll('#mcFiscalPeriodBtns .period-btn').forEach(b => b.classList.remove('active'));
-                    if (btn) btn.classList.add('active');
-                    renderFiscalSection();
-                },
-                updateFiscalFromFirestore: function (docData) {
-                    if (docData && Array.isArray(docData.series) && docData.series.length > 0) {
-                        fiscalData = docData;
-                        const syncEl = document.getElementById('mcFiscalSyncText');
-                        if (syncEl) syncEl.textContent = 'Sincronizado Ao Vivo · Firebase Firestore (03:00 BRT)';
-                        if (initialized) renderFiscalSection();
                     }
                 },
                 setCopomYear: function (yr, btn) {
@@ -10069,6 +9815,15 @@ body.theme-light .event-tile-date {
 
             let currentFilter = 'TODOS';
             let currentViewMode = 'comfort'; // 'comfort' ou 'compact'
+            let chartMode = 'nav'; // 'nav' ou 'twr'
+            let visibleEventTypes = {
+                COMPRA: true,
+                GAIN: true,
+                STOP: true,
+                PROVENTO: true,
+                APORTE: true,
+                EVENTO_SOCIETARIO: true
+            };
             let searchQuery = '';
             let chartInstance = null;
             let firestoreDb = null;
@@ -10077,18 +9832,21 @@ body.theme-light .event-tile-date {
             let ifrData = {
                 config: {
                     capital_inicial: 50000,
-                    caixa_livre: 41750,
-                    capital_alocado_atual: 23100,
-                    lucro_realizado_acumulado: 14850,
-                    total_trades_finalizados: 28,
-                    total_gains: 22,
-                    total_stops: 6,
-                    taxa_acerto_pct: 78.5,
-                    quantidade_ativos_posicionados: 5
+                    caixa_livre: 50000,
+                    capital_alocado_atual: 0,
+                    lucro_realizado_acumulado: 0,
+                    total_trades_finalizados: 0,
+                    total_gains: 0,
+                    total_stops: 0,
+                    taxa_acerto_pct: 0,
+                    quantidade_ativos_posicionados: 0
                 },
                 ativos: {},
                 trades: {},
-                evolucao: []
+                evolucao: [],
+                fechamentos_resumo: [],
+                ultimo_fechamento: null,
+                ledger: []
             };
 
             const LOGO_COLORS = {
@@ -10124,12 +9882,6 @@ body.theme-light .event-tile-date {
                         console.log('⚡ Firebase Firestore conectado no cliente web!');
 
                         // Listeners em tempo real
-                        firestoreDb.collection('macro_fiscal').doc('governo_central_historico').onSnapshot(doc => {
-                            if (doc.exists && typeof MacroModule !== 'undefined' && MacroModule.updateFiscalFromFirestore) {
-                                MacroModule.updateFiscalFromFirestore(doc.data());
-                            }
-                        });
-
                         firestoreDb.collection('configuracao_ifr').doc('estado_global').onSnapshot(doc => {
                             if (doc.exists) {
                                 ifrData.config = doc.data();
@@ -10137,44 +9889,43 @@ body.theme-light .event-tile-date {
                             }
                         });
 
-                        firestoreDb.collection('evolucao_patrimonial').orderBy('data', 'asc').onSnapshot(snap => {
-                            // Re-executa o cálculo dinâmico da curva para garantir fidelidade aos trades reais
-                            renderChart();
-                            renderTimeline();
+                        firestoreDb.collection('fechamentos_resumo').onSnapshot(snap => {
+                            const serie = [];
+                            snap.forEach(d => {
+                                const data = d.data();
+                                if (Array.isArray(data.serie)) serie.push(...data.serie);
+                            });
+                            serie.sort((a, b) => a.d.localeCompare(b.d));
+                            if (serie.length > 0) {
+                                ifrData.fechamentos_resumo = serie;
+                                renderChart();
+                                renderTimeline();
+                                renderAccountingDetails();
+                            }
+                        });
+
+                        firestoreDb.collection('fechamentos_ifr').orderBy('data', 'desc').limit(1).onSnapshot(snap => {
+                            if (!snap.empty) {
+                                ifrData.ultimo_fechamento = snap.docs[0].data();
+                                renderKPIs();
+                                renderAccountingDetails();
+                            }
+                        });
+
+                        firestoreDb.collection('ledger_ifr').orderBy('seq', 'desc').limit(300).onSnapshot(snap => {
+                            const items = [];
+                            snap.forEach(d => items.push(d.data()));
+                            if (items.length > 0) {
+                                items.sort((a, b) => a.seq - b.seq);
+                                ifrData.ledger = items;
+                                renderLedger();
+                            }
                         });
 
                         firestoreDb.collection('trades_ifr').onSnapshot(snap => {
                             const trs = {};
                             snap.forEach(d => { trs[d.id] = d.data(); });
-
-                            // Preservar entradas e aportes mais recentes do cache local (evita que documentos legados na nuvem sobrescrevam aportes executados)
-                            if (typeof IFR_CACHE_DATA !== 'undefined' && IFR_CACHE_DATA && IFR_CACHE_DATA.trades) {
-                                Object.entries(IFR_CACHE_DATA.trades).forEach(([tId, cachedTrade]) => {
-                                    if (!trs[tId]) {
-                                        trs[tId] = cachedTrade;
-                                    } else {
-                                        const fsTrade = trs[tId];
-                                        const cachedEntradas = cachedTrade.entradas || [];
-                                        const fsEntradas = fsTrade.entradas || [];
-                                        if (cachedEntradas.length > fsEntradas.length) {
-                                            trs[tId] = {
-                                                ...fsTrade,
-                                                ...cachedTrade,
-                                                entradas: cachedEntradas,
-                                                etapa_atual: cachedTrade.etapa_atual,
-                                                preco_medio: cachedTrade.preco_medio,
-                                                capital_total_alocado: cachedTrade.capital_total_alocado,
-                                                quantidade_total: cachedTrade.quantidade_total,
-                                                stop_geral_rs: cachedTrade.stop_geral_rs,
-                                                alvo_saida_desc: cachedTrade.alvo_saida_desc
-                                            };
-                                        }
-                                    }
-                                });
-                            }
-
                             ifrData.trades = trs;
-                            renderKPIs();
                             renderChart();
                             renderTimeline();
                             renderTrades();
@@ -10187,108 +9938,165 @@ body.theme-light .event-tile-date {
 
             function formatMoney(val) {
                 if (val === null || val === undefined || isNaN(val)) return 'R$ --';
-                return 'R$ ' + Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const n = Number(val);
+                const sign = n < 0 ? '-' : '';
+                return sign + 'R$ ' + Math.abs(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
 
-            // Recupera a cotação e múltiplos mais recentes e oficiais da B3 direto da visão geral (DATA)
-            function getOfficialAssetPrice(ticker, fallback) {
-                if (typeof DATA !== 'undefined' && DATA && DATA[ticker]) {
-                    const prices = DATA[ticker].prices;
-                    if (prices && prices.length > 0) {
-                        const p = Number(prices[prices.length - 1]);
-                        if (!isNaN(p) && p > 0) return p;
-                    }
+            function formatSignedMoney(val) {
+                if (val === null || val === undefined || isNaN(val)) return 'R$ --';
+                const n = Number(val);
+                return (n >= 0 ? '+' : '-') + 'R$ ' + Math.abs(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            function formatPct(val, withSign = true) {
+                if (val === null || val === undefined || isNaN(val)) return '--%';
+                const n = Number(val);
+                const s = withSign && n >= 0 ? '+' : '';
+                return s + n.toFixed(2).replace('.', ',') + '%';
+            }
+
+            function fmtDateBr(dStr) {
+                if (!dStr) return '--';
+                const p = String(dStr).split('-');
+                return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : dStr;
+            }
+
+            function getSeries() {
+                if (Array.isArray(ifrData.fechamentos_resumo) && ifrData.fechamentos_resumo.length > 0) {
+                    return ifrData.fechamentos_resumo;
                 }
-                const at = (ifrData.ativos || {})[ticker];
-                if (at && at.ultimo_preco && !isNaN(at.ultimo_preco) && at.ultimo_preco > 0) {
-                    return Number(at.ultimo_preco);
-                }
-                return Number(fallback || 0);
+                return (ifrData.evolucao || []).map(p => ({
+                    d: p.data,
+                    nav: p.patrimonio_total,
+                    caixa: p.caixa_livre,
+                    vm: p.valor_mercado_posicoes,
+                    custo: p.capital_alocado,
+                    r_acum: p.variacao_pct_total || 0,
+                    ibov_acum: 0,
+                    ev: []
+                }));
             }
 
             function renderKPIs() {
                 const cfg = ifrData.config || {};
-                const allTrades = Object.values(ifrData.trades || {});
-                const ativosMap = ifrData.ativos || {};
+                const ult = ifrData.ultimo_fechamento;
 
-                const kpiWin = document.getElementById('kpiIfrWinRate');
-                const kpiScore = document.getElementById('kpiIfrScoreText');
-                const kpiProfit = document.getElementById('kpiIfrTotalProfit');
-                const kpiProfitPct = document.getElementById('kpiIfrProfitPct');
+                // 0. Selo de Conciliação Diária
+                const barEl = document.getElementById('ifrConciliacaoBar');
+                const badgeEl = document.getElementById('ifrConciliacaoBadge');
+                const eqEl = document.getElementById('ifrConciliacaoEq');
+                const resEl = document.getElementById('ifrConciliacaoResiduo');
+                const hashEl = document.getElementById('ifrConciliacaoHash');
+
+                if (ult && ult.patrimonio) {
+                    const ok = ult.conciliado !== false;
+                    if (barEl) barEl.className = 'ifr-conciliacao-bar ' + (ok ? '' : 'err');
+                    if (badgeEl) {
+                        badgeEl.className = 'ifr-conciliacao-badge ' + (ok ? 'ok' : 'err');
+                        badgeEl.innerText = ok ? `✅ Conciliado (${fmtDateBr(ult.data)})` : `❌ Divergência (${fmtDateBr(ult.data)})`;
+                    }
+                    if (eqEl) {
+                        eqEl.innerText = `NAV ${formatMoney(ult.patrimonio.nav)} = Caixa ${formatMoney(ult.caixa.saldo)} + Ações ${formatMoney(ult.investido.valor_mercado)}`;
+                    }
+                    if (resEl) {
+                        resEl.innerText = `Resíduo: ${formatMoney(ult.residuo_contabil || 0)}`;
+                    }
+                    if (hashEl) {
+                        hashEl.innerText = `Hash: ${(ult.hash || '--').slice(0, 12)}…`;
+                    }
+                }
+
+                // 1. Patrimônio (NAV)
+                const nav = ult ? ult.patrimonio.nav : (cfg.patrimonio_total || ((cfg.caixa_livre || 0) + (cfg.valor_mercado_posicoes || cfg.capital_alocado_atual || 0)));
+                const navIni = ult ? ult.patrimonio.nav_inicial : (cfg.capital_inicial || 50000);
+                const varTot = ult ? ult.patrimonio.variacao_total : (nav - navIni);
+                const varRes = ult ? ult.patrimonio.variacao_por_resultado : (cfg.lucro_realizado_acumulado || 0);
+                const varAp = ult ? ult.patrimonio.variacao_por_aportes : (cfg.aportes_acumulados || 0);
+
+                const kpiNav = document.getElementById('kpiIfrNav');
+                const kpiNavSub = document.getElementById('kpiIfrNavSub');
+                const kpiNavSplit = document.getElementById('kpiIfrNavSplit');
+                if (kpiNav) {
+                    kpiNav.innerText = formatMoney(nav);
+                    kpiNav.className = 'ifr-kpi-val ' + (varTot >= 0 ? 'pos' : 'neg');
+                }
+                if (kpiNavSub) kpiNavSub.innerText = `Inicial: ${formatMoney(navIni)} · Var: ${formatSignedMoney(varTot)}`;
+                if (kpiNavSplit) kpiNavSplit.innerText = `Resultado: ${formatSignedMoney(varRes)} · Aportes: ${formatSignedMoney(varAp)}`;
+
+                // 2. Caixa
+                const cx = ult ? ult.caixa : { livre: cfg.caixa_livre || 0, comprometido: 0, a_receber_vendas: 0, a_receber_proventos: 0, entradas_dia: 0, saidas_dia: 0, entradas_possiveis: Math.floor((cfg.caixa_livre || 0) / 3300) };
+                const kpiCx = document.getElementById('kpiIfrCaixa');
+                const kpiCxSub = document.getElementById('kpiIfrCaixaSub');
+                const kpiCxMov = document.getElementById('kpiIfrCaixaMov');
+                const aReceber = (cx.a_receber_vendas || 0) + (cx.a_receber_proventos || 0);
+                if (kpiCx) kpiCx.innerText = formatMoney(cx.livre);
+                if (kpiCxSub) kpiCxSub.innerText = `Comprometido: ${formatMoney(cx.comprometido)} · A receber: ${formatMoney(aReceber)}`;
+                if (kpiCxMov) kpiCxMov.innerText = `Hoje: +${formatMoney(cx.entradas_dia)} / -${formatMoney(cx.saidas_dia)} · Cap: ${cx.entradas_possiveis || 0} entradas`;
+
+                // 3. Capital Investido
+                const inv = ult ? ult.investido : { valor_mercado: cfg.valor_mercado_posicoes || cfg.capital_alocado_atual || 0, custo_aquisicao: cfg.capital_alocado_atual || 0, pct_investido: 0, n_posicoes: cfg.quantidade_ativos_posicionados || 0 };
                 const kpiAlloc = document.getElementById('kpiIfrAllocated');
                 const kpiPositions = document.getElementById('kpiIfrPositionsCount');
-                const kpiRadar = document.getElementById('kpiIfrRadarCount');
-                const badgeCount = document.getElementById('badgeIfrCountText');
+                const kpiCostSub = document.getElementById('kpiIfrCostSub');
+                if (kpiAlloc) kpiAlloc.innerText = formatMoney(inv.valor_mercado);
+                if (kpiPositions) kpiPositions.innerText = `(${inv.n_posicoes} posições · ${(inv.pct_investido || 0).toFixed(1).replace('.', ',')}% do NAV)`;
+                if (kpiCostSub) kpiCostSub.innerText = `Custo de aquisição: ${formatMoney(inv.custo_aquisicao)}`;
 
-                // 1. CÁLCULO DINÂMICO DOS TRADES ENCERRADOS (Taxa de Acerto & Score)
-                const finalizados = allTrades.filter(t => t.status && t.status.startsWith('FINALIZADO'));
-                const gains = finalizados.filter(t => t.status === 'FINALIZADO_GAIN');
-                const stops = finalizados.filter(t => t.status === 'FINALIZADO_STOP');
-
-                const totalGains = gains.length > 0 ? gains.length : (cfg.total_gains || 0);
-                const totalStops = stops.length > 0 ? stops.length : (cfg.total_stops || 0);
-                const totalEncerrados = totalGains + totalStops;
-                const winRate = totalEncerrados > 0 ? (totalGains / totalEncerrados * 100) : (cfg.taxa_acerto_pct || 0);
-
-                if (kpiWin) kpiWin.innerText = winRate.toFixed(1).replace('.', ',') + '%';
-                if (kpiScore) kpiScore.innerText = `(${totalGains} Gains · ${totalStops} Stops)`;
-
-                // 2. CÁLCULO DINÂMICO DO RESULTADO REALIZADO ACUMULADO
-                let profit = 0;
-                if (finalizados.length > 0) {
-                    profit = finalizados.reduce((acc, t) => {
-                        const r = t.resultado_realizado_rs !== undefined && t.resultado_realizado_rs !== null
-                            ? Number(t.resultado_realizado_rs)
-                            : (Number(t.valor_mercado_atual || 0) - Number(t.capital_total_alocado || 0));
-                        return acc + (isNaN(r) ? 0 : r);
-                    }, 0);
-                } else {
-                    profit = Number(cfg.lucro_realizado_acumulado || 0);
-                }
-
-                const profitSign = profit >= 0 ? '+' : '';
+                // 4. Resultados
+                const res = ult ? ult.resultados : { resultado_liquido: cfg.lucro_realizado_acumulado || 0, realizado_acum: cfg.lucro_realizado_acumulado || 0, nao_realizado: cfg.lucro_nao_realizado || 0, proventos_acum: cfg.proventos_acumulados || 0, resultado_dia: 0, custos_acum: 0, impostos_acum: 0 };
+                const kpiProfit = document.getElementById('kpiIfrTotalProfit');
+                const kpiProfitBreak = document.getElementById('kpiIfrProfitBreakdown');
+                const kpiDayRes = document.getElementById('kpiIfrDayResult');
                 if (kpiProfit) {
-                    kpiProfit.innerText = `${profitSign}${formatMoney(profit)}`;
-                    kpiProfit.className = 'ifr-kpi-val ' + (profit >= 0 ? 'pos' : 'neg');
+                    kpiProfit.innerText = formatSignedMoney(res.resultado_liquido);
+                    kpiProfit.className = 'ifr-kpi-val ' + (res.resultado_liquido >= 0 ? 'pos' : 'neg');
                 }
+                if (kpiProfitBreak) kpiProfitBreak.innerText = `Realiz: ${formatSignedMoney(res.realizado_acum)} · MtM: ${formatSignedMoney(res.nao_realizado)} · Prov: ${formatMoney(res.proventos_acum)}`;
+                if (kpiDayRes) kpiDayRes.innerText = `Resultado hoje: ${formatSignedMoney(res.resultado_dia)} (Taxas: ${formatMoney((res.custos_acum || 0) + (res.impostos_acum || 0))})`;
 
-                const capitalBase = Number(cfg.capital_inicial || 50000);
-                const profitPct = capitalBase > 0 ? ((profit / capitalBase) * 100).toFixed(1).replace('.', ',') : '0,0';
-                if (kpiProfitPct) kpiProfitPct.innerText = `(${profitSign}${profitPct}%)`;
-
-                // 3. CÁLCULO DINÂMICO DO CAPITAL ALOCADO & ATIVOS EM CARTEIRA
-                const abertos = allTrades.filter(t => t.status === 'ABERTO');
-                let allocTotal = 0;
-                if (abertos.length > 0) {
-                    allocTotal = abertos.reduce((acc, t) => acc + Number(t.capital_total_alocado || 0), 0);
-                } else {
-                    allocTotal = Number(cfg.capital_alocado_atual || 0);
+                // 5. Rentabilidade (Cota TWR vs IBOV)
+                const rent = ult ? ult.rentabilidade : { rent_acum: cfg.rentabilidade_acumulada_pct || 0, rent_dia: 0, rent_mes: 0, ibov_acum: 0, max_drawdown: 0, max_drawdown_data: '--' };
+                const kpiRent = document.getElementById('kpiIfrRentAcum');
+                const kpiRentSub = document.getElementById('kpiIfrRentSub');
+                const kpiDdSub = document.getElementById('kpiIfrDrawdownSub');
+                if (kpiRent) {
+                    kpiRent.innerText = formatPct(rent.rent_acum);
+                    kpiRent.className = 'ifr-kpi-val ' + (rent.rent_acum >= 0 ? 'pos' : 'neg');
                 }
+                if (kpiRentSub) kpiRentSub.innerText = `Dia: ${formatPct(rent.rent_dia)} · Mês: ${formatPct(rent.rent_mes)} · IBOV: ${formatPct(rent.ibov_acum)}`;
+                if (kpiDdSub) kpiDdSub.innerText = `Max DD: ${formatPct(rent.max_drawdown, false)} (${fmtDateBr(rent.max_drawdown_data)}) · Alpha: ${formatPct(rent.alpha_acum)}`;
 
-                if (kpiAlloc) kpiAlloc.innerText = formatMoney(allocTotal);
-                const activeCount = abertos.length > 0 ? abertos.length : (cfg.quantidade_ativos_posicionados || 0);
-                if (kpiPositions) kpiPositions.innerText = `(${activeCount} ativos em carteira)`;
+                // 6. Eficiência & Radar
+                const ef = ult ? ult.eficiencia : { taxa_acerto: cfg.taxa_acerto_pct || 0, vencedoras: cfg.total_gains || 0, perdedoras: cfg.total_stops || 0, profit_factor: 0, retorno_medio_capital_pct: 0 };
+                const kpiWin = document.getElementById('kpiIfrWinRate');
+                const kpiScore = document.getElementById('kpiIfrScoreText');
+                const kpiPf = document.getElementById('kpiIfrProfitFactor');
+                const badgeCount = document.getElementById('badgeIfrCountText');
+                if (kpiWin) {
+                    kpiWin.innerText = (ef.taxa_acerto || 0).toFixed(1).replace('.', ',') + '%';
+                    kpiWin.className = 'ifr-kpi-val ' + (ef.taxa_acerto >= 50 ? 'pos' : '');
+                }
+                if (kpiScore) kpiScore.innerText = `(${ef.vencedoras} Gains · ${ef.perdedoras} Stops · Méd ${formatPct(ef.retorno_medio_capital_pct)})`;
+                const radarCount = Object.values(ifrData.ativos || {}).filter(a => a.ifr_21 && a.ifr_21 < 30).length || 0;
+                if (kpiPf) {
+                    const pfStr = ef.profit_factor === null || ef.profit_factor === undefined ? '∞' : Number(ef.profit_factor).toFixed(2).replace('.', ',');
+                    kpiPf.innerHTML = `PF: ${pfStr} · Radar IFR&lt;30: <strong id="kpiIfrRadarCount" style="color:#38bdf8;">${radarCount} Ações</strong>`;
+                }
+                const activeCount = Object.values(ifrData.trades || {}).filter(t => t.status === 'ABERTO').length || inv.n_posicoes || 0;
                 if (badgeCount) badgeCount.innerText = `${activeCount} Ativos`;
-
-                // 4. RADAR GATILHO IFR < 30 (DINÂMICO)
-                let radarCount = 0;
-                if (typeof DATA !== 'undefined' && DATA) {
-                    // Se disponível no cliente, computa dos ativos monitorados
-                    radarCount = Object.values(ativosMap).filter(a => a && a.ifr_21 !== undefined && a.ifr_21 < 30).length;
-                }
-                if (radarCount === 0) {
-                    radarCount = Object.values(ativosMap).filter(a => a && a.ifr_21 !== undefined && a.ifr_21 < 30).length || 5;
-                }
-                if (kpiRadar) kpiRadar.innerText = `${radarCount} Ações`;
             }
 
             function getOperationalEvents() {
                 const allTrades = Object.values(ifrData.trades || {});
                 const events = [];
+                const seenTradeKey = new Set();
 
                 allTrades.forEach(t => {
                     (t.entradas || []).forEach(e => {
                         if (e.data) {
+                            const key = `${e.data}|COMPRA|${t.ticker}|${e.nivel || 1}`;
+                            seenTradeKey.add(`${e.data}|COMPRA|${t.ticker}`);
                             events.push({
                                 data: e.data,
                                 ticker: t.ticker,
@@ -10304,6 +10112,7 @@ body.theme-light .event-tile-date {
 
                     if (t.data_encerramento) {
                         const isGain = t.status === 'FINALIZADO_GAIN';
+                        seenTradeKey.add(`${t.data_encerramento}|VENDA|${t.ticker}`);
                         events.push({
                             data: t.data_encerramento,
                             ticker: t.ticker,
@@ -10318,9 +10127,45 @@ body.theme-light .event-tile-date {
                     }
                 });
 
-                // Ordenar cronologicamente
+                // Eventos contábeis diários (Proventos, Aportes Mensais, Eventos Societários)
+                getSeries().forEach(pt => {
+                    (pt.ev || []).forEach(ev => {
+                        const tipo = ev.t || ev.tipo;
+                        const ticker = ev.tk || ev.ticker || 'CAIXA';
+                        if (tipo === 'COMPRA' || tipo === 'VENDA') {
+                            if (seenTradeKey.has(`${pt.d}|${tipo}|${ticker}`)) return;
+                        }
+                        events.push({
+                            data: pt.d,
+                            ticker,
+                            tipo: tipo === 'VENDA' ? (ev.cl === 'STOP' ? 'STOP' : 'GAIN') : (tipo === 'COMPRA' && ev.n ? 'E' + ev.n : tipo),
+                            preco: ev.p,
+                            qtd: ev.q,
+                            valor: ev.v,
+                            resultado_rs: ev.rl,
+                            resultado_pct: ev.rp,
+                            descricao: ev.m || ev.descricao,
+                            tradeId: ev.id || ev.trade_id || null
+                        });
+                    });
+                });
+
                 events.sort((a, b) => a.data.localeCompare(b.data));
                 return events;
+            }
+
+            function eventCategoryOf(ev) {
+                const t = ev && ev.tipo ? ev.tipo : '';
+                if (t === 'GAIN') return 'GAIN';
+                if (t === 'STOP') return 'STOP';
+                if (t === 'PROVENTO') return 'PROVENTO';
+                if (t === 'APORTE') return 'APORTE';
+                if (t === 'EVENTO_SOCIETARIO') return 'EVENTO_SOCIETARIO';
+                return 'COMPRA';
+            }
+
+            function getVisibleOperationalEvents() {
+                return getOperationalEvents().filter(ev => visibleEventTypes[eventCategoryOf(ev)] !== false);
             }
 
             function renderTimeline() {
@@ -10328,8 +10173,13 @@ body.theme-light .event-tile-date {
                 const countEl = document.getElementById('ifrTimelineCount');
                 if (!scrollEl) return;
 
-                const events = getOperationalEvents();
-                if (countEl) countEl.innerText = `${events.length} Eventos`;
+                const allEvents = getOperationalEvents();
+                const events = allEvents.filter(ev => visibleEventTypes[eventCategoryOf(ev)] !== false);
+                if (countEl) {
+                    countEl.innerText = events.length === allEvents.length
+                        ? `${events.length} Eventos`
+                        : `${events.length}/${allEvents.length} Eventos`;
+                }
 
                 if (events.length === 0) {
                     scrollEl.innerHTML = '<span style="font-size:12px; color:var(--text-muted); padding:4px 8px;">Nenhum evento registrado ainda.</span>';
@@ -10344,24 +10194,39 @@ body.theme-light .event-tile-date {
 
                 let html = '';
                 events.forEach(ev => {
-                    const isBuy = ev.tipo.startsWith('E');
+                    const isBuy = ev.tipo.startsWith('E') || ev.tipo === 'COMPRA';
                     const isGain = ev.tipo === 'GAIN';
                     const isStop = ev.tipo === 'STOP';
-                    const pillClass = isBuy ? 'pill-buy' : (isGain ? 'pill-gain' : 'pill-stop');
+                    const isProv = ev.tipo === 'PROVENTO';
+                    const isAporte = ev.tipo === 'APORTE';
+                    const isCorp = ev.tipo === 'EVENTO_SOCIETARIO';
+                    const pillClass = isBuy ? 'pill-buy' : (isGain ? 'pill-gain' : (isStop ? 'pill-stop' : (isProv ? 'pill-prov' : (isAporte ? 'pill-aporte' : 'pill-corp'))));
 
                     let desc = '';
                     if (isBuy) {
                         desc = `${ev.ticker} • ${ev.tipo} (${formatMoney(ev.preco)})`;
                     } else if (isGain) {
                         const pct = ev.resultado_pct !== undefined ? ev.resultado_pct.toFixed(1).replace('.', ',') : '0';
-                        desc = `${ev.ticker} • Gain +${pct}%`;
-                    } else {
+                        desc = `${ev.ticker} • Gain ${Number(ev.resultado_pct) >= 0 ? '+' : ''}${pct}%`;
+                    } else if (isStop) {
                         const pct = ev.resultado_pct !== undefined ? ev.resultado_pct.toFixed(1).replace('.', ',') : '-50';
                         desc = `${ev.ticker} • Stop ${pct}%`;
+                    } else if (isProv) {
+                        desc = `${ev.ticker} • Prov +${formatMoney(ev.valor)}`;
+                    } else if (isAporte) {
+                        desc = `Aporte +${formatMoney(ev.valor)}`;
+                    } else if (isCorp) {
+                        desc = `${ev.ticker} • Ev. Societário`;
+                    } else {
+                        desc = `${ev.ticker} • ${ev.tipo}`;
                     }
 
+                    const clickAttr = ev.tradeId
+                        ? `IfrModule.onTimelinePillClick('${ev.tradeId}', '${ev.data}')`
+                        : `IfrModule.inspectDay('${ev.data}', true)`;
+
                     html += `
-                        <div class="ifr-timeline-pill ${pillClass}" data-trade-id="${ev.tradeId}" data-date="${ev.data}" onclick="IfrModule.onTimelinePillClick('${ev.tradeId}', '${ev.data}')" title="${ev.data}: ${desc} (Clique para focar no gráfico e no trade)">
+                        <div class="ifr-timeline-pill ${pillClass}" data-trade-id="${ev.tradeId || ''}" data-date="${ev.data}" onclick="${clickAttr}" title="${ev.data}: ${desc}">
                             <span>${fmtShort(ev.data)}</span>
                             <strong>${desc}</strong>
                             <span style="font-size:11px; opacity:0.85;">↗</span>
@@ -10370,172 +10235,16 @@ body.theme-light .event-tile-date {
                 });
 
                 scrollEl.innerHTML = html;
-                setTimeout(syncIfrTimelineIndicator, 50);
-            }
-
-            function syncIfrTimelineIndicator() {
-                const container = document.getElementById('ifrTimelineScroll');
-                const track = document.getElementById('ifrTimelineScrollIndicator');
-                const thumb = document.getElementById('ifrTimelineScrollThumb');
-                if (!container || !track || !thumb) return;
-
-                const scrollWidth = container.scrollWidth;
-                const clientWidth = container.clientWidth;
-                const scrollLeft = container.scrollLeft;
-
-                if (scrollWidth <= clientWidth + 2) {
-                    track.style.display = 'none';
-                    return;
-                }
-                track.style.display = 'block';
-
-                const ratio = clientWidth / scrollWidth;
-                const thumbWidthPct = Math.max(10, Math.min(100, ratio * 100));
-                thumb.style.width = thumbWidthPct + '%';
-
-                const maxScroll = scrollWidth - clientWidth;
-                const scrollFraction = maxScroll > 0 ? (scrollLeft / maxScroll) : 0;
-                const maxTranslate = 100 - thumbWidthPct;
-                const translateX = scrollFraction * maxTranslate;
-
-                thumb.style.left = (translateX * (track.clientWidth / 100) / (track.clientWidth || 1) * 100) + '%';
-            }
-
-            function syncIfrFilterIndicator() {
-                const container = document.getElementById('ifrFilterScrollContainer');
-                const track = document.getElementById('ifrFilterScrollIndicator');
-                const thumb = document.getElementById('ifrFilterScrollThumb');
-                if (!container || !track || !thumb) return;
-
-                const scrollWidth = container.scrollWidth;
-                const clientWidth = container.clientWidth;
-                const scrollLeft = container.scrollLeft;
-
-                if (scrollWidth <= clientWidth + 2) {
-                    track.style.display = 'none';
-                    return;
-                }
-                track.style.display = 'block';
-
-                const ratio = clientWidth / scrollWidth;
-                const thumbWidthPct = Math.max(12, Math.min(100, ratio * 100));
-                thumb.style.width = thumbWidthPct + '%';
-
-                const maxScroll = scrollWidth - clientWidth;
-                const scrollFraction = maxScroll > 0 ? (scrollLeft / maxScroll) : 0;
-                const maxTranslate = 100 - thumbWidthPct;
-                const translateX = scrollFraction * maxTranslate;
-
-                thumb.style.left = (translateX * (track.clientWidth / 100) / (track.clientWidth || 1) * 100) + '%';
-            }
-
-            function computeDynamicEvolution() {
-                const cfg = ifrData.config || {};
-                const initialCapital = Number(cfg.capital_inicial || 50000);
-                const allTrades = Object.values(ifrData.trades || {});
-                if (allTrades.length === 0) return ifrData.evolucao || [];
-
-                function getPriceOnDate(ticker, targetDate) {
-                    if (typeof DATA !== 'undefined' && DATA[ticker] && Array.isArray(DATA[ticker].dates)) {
-                        const dList = DATA[ticker].dates;
-                        const pList = DATA[ticker].prices;
-                        let lastP = null;
-                        for (let i = 0; i < dList.length; i++) {
-                            if (dList[i] <= targetDate) {
-                                lastP = pList[i];
-                            } else {
-                                break;
-                            }
-                        }
-                        if (lastP !== null && !isNaN(lastP)) return Number(lastP);
-                    }
-                    return null;
-                }
-
-                const dateSet = new Set();
-                dateSet.add('2026-01-02');
-
-                allTrades.forEach(t => {
-                    (t.entradas || []).forEach(e => {
-                        if (e.data) dateSet.add(e.data);
-                    });
-                    if (t.data_encerramento) dateSet.add(t.data_encerramento);
-                });
-
-                const milestones = [
-                    '2026-01-31', '2026-02-28', '2026-03-31', '2026-04-30',
-                    '2026-05-31', '2026-06-30', '2026-07-31', '2026-08-31',
-                    '2026-09-30', '2026-10-31', '2026-11-10'
-                ];
-                milestones.forEach(m => dateSet.add(m));
-
-                const sortedDates = Array.from(dateSet).sort();
-                const points = [];
-
-                sortedDates.forEach(curDate => {
-                    let realizedProfit = 0;
-                    let capitalAlocado = 0;
-                    let valorMercado = 0;
-                    let ativosPosicionados = 0;
-
-                    allTrades.forEach(t => {
-                        const ticker = t.ticker;
-                        const entradasValidas = (t.entradas || []).filter(e => e.data && e.data <= curDate);
-                        if (entradasValidas.length === 0) return;
-
-                        const isClosed = t.data_encerramento && t.data_encerramento <= curDate;
-
-                        if (isClosed) {
-                            const res = Number(t.resultado_realizado_rs);
-                            realizedProfit += isNaN(res) ? 0 : res;
-                        } else {
-                            const shares = entradasValidas.reduce((sum, e) => sum + Number(e.quantidade || 0), 0);
-                            const cost = entradasValidas.reduce((sum, e) => sum + Number(e.aporte_real || 0), 0);
-
-                            let p = getPriceOnDate(ticker, curDate);
-                            if (p === null) {
-                                p = Number(entradasValidas[entradasValidas.length - 1].preco || 0);
-                            }
-
-                            capitalAlocado += cost;
-                            valorMercado += (shares * p);
-                            ativosPosicionados++;
-                        }
-                    });
-
-                    const caixaLivre = initialCapital + realizedProfit - capitalAlocado;
-                    const patrimonio = caixaLivre + valorMercado;
-                    const varPct = initialCapital > 0 ? ((patrimonio / initialCapital - 1) * 100) : 0;
-
-                    points.push({
-                        data: curDate,
-                        patrimonio_total: Math.round(patrimonio * 100) / 100,
-                        capital_alocado: Math.round(capitalAlocado * 100) / 100,
-                        valor_mercado_posicoes: Math.round(valorMercado * 100) / 100,
-                        caixa_livre: Math.round(caixaLivre * 100) / 100,
-                        lucro_realizado_acumulado: Math.round(realizedProfit * 100) / 100,
-                        variacao_pct_total: Math.round(varPct * 100) / 100,
-                        quantidade_ativos_posicionados: ativosPosicionados
-                    });
-                });
-
-                return points;
             }
 
             function renderChart() {
                 const ctx = document.getElementById('chartIfrEvolucao');
                 if (!ctx) return;
 
-                // 1. Recalcula curva dinâmica fiel às operações e cotações reais
-                const dynamicEvo = computeDynamicEvolution();
-                if (dynamicEvo && dynamicEvo.length > 0) {
-                    ifrData.evolucao = dynamicEvo;
-                }
-
-                const evoList = ifrData.evolucao || [];
+                const evoList = getSeries();
                 if (evoList.length === 0) return;
 
-                const allEvents = getOperationalEvents();
+                const allEvents = getVisibleOperationalEvents();
                 const eventsByDate = {};
                 allEvents.forEach(ev => {
                     if (!eventsByDate[ev.data]) eventsByDate[ev.data] = [];
@@ -10543,26 +10252,18 @@ body.theme-light .event-tile-date {
                 });
 
                 const labels = evoList.map(p => {
-                    const parts = p.data.split('-');
-                    return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0].slice(2)}` : p.data;
+                    const parts = p.d.split('-');
+                    return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0].slice(2)}` : p.d;
                 });
-                const dataValues = evoList.map(p => p.patrimonio_total);
+                const isTwr = chartMode === 'twr';
+                const dataValues = evoList.map(p => isTwr ? (p.r_acum || 0) : p.nav);
+                const ibovValues = evoList.map(p => p.ibov_acum || 0);
                 const lastPoint = evoList[evoList.length - 1];
 
                 const currentBadge = document.getElementById('ifrPatrimonioCurrentBadge');
                 if (currentBadge && lastPoint) {
-                    const varPct = lastPoint.variacao_pct_total || 0;
-                    currentBadge.innerText = `Patrimônio: ${formatMoney(lastPoint.patrimonio_total)} (${varPct >= 0 ? '+' : ''}${varPct.toFixed(1)}%)`;
-                }
-
-                const caixaBadge = document.getElementById('ifrPatrimonioCaixaBadge');
-                if (caixaBadge && lastPoint) {
-                    caixaBadge.innerText = `Caixa: ${formatMoney(lastPoint.caixa_livre)}`;
-                }
-
-                const alocBadge = document.getElementById('ifrPatrimonioAlocBadge');
-                if (alocBadge && lastPoint) {
-                    alocBadge.innerText = `Alocado: ${formatMoney(lastPoint.capital_alocado)}`;
+                    const varPct = lastPoint.r_acum || 0;
+                    currentBadge.innerText = `Patrimônio: ${formatMoney(lastPoint.nav)} (Cota: ${varPct >= 0 ? '+' : ''}${varPct.toFixed(2).replace('.', ',')}%)`;
                 }
 
                 if (chartInstance) {
@@ -10570,7 +10271,6 @@ body.theme-light .event-tile-date {
                 }
 
                 const isLight = document.body.classList.contains('theme-light');
-                // Alto Contraste: Verde Floresta #15803d no modo claro (idêntico à Visão Detalhada)
                 const lineColor = isLight ? '#15803d' : '#00e676';
                 const gridColor = isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.06)';
                 const textColor = isLight ? '#1e293b' : '#8492a6';
@@ -10585,54 +10285,66 @@ body.theme-light .event-tile-date {
                     gradient.addColorStop(1, 'rgba(0, 230, 118, 0.00)');
                 }
 
-                // Configuração dinâmica das bolinhas dos eventos operacionais (apenas pregões com negociações ganham bolinhas)
                 const pointRadii = evoList.map(pt => {
-                    const evs = eventsByDate[pt.data];
-                    return (evs && evs.length > 0) ? 7 : 0;
+                    const evs = eventsByDate[pt.d];
+                    return (evs && evs.length > 0) ? 6 : 0;
                 });
 
                 const pointHoverRadii = evoList.map(pt => {
-                    const evs = eventsByDate[pt.data];
-                    return (evs && evs.length > 0) ? 11 : 4;
+                    const evs = eventsByDate[pt.d];
+                    return (evs && evs.length > 0) ? 9.5 : 5;
                 });
 
                 const pointBgColors = evoList.map(pt => {
-                    const evs = eventsByDate[pt.data];
-                    if (!evs || evs.length === 0) return 'transparent';
-                    if (evs.some(e => e.tipo === 'STOP')) return '#ef4444'; // Stop Loss (Vermelho)
-                    if (evs.some(e => e.tipo === 'GAIN')) return '#f59e0b'; // Venda com Lucro (Dourado/Ambar)
-                    return isLight ? '#15803d' : '#10b981'; // Entradas E1, E2, E3 (Verde Esmeralda)
+                    const evs = eventsByDate[pt.d];
+                    if (!evs || evs.length === 0) return lineColor;
+                    if (evs.some(e => e.tipo === 'STOP')) return '#ef4444';
+                    if (evs.some(e => e.tipo === 'GAIN')) return '#f59e0b';
+                    if (evs.some(e => e.tipo.startsWith('E') || e.tipo === 'COMPRA')) return isLight ? '#15803d' : '#10b981';
+                    if (evs.some(e => e.tipo === 'EVENTO_SOCIETARIO')) return '#a855f7';
+                    if (evs.some(e => e.tipo === 'PROVENTO')) return '#06b6d4';
+                    if (evs.some(e => e.tipo === 'APORTE')) return '#3b82f6';
+                    return lineColor;
                 });
 
-                const pointBorderColors = evoList.map(pt => {
-                    const evs = eventsByDate[pt.data];
-                    return (evs && evs.length > 0) ? '#ffffff' : 'transparent';
-                });
-
+                const pointBorderColors = evoList.map(() => '#ffffff');
                 const pointBorderWidths = evoList.map(pt => {
-                    const evs = eventsByDate[pt.data];
-                    return (evs && evs.length > 0) ? 2.5 : 0;
+                    const evs = eventsByDate[pt.d];
+                    return (evs && evs.length > 0) ? 2 : 0;
                 });
+
+                const datasets = [{
+                    label: isTwr ? 'Carteira (Cota TWR %)' : 'Patrimônio Total (R$)',
+                    data: dataValues,
+                    borderColor: lineColor,
+                    borderWidth: 2.3,
+                    fill: !isTwr,
+                    backgroundColor: isTwr ? 'transparent' : gradient,
+                    tension: 0.2,
+                    pointRadius: pointRadii,
+                    pointHoverRadius: pointHoverRadii,
+                    pointBackgroundColor: pointBgColors,
+                    pointBorderColor: pointBorderColors,
+                    pointBorderWidth: pointBorderWidths
+                }];
+
+                if (isTwr) {
+                    datasets.push({
+                        label: 'IBOV (%)',
+                        data: ibovValues,
+                        borderColor: '#94a3b8',
+                        borderWidth: 1.8,
+                        borderDash: [5, 4],
+                        fill: false,
+                        tension: 0.2,
+                        pointRadius: 0,
+                        pointHoverRadius: 4
+                    });
+                }
 
                 chartInstance = new Chart(ctx, {
                     type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Patrimônio Total (R$)',
-                            data: dataValues,
-                            borderColor: lineColor,
-                            borderWidth: 2.5,
-                            fill: true,
-                            backgroundColor: gradient,
-                            tension: 0.25,
-                            pointRadius: pointRadii,
-                            pointHoverRadius: pointHoverRadii,
-                            pointBackgroundColor: pointBgColors,
-                            pointBorderColor: pointBorderColors,
-                            pointBorderWidth: pointBorderWidths
-                        }]
-                    },
+                    data: { labels, datasets },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
@@ -10645,13 +10357,15 @@ body.theme-light .event-tile-date {
                             const idx = elements[0].index;
                             const pt = evoList[idx];
                             if (!pt) return;
-                            const evs = eventsByDate[pt.data];
+                            const evs = eventsByDate[pt.d];
                             if (evs && evs.length > 0 && evs[0].tradeId) {
                                 IfrModule.scrollToTrade(evs[0].tradeId);
+                            } else {
+                                IfrModule.inspectDay(pt.d, true);
                             }
                         },
                         plugins: {
-                            legend: { display: false },
+                            legend: { display: isTwr, labels: { color: textColor, boxWidth: 14 } },
                             tooltip: {
                                 backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(17, 19, 25, 0.96)',
                                 titleColor: isLight ? '#0f172a' : '#f1f5f9',
@@ -10665,45 +10379,50 @@ body.theme-light .event-tile-date {
                                         if (!items || items.length === 0) return '';
                                         const idx = items[0].dataIndex;
                                         const pt = evoList[idx] || {};
-                                        const evs = eventsByDate[pt.data] || [];
+                                        const evs = eventsByDate[pt.d] || [];
                                         if (evs.length > 0) {
-                                            return `📅 ${items[0].label} • ${evs.length} Negociação(ões) Operacional(is)`;
+                                            return `📅 ${items[0].label} • ${evs.length} Evento(s)`;
                                         }
                                         return `📅 ${items[0].label}`;
                                     },
                                     label: function (context) {
+                                        if (context.datasetIndex > 0) {
+                                            return `IBOV Acum.: ${formatPct(context.raw)}`;
+                                        }
                                         const idx = context.dataIndex;
                                         const pt = evoList[idx] || {};
                                         return [
-                                            `Patrimônio: ${formatMoney(context.raw)}`,
-                                            `Variação: ${pt.variacao_pct_total >= 0 ? '+' : ''}${pt.variacao_pct_total}%`,
-                                            `Caixa Livre: ${formatMoney(pt.caixa_livre)}`,
-                                            `Capital Alocado: ${formatMoney(pt.capital_alocado)}`
+                                            `NAV: ${formatMoney(pt.nav)} = Caixa ${formatMoney(pt.caixa)} + Ações ${formatMoney(pt.vm)}`,
+                                            `Cota TWR: ${formatPct(pt.r_acum)} · IBOV: ${formatPct(pt.ibov_acum)}`,
+                                            `Resultado Dia: ${formatSignedMoney(pt.res_dia)} · Conciliado: ${pt.ok !== false ? '✅' : '❌'}`
                                         ];
                                     },
                                     afterBody: function (items) {
                                         if (!items || items.length === 0) return [];
                                         const idx = items[0].dataIndex;
                                         const pt = evoList[idx] || {};
-                                        const evs = eventsByDate[pt.data] || [];
+                                        const evs = eventsByDate[pt.d] || [];
                                         if (evs.length === 0) return [];
 
-                                        const lines = ['', '── OPERAÇÕES DO DIA ──'];
+                                        const lines = ['', '── EVENTOS DO DIA ──'];
                                         evs.forEach(ev => {
                                             if (ev.tipo === 'GAIN') {
                                                 const pct = ev.resultado_pct !== undefined ? ev.resultado_pct.toFixed(1) + '%' : '';
-                                                lines.push(`🎯 Venda Gain: ${ev.ticker} (${ev.motivo})`);
-                                                lines.push(`   Preço: ${formatMoney(ev.preco)} | Lucro: +${formatMoney(ev.resultado_rs)} (+${pct})`);
+                                                lines.push(`🎯 Venda Gain: ${ev.ticker} (${formatSignedMoney(ev.resultado_rs)} | ${pct})`);
                                             } else if (ev.tipo === 'STOP') {
                                                 const pct = ev.resultado_pct !== undefined ? ev.resultado_pct.toFixed(1) + '%' : '';
-                                                lines.push(`🚨 Stop Loss: ${ev.ticker} (${ev.motivo})`);
-                                                lines.push(`   Preço: ${formatMoney(ev.preco)} | Prejuízo: ${formatMoney(ev.resultado_rs)} (${pct})`);
+                                                lines.push(`🚨 Stop Loss: ${ev.ticker} (${formatSignedMoney(ev.resultado_rs)} | ${pct})`);
+                                            } else if (ev.tipo.startsWith('E') || ev.tipo === 'COMPRA') {
+                                                lines.push(`🟢 Compra ${ev.tipo}: ${ev.ticker} (${ev.qtd || ''} @ ${formatMoney(ev.preco || ev.valor)})`);
+                                            } else if (ev.tipo === 'PROVENTO') {
+                                                lines.push(`💧 Provento: ${ev.ticker} (+${formatMoney(ev.valor)})`);
+                                            } else if (ev.tipo === 'APORTE') {
+                                                lines.push(`🏦 Aporte Mensal: +${formatMoney(ev.valor)}`);
                                             } else {
-                                                lines.push(`🟢 Entrada ${ev.tipo}: ${ev.ticker}`);
-                                                lines.push(`   Preço: ${formatMoney(ev.preco)} | Qtd: ${ev.qtd} ações (${formatMoney(ev.aporte)})`);
+                                                lines.push(`📌 ${ev.tipo}: ${ev.ticker || ''} ${ev.descricao || ''}`);
                                             }
                                         });
-                                        lines.push('👉 Clique no ponto para ir ao trade');
+                                        lines.push('👉 Clique no ponto para navegar/inspecionar');
                                         return lines;
                                     }
                                 }
@@ -10712,7 +10431,7 @@ body.theme-light .event-tile-date {
                         scales: {
                             x: {
                                 grid: { color: gridColor },
-                                ticks: { color: textColor, font: { size: 11, family: "'JetBrains Mono', monospace" } }
+                                ticks: { color: textColor, maxTicksLimit: 12, font: { size: 11, family: "'JetBrains Mono', monospace" } }
                             },
                             y: {
                                 grid: { color: gridColor },
@@ -10720,7 +10439,7 @@ body.theme-light .event-tile-date {
                                     color: textColor,
                                     font: { size: 11, family: "'JetBrains Mono', monospace" },
                                     callback: function (val) {
-                                        return 'R$ ' + (val / 1000).toFixed(0) + 'k';
+                                        return isTwr ? (val.toFixed(1) + '%') : ('R$ ' + (val / 1000).toFixed(1) + 'k');
                                     }
                                 }
                             }
@@ -10768,13 +10487,15 @@ body.theme-light .event-tile-date {
                     const ativo = ativosMap[t.ticker] || {};
                     const logo = LOGO_COLORS[t.ticker] || { bg: '#ffffff', color: '#0f172a', text: t.ticker.slice(0, 4) };
 
-                    // Cotação Oficial B3 em tempo real refletindo a visão geral do dashboard
-                    const isFinalizado = (t.status === 'FINALIZADO_GAIN' || t.status === 'FINALIZADO_STOP');
-                    const officialPrice = getOfficialAssetPrice(t.ticker, t.preco_fechamento_atual || ativo.ultimo_preco || t.preco_medio_atual);
-                    const currentPrice = isFinalizado ? (t.preco_saida || t.preco_fechamento_atual || officialPrice) : officialPrice;
-
+                    const currentPrice = t.preco_fechamento_atual || ativo.ultimo_preco || t.preco_medio_atual;
                     const ifr = ativo.ifr_21 !== undefined ? ativo.ifr_21 : 45.0;
                     const ifrClass = ifr < 30 ? 'alert' : (ifr > 70 ? 'ok' : 'warn');
+
+                    const pnlPct = t.status === 'ABERTO'
+                        ? (t.resultado_nao_realizado_pct || 0)
+                        : (t.resultado_realizado_pct || 0);
+                    const pnlClass = pnlPct >= 0 ? 'pos' : 'neg';
+                    const pnlSign = pnlPct >= 0 ? '+' : '';
 
                     const e1 = (t.entradas && t.entradas[0]) || { preco: currentPrice, data: t.data_abertura || '--' };
                     const e2 = (t.entradas && t.entradas[1]) || null;
@@ -10783,18 +10504,6 @@ body.theme-light .event-tile-date {
                     const pm = t.preco_medio_atual || currentPrice;
                     const stopPrice = t.stop_geral_preco || Number((pm * 0.50).toFixed(2));
                     const alvoDesc = t.alvo_saida_desc || 'IFR > 70';
-
-                    // PnL recalculado em tempo real sobre a cotação oficial se o trade estiver aberto
-                    let pnlPct = 0;
-                    if (isFinalizado) {
-                        pnlPct = (t.resultado_realizado_pct !== undefined && t.resultado_realizado_pct !== null)
-                            ? t.resultado_realizado_pct
-                            : (t.capital_total_alocado > 0 ? ((currentPrice * t.quantidade_total / t.capital_total_alocado - 1) * 100) : 0);
-                    } else {
-                        pnlPct = pm > 0 ? Number(((currentPrice / pm - 1) * 100).toFixed(2)) : (t.resultado_nao_realizado_pct || 0);
-                    }
-                    const pnlClass = pnlPct >= 0 ? 'pos' : 'neg';
-                    const pnlSign = pnlPct >= 0 ? '+' : '';
 
                     // Formatar data abreviada (DD/MM)
                     function fmtDate(dStr) {
@@ -10809,6 +10518,7 @@ body.theme-light .event-tile-date {
 
                     if (currentViewMode === 'comfort') {
                         // Modo Conforto
+                        const isFinalizado = (t.status === 'FINALIZADO_GAIN' || t.status === 'FINALIZADO_STOP');
                         const isGain = (t.status === 'FINALIZADO_GAIN');
                         const e1Done = true;
                         const e2Done = Boolean(e2 && (t.etapa_atual >= 2));
@@ -10817,30 +10527,22 @@ body.theme-light .event-tile-date {
                         const nextE2Price = Number((e1.preco * 0.90).toFixed(2));
                         const nextE3Price = e2 ? Number((e2.preco * 0.90).toFixed(2)) : Number((e1.preco * 0.81).toFixed(2));
 
-                        // Verificação dinâmica de gatilho para nova entrada atingido
-                        const e2GatilhoAtingido = !isFinalizado && !e2Done && (currentPrice <= nextE2Price);
-                        const e3GatilhoAtingido = !isFinalizado && e2Done && !e3Done && (currentPrice <= nextE3Price);
-
                         let statusBadgeHtml = '';
                         if (isFinalizado) {
                             statusBadgeHtml = isGain 
                                 ? '<span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; background:#dcfce7; color:#15803d; border:1px solid #86efac;">ENCERRADO (GAIN) 🎯</span>'
                                 : '<span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5;">ENCERRADO (STOP) 🚨</span>';
-                        } else if (e2GatilhoAtingido) {
-                            statusBadgeHtml = '<span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; background:rgba(245, 158, 11, 0.18); color:#f59e0b; border:1px solid #f59e0b;" title="Preço atual atingiu a queda de 10% da Entrada 1">GATILHO E2 ATINGIDO ⚡</span>';
-                        } else if (e3GatilhoAtingido) {
-                            statusBadgeHtml = '<span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; background:rgba(245, 158, 11, 0.18); color:#f59e0b; border:1px solid #f59e0b;" title="Preço atual atingiu a queda de 10% da Entrada 2">GATILHO E3 ATINGIDO ⚡</span>';
                         }
 
                         // Textos descritivos das etapas
-                        let e2SubText = e2GatilhoAtingido ? ('Gatilho R$ ' + currentPrice.toFixed(2)) : ('Aguardando ' + formatMoney(nextE2Price));
+                        let e2SubText = 'Aguardando ' + formatMoney(nextE2Price);
                         if (e2Done && e2) {
                             e2SubText = `${fmtDate(e2.data)} ${formatMoney(e2.preco)}`;
                         } else if (isFinalizado) {
                             e2SubText = 'Não necessária';
                         }
 
-                        let e3SubText = e3GatilhoAtingido ? ('Gatilho R$ ' + currentPrice.toFixed(2)) : ('Aguardando ' + formatMoney(nextE3Price));
+                        let e3SubText = 'Aguardando ' + formatMoney(nextE3Price);
                         if (e3Done && e3) {
                             e3SubText = `${fmtDate(e3.data)} ${formatMoney(e3.preco)}`;
                         } else if (isFinalizado) {
@@ -10909,7 +10611,7 @@ body.theme-light .event-tile-date {
                                 </div>
                                 <div class="ifr-asset-metrics">
                                     <span class="ifr-metric-item">Preço: <strong>${formatMoney(currentPrice)}</strong></span>
-                                    <span class="ifr-metric-item">P/L: <strong>${(typeof DATA !== 'undefined' && DATA[t.ticker] && DATA[t.ticker].pl && DATA[t.ticker].pl.length > 0) ? Number(DATA[t.ticker].pl[DATA[t.ticker].pl.length - 1]).toFixed(1) + 'x' : (ativo.ultimo_pl ? ativo.ultimo_pl + 'x' : '--')}</strong> vs Méd 2A: <strong>${(ativo.pl_medio_historico_2a || ativo.pl_medio_historico) ? (ativo.pl_medio_historico_2a || ativo.pl_medio_historico) + 'x' : '--'}</strong></span>
+                                    <span class="ifr-metric-item">P/L: <strong>${ativo.ultimo_pl ? ativo.ultimo_pl + 'x' : '--'}</strong> vs Méd 2A: <strong>${(ativo.pl_medio_historico_2a || ativo.pl_medio_historico) ? (ativo.pl_medio_historico_2a || ativo.pl_medio_historico) + 'x' : '--'}</strong></span>
                                     <span class="ifr-pill ${ifrClass}">IFR: ${ifr.toFixed(1)}</span>
                                 </div>
                             </div>
@@ -10925,16 +10627,16 @@ body.theme-light .event-tile-date {
                                 <div class="ifr-step-connector ${e2Done ? 'done' : ''}"></div>
 
                                 <!-- E2 -->
-                                <div class="ifr-step-node ${e2Done ? 'done' : (e2GatilhoAtingido ? 'gatilho' : 'pending')}" ${e2Done && e2 ? `onclick="event.stopPropagation(); IfrModule.scrollToChartDate('${e2.data}', '${t.id}')" title="Ver Aporte E2 (${fmtDate(e2.data)}) no gráfico" style="cursor:pointer;"` : (e2GatilhoAtingido ? 'title="Gatilho de preço atingido! Nova entrada pendente de processamento."' : '')}>
-                                    <div class="ifr-step-badge">${e2Done ? '✓ ' : (e2GatilhoAtingido ? '⚡ ' : '')}E2 R$ 3.300 ${e2Done ? '↗' : ''}</div>
+                                <div class="ifr-step-node ${e2Done ? 'done' : 'pending'}" ${e2Done && e2 ? `onclick="event.stopPropagation(); IfrModule.scrollToChartDate('${e2.data}', '${t.id}')" title="Ver Aporte E2 (${fmtDate(e2.data)}) no gráfico" style="cursor:pointer;"` : ''}>
+                                    <div class="ifr-step-badge">${e2Done ? '✓ ' : ''}E2 R$ 3.300 ${e2Done ? '↗' : ''}</div>
                                     <div class="ifr-step-sub">${e2SubText}</div>
                                 </div>
 
                                 <div class="ifr-step-connector ${e3Done ? 'done' : ''}"></div>
 
                                 <!-- E3 -->
-                                <div class="ifr-step-node ${e3Done ? 'done' : (e3GatilhoAtingido ? 'gatilho' : 'pending')}" ${e3Done && e3 ? `onclick="event.stopPropagation(); IfrModule.scrollToChartDate('${e3.data}', '${t.id}')" title="Ver Aporte E3 (${fmtDate(e3.data)}) no gráfico" style="cursor:pointer;"` : (e3GatilhoAtingido ? 'title="Gatilho de preço atingido! Nova entrada pendente de processamento."' : '')}>
-                                    <div class="ifr-step-badge">${e3Done ? '✓ ' : (e3GatilhoAtingido ? '⚡ ' : '')}E3 R$ 3.300 ${e3Done ? '↗' : ''}</div>
+                                <div class="ifr-step-node ${e3Done ? 'done' : 'pending'}" ${e3Done && e3 ? `onclick="event.stopPropagation(); IfrModule.scrollToChartDate('${e3.data}', '${t.id}')" title="Ver Aporte E3 (${fmtDate(e3.data)}) no gráfico" style="cursor:pointer;"` : ''}>
+                                    <div class="ifr-step-badge">${e3Done ? '✓ ' : ''}E3 R$ 3.300 ${e3Done ? '↗' : ''}</div>
                                     <div class="ifr-step-sub">${e3SubText}</div>
                                 </div>
                             </div>
@@ -11031,15 +10733,15 @@ body.theme-light .event-tile-date {
                 if (!targetDate) return;
 
                 // 1. Encontrar o índice no gráfico de evolução patrimonial
-                const evoList = ifrData.evolucao || [];
-                let idx = evoList.findIndex(p => p.data === targetDate);
+                const evoList = getSeries();
+                let idx = evoList.findIndex(p => p.d === targetDate);
 
                 // Se a data exata não constar, busca a data mais próxima
                 if (idx === -1 && evoList.length > 0) {
                     let bestDiff = Infinity;
                     const targetTime = new Date(targetDate).getTime();
                     evoList.forEach((p, i) => {
-                        const ptTime = new Date(p.data).getTime();
+                        const ptTime = new Date(p.d).getTime();
                         const diff = Math.abs(ptTime - targetTime);
                         if (diff < bestDiff) {
                             bestDiff = diff;
@@ -11106,8 +10808,8 @@ body.theme-light .event-tile-date {
                 scrollToTrade(tradeId);
                 // Ativar elemento no gráfico
                 if (chartInstance && targetDate) {
-                    const evoList = ifrData.evolucao || [];
-                    const idx = evoList.findIndex(p => p.data === targetDate);
+                    const evoList = getSeries();
+                    const idx = evoList.findIndex(p => p.d === targetDate);
                     if (idx !== -1) {
                         try {
                             chartInstance.setActiveElements([{ datasetIndex: 0, index: idx }]);
@@ -11120,46 +10822,219 @@ body.theme-light .event-tile-date {
                 }
             }
 
+            function renderAccountingDetails() {
+                const ult = ifrData.ultimo_fechamento;
+                const serie = getSeries();
+
+                // 1. Posições & Concentração
+                const posTbody = document.getElementById('ifrPosicoesTableBody');
+                const posResumo = document.getElementById('ifrPosicoesResumo');
+                if (posTbody) {
+                    const posicoes = (ult && ult.investido && ult.investido.posicoes) ? ult.investido.posicoes : [];
+                    if (posResumo) {
+                        const pctInv = ult && ult.investido ? (ult.investido.pct_investido || 0).toFixed(1).replace('.', ',') : '0,0';
+                        posResumo.innerText = `${posicoes.length} posições · ${pctInv}% do NAV investido`;
+                    }
+                    if (!posicoes.length) {
+                        posTbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:16px;">Nenhuma posição em aberto.</td></tr>';
+                    } else {
+                        posTbody.innerHTML = posicoes.map(p => {
+                            const cls = p.nao_realizado >= 0 ? 'color:#10b981;' : 'color:#ef4444;';
+                            return `
+                                <tr>
+                                    <td><strong>${p.ticker}</strong></td>
+                                    <td class="num">${p.quantidade}</td>
+                                    <td class="num">${formatMoney(p.preco_medio)}</td>
+                                    <td class="num">${formatMoney(p.preco)}</td>
+                                    <td class="num">${formatMoney(p.custo)}</td>
+                                    <td class="num">${formatMoney(p.valor_mercado)}</td>
+                                    <td class="num">${(p.pct_nav || 0).toFixed(1).replace('.', ',')}%</td>
+                                    <td class="num" style="font-weight:700; ${cls}">${formatSignedMoney(p.nao_realizado)} (${formatPct(p.nao_realizado_pct)})</td>
+                                </tr>
+                            `;
+                        }).join('');
+                    }
+                }
+
+                // 2. Explicação da Variação do NAV (Dia + Acumulado)
+                const deltaBox = document.getElementById('ifrDeltaNavBox');
+                const deltaSub = document.getElementById('ifrDeltaNavDiaSub');
+                if (deltaBox && ult && ult.delta_nav) {
+                    const dn = ult.delta_nav;
+                    const pat = ult.patrimonio;
+                    if (deltaSub) deltaSub.innerText = `Pregão ${fmtDateBr(ult.data)} · Resíduo: ${formatMoney(dn.residuo || 0)}`;
+                    deltaBox.innerHTML = `
+                        <div class="ifr-delta-row"><span>Δ NAV do Dia</span><strong>${formatSignedMoney(dn.total)}</strong></div>
+                        <div class="ifr-delta-row"><span>Δ NAV Desde Início</span><strong>${formatSignedMoney(pat.variacao_total)}</strong></div>
+                        <div class="ifr-delta-row"><span>Lucro/Prej. Posições (MtM)</span><strong>${formatSignedMoney(dn.por_resultado_posicoes)}</strong></div>
+                        <div class="ifr-delta-row"><span>Resultado Líq. Acumulado</span><strong>${formatSignedMoney(pat.variacao_por_resultado)}</strong></div>
+                        <div class="ifr-delta-row"><span>Resultado Realizado (Dia)</span><strong>${formatSignedMoney(dn.por_realizado)}</strong></div>
+                        <div class="ifr-delta-row"><span>Aportes Acumulados</span><strong>${formatSignedMoney(pat.variacao_por_aportes)}</strong></div>
+                        <div class="ifr-delta-row"><span>Proventos / JCP (Dia)</span><strong>${formatSignedMoney(dn.por_proventos)}</strong></div>
+                        <div class="ifr-delta-row"><span>Custos &amp; Impostos</span><strong>${formatSignedMoney(dn.por_custos_impostos)}</strong></div>
+                    `;
+                }
+
+                // 3. Rentabilidade Mensal vs IBOV
+                const mensalTbody = document.getElementById('ifrMensalTableBody');
+                if (mensalTbody) {
+                    if (!serie.length) {
+                        mensalTbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:14px;">Sem série diária.</td></tr>';
+                    } else {
+                        const porMes = {};
+                        serie.forEach((pt, i) => {
+                            const mes = pt.d.slice(0, 7);
+                            if (!porMes[mes]) {
+                                const prev = i > 0 ? serie[i - 1] : null;
+                                porMes[mes] = {
+                                    mes,
+                                    cotaBase: prev && prev.cota ? prev.cota : 1,
+                                    ibovAcumBase: prev && prev.ibov_acum !== undefined ? prev.ibov_acum : 0,
+                                    aportesBase: prev ? (prev.apt || 0) : 0,
+                                    ultimo: pt
+                                };
+                            }
+                            porMes[mes].ultimo = pt;
+                        });
+                        const rows = Object.values(porMes).map(m => {
+                            const u = m.ultimo;
+                            const rentM = m.cotaBase > 0 && u.cota ? ((u.cota / m.cotaBase) - 1) * 100 : 0;
+                            const ibovM = ((1 + (u.ibov_acum || 0) / 100) / (1 + (m.ibovAcumBase || 0) / 100) - 1) * 100;
+                            const alphaM = rentM - ibovM;
+                            const aportesM = (u.apt || 0) - m.aportesBase;
+                            const [yr, mo] = m.mes.split('-');
+                            return `
+                                <tr>
+                                    <td><strong>${mo}/${yr}</strong></td>
+                                    <td class="num" style="color:${rentM >= 0 ? '#10b981' : '#ef4444'}; font-weight:700;">${formatPct(rentM)}</td>
+                                    <td class="num">${formatPct(ibovM)}</td>
+                                    <td class="num" style="color:${alphaM >= 0 ? '#10b981' : '#ef4444'};">${formatPct(alphaM)}</td>
+                                    <td class="num">${formatMoney(aportesM)}</td>
+                                    <td class="num">${formatMoney(u.nav)}</td>
+                                </tr>
+                            `;
+                        }).reverse();
+                        mensalTbody.innerHTML = rows.join('');
+                    }
+                }
+            }
+
+            function renderLedger() {
+                const tbody = document.getElementById('ifrLedgerTableBody');
+                const sumEl = document.getElementById('ifrAuditSummaryText');
+                if (!tbody) return;
+
+                const typeFilter = (document.getElementById('ifrLedgerTypeFilter') || {}).value || 'TODOS';
+                const q = ((document.getElementById('ifrLedgerSearch') || {}).value || '').trim().toUpperCase();
+
+                let list = [...(ifrData.ledger || [])].sort((a, b) => (b.seq || 0) - (a.seq || 0));
+                if (sumEl) sumEl.innerText = `${list.length} lançamentos imutáveis no livro diário`;
+
+                if (typeFilter !== 'TODOS') list = list.filter(l => l.tipo === typeFilter);
+                if (q) {
+                    list = list.filter(l =>
+                        (l.ticker || '').toUpperCase().includes(q) ||
+                        (l.data || '').includes(q) ||
+                        (l.descricao || '').toUpperCase().includes(q)
+                    );
+                }
+
+                if (!list.length) {
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:var(--text-muted); padding:16px;">Nenhum lançamento encontrado.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = list.map(l => {
+                    const cls = l.valor >= 0 ? 'color:#10b981;' : 'color:#ef4444;';
+                    return `
+                        <tr>
+                            <td style="font-family:'JetBrains Mono', monospace;">${fmtDateBr(l.data)}</td>
+                            <td><span class="ifr-tag-tipo ifr-tag-${l.tipo}">${l.tipo}</span></td>
+                            <td><strong>${l.ticker || 'CAIXA'}</strong></td>
+                            <td style="max-width:260px; white-space:normal;">${l.descricao || ''}</td>
+                            <td class="num">${l.quantidade || '--'}</td>
+                            <td class="num">${l.preco ? formatMoney(l.preco) : '--'}</td>
+                            <td class="num" style="font-weight:700; ${cls}">${formatSignedMoney(l.valor)}</td>
+                            <td class="num">${formatMoney(l.caixa_depois)}</td>
+                            <td class="num"><button class="ifr-filter-btn" style="padding:3px 8px; font-size:11px;" onclick="IfrModule.inspectDay('${l.data}', false)">🔍</button></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            async function inspectDay(targetDate, scrollToInspector = true) {
+                const box = document.getElementById('ifrDayInspector');
+                if (!box || !targetDate) return;
+
+                let fech = (ifrData.ultimo_fechamento && ifrData.ultimo_fechamento.data === targetDate) ? ifrData.ultimo_fechamento : null;
+                if (!fech && firestoreDb) {
+                    try {
+                        const doc = await firestoreDb.collection('fechamentos_ifr').doc(targetDate).get();
+                        if (doc.exists) fech = doc.data();
+                    } catch (e) {}
+                }
+
+                const resumo = getSeries().find(p => p.d === targetDate);
+                if (!fech && !resumo) return;
+
+                if (fech) {
+                    const dn = fech.delta_nav || {};
+                    box.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
+                            <strong>🔍 Inspeção Contábil — ${fmtDateBr(fech.data)} (${fech.conciliado ? '✅ Conciliado' : '❌ Divergência'})</strong>
+                            <button class="ifr-filter-btn" style="padding:2px 8px; font-size:11px;" onclick="document.getElementById('ifrDayInspector').style.display='none'">Fechar ✕</button>
+                        </div>
+                        <div style="font-family:'JetBrains Mono', monospace; font-size:12px;">
+                            NAV ${formatMoney(fech.patrimonio.nav)} = Caixa ${formatMoney(fech.caixa.saldo)} + Ações ${formatMoney(fech.investido.valor_mercado)} | Resíduo: ${formatMoney(fech.residuo_contabil || 0)}<br>
+                            Δ Dia: ${formatSignedMoney(dn.total)} (MtM: ${formatSignedMoney(dn.por_resultado_posicoes)} · Realiz: ${formatSignedMoney(dn.por_realizado)} · Prov: ${formatSignedMoney(dn.por_proventos)} · Aportes: ${formatSignedMoney(dn.por_aportes_retiradas)})<br>
+                            Cota: ${(fech.rentabilidade.cota || 1).toFixed(6)} (${formatPct(fech.rentabilidade.rent_acum)}) · IBOV: ${fech.rentabilidade.ibov} (${formatPct(fech.rentabilidade.ibov_acum)}) · Hash: ${(fech.hash || '').slice(0, 16)}…
+                        </div>
+                    `;
+                } else {
+                    box.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                            <strong>🔍 Pregão ${fmtDateBr(resumo.d)} (${resumo.ok !== false ? '✅ Conciliado' : '❌ Divergência'})</strong>
+                            <button class="ifr-filter-btn" style="padding:2px 8px; font-size:11px;" onclick="document.getElementById('ifrDayInspector').style.display='none'">Fechar ✕</button>
+                        </div>
+                        <div style="font-family:'JetBrains Mono', monospace; font-size:12px; margin-top:4px;">
+                            NAV ${formatMoney(resumo.nav)} = Caixa ${formatMoney(resumo.caixa)} + Ações ${formatMoney(resumo.vm)} | Resultado Dia: ${formatSignedMoney(resumo.res_dia)} | Cota: ${formatPct(resumo.r_acum)} vs IBOV: ${formatPct(resumo.ibov_acum)}
+                        </div>
+                    `;
+                }
+                box.style.display = 'block';
+                if (scrollToInspector) {
+                    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            function exportAuditCsv() {
+                const list = [...(ifrData.ledger || [])].sort((a, b) => (a.seq || 0) - (b.seq || 0));
+                if (!list.length) return;
+                const header = ['seq', 'data', 'tipo', 'ticker', 'trade_id', 'quantidade', 'preco', 'valor', 'caixa_antes', 'caixa_depois', 'descricao'];
+                const lines = [header.join(';')];
+                list.forEach(l => {
+                    lines.push(header.map(k => `"${String(l[k] ?? '').replace(/"/g, '""')}"`).join(';'));
+                });
+                const blob = new Blob([String.fromCharCode(0xFEFF) + lines.join('\\n')], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `auditoria_ifr_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
             return {
                 init: function () {
                     initData();
                     initFirebaseClient();
-                    const container = document.getElementById('ifrTimelineScroll');
-                    const track = document.getElementById('ifrTimelineScrollIndicator');
-                    if (container) {
-                        container.addEventListener('scroll', syncIfrTimelineIndicator, { passive: true });
-                        window.addEventListener('resize', syncIfrTimelineIndicator);
-                    }
-                    if (track && container) {
-                        track.addEventListener('click', (e) => {
-                            const rect = track.getBoundingClientRect();
-                            const clickX = e.clientX - rect.left;
-                            const fraction = Math.max(0, Math.min(1, clickX / rect.width));
-                            const maxScroll = container.scrollWidth - container.clientWidth;
-                            container.scrollTo({ left: fraction * maxScroll, behavior: 'smooth' });
-                        });
-                    }
-
-                    const filterContainer = document.getElementById('ifrFilterScrollContainer');
-                    const filterTrack = document.getElementById('ifrFilterScrollIndicator');
-                    if (filterContainer) {
-                        filterContainer.addEventListener('scroll', syncIfrFilterIndicator, { passive: true });
-                        window.addEventListener('resize', syncIfrFilterIndicator);
-                    }
-                    if (filterTrack && filterContainer) {
-                        filterTrack.addEventListener('click', (e) => {
-                            const rect = filterTrack.getBoundingClientRect();
-                            const clickX = e.clientX - rect.left;
-                            const fraction = Math.max(0, Math.min(1, clickX / rect.width));
-                            const maxScroll = filterContainer.scrollWidth - filterContainer.clientWidth;
-                            filterContainer.scrollTo({ left: fraction * maxScroll, behavior: 'smooth' });
-                        });
-                    }
                 },
                 onThemeChange: function () {
                     renderChart();
                     renderTimeline();
                     renderTrades();
+                    renderAccountingDetails();
+                    renderLedger();
                 },
                 onOpen: function () {
                     initData();
@@ -11167,11 +11042,26 @@ body.theme-light .event-tile-date {
                     renderChart();
                     renderTimeline();
                     renderTrades();
-                    setTimeout(syncIfrTimelineIndicator, 150);
-                    setTimeout(syncIfrFilterIndicator, 150);
+                    renderAccountingDetails();
+                    renderLedger();
                 },
                 onResize: function () {
                     if (chartInstance) chartInstance.resize();
+                },
+                setChartMode: function (mode, btnEl) {
+                    chartMode = mode || 'nav';
+                    const bNav = document.getElementById('btnIfrChartNav');
+                    const bTwr = document.getElementById('btnIfrChartTwr');
+                    if (bNav) bNav.classList.toggle('active', chartMode === 'nav');
+                    if (bTwr) bTwr.classList.toggle('active', chartMode === 'twr');
+                    renderChart();
+                },
+                toggleEventType: function (type, btnEl) {
+                    if (!(type in visibleEventTypes)) return;
+                    visibleEventTypes[type] = !visibleEventTypes[type];
+                    if (btnEl) btnEl.classList.toggle('inactive', !visibleEventTypes[type]);
+                    renderChart();
+                    renderTimeline();
                 },
                 setFilter: function (filter, btnEl) {
                     currentFilter = filter;
@@ -11193,7 +11083,10 @@ body.theme-light .event-tile-date {
                 scrollToChartDate: scrollToChartDate,
                 onTradeCardClick: onTradeCardClick,
                 onTimelinePillClick: onTimelinePillClick,
-                renderTimeline: renderTimeline
+                renderTimeline: renderTimeline,
+                renderLedger: renderLedger,
+                inspectDay: inspectDay,
+                exportAuditCsv: exportAuditCsv
             };
         })();
 
@@ -11219,7 +11112,6 @@ html_final = html_final.replace("__EARNINGS_PLACEHOLDER__", json.dumps(earnings_
 html_final = html_final.replace("__CORPORATE_EVENTS_PLACEHOLDER__", json.dumps(corporate_events_summary, ensure_ascii=False))
 html_final = html_final.replace("__EVENTS_ALL_DATA_PLACEHOLDER__", json.dumps(corporate_events_full, ensure_ascii=False))
 html_final = html_final.replace("__MACRO_PLACEHOLDER__", json.dumps(macro_snapshot, ensure_ascii=False))
-html_final = html_final.replace("__MACRO_FISCAL_PLACEHOLDER__", json.dumps(macro_fiscal_cache, ensure_ascii=False))
 html_final = html_final.replace("__IFR_PLACEHOLDER__", json.dumps(ifr_cache, ensure_ascii=False))
 
 ibov_val = ibov_info.get("aggregated_pe_all") or ibov_info.get("weighted_pe", 10.16)
