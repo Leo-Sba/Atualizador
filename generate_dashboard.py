@@ -8233,8 +8233,38 @@ body.theme-light .event-tile-date {
             renderHeatmap();
         }
 
-        function switchAppTab(tab) {
+        const TAB_TO_PATH = {
+            detail: '/detalhes',
+            heatmap: '/heatmap',
+            events: '/eventos',
+            macro: '/macro',
+            ifr: '/ifr'
+        };
+        const PATH_TO_TAB = {
+            '/detalhes': 'detail',
+            '/heatmap': 'heatmap',
+            '/eventos': 'events',
+            '/calendario': 'events',
+            '/macro': 'macro',
+            '/ifr': 'ifr'
+        };
+
+        function resolveTabFromUrl() {
+            const p = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
+            if (PATH_TO_TAB[p]) return PATH_TO_TAB[p];
+            const h = (window.location.hash || '').replace(/^#/, '').toLowerCase();
+            if (TAB_TO_PATH[h]) return h;
+            return 'detail';
+        }
+
+        function switchAppTab(tab, updateUrl = true) {
             currentAppTab = tab;
+            if (updateUrl !== false && window.history && window.history.pushState && TAB_TO_PATH[tab]) {
+                const targetPath = TAB_TO_PATH[tab];
+                if (window.location.pathname !== targetPath) {
+                    window.history.pushState({ tab }, '', targetPath);
+                }
+            }
             const btnDetail = document.getElementById('btnTabDetail');
             const btnHeatmap = document.getElementById('btnTabHeatmap');
             const btnEvents = document.getElementById('btnTabEvents');
@@ -11482,9 +11512,18 @@ body.theme-light .event-tile-date {
             };
         })();
 
-        // Inicializar IfrModule no carregamento
+        // Inicializar IfrModule e rota inicial da URL no carregamento
         document.addEventListener('DOMContentLoaded', () => {
             if (typeof IfrModule !== 'undefined') IfrModule.init();
+            const initialTab = resolveTabFromUrl();
+            if (initialTab !== 'detail') {
+                switchAppTab(initialTab, false);
+            } else if (window.history && window.history.replaceState && (window.location.pathname === '/' || window.location.pathname === '/index.html')) {
+                window.history.replaceState({ tab: 'detail' }, '', '/detalhes');
+            }
+        });
+        window.addEventListener('popstate', () => {
+            switchAppTab(resolveTabFromUrl(), false);
         });
         
     </script>
