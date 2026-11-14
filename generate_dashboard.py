@@ -10211,9 +10211,9 @@ body.theme-light .event-tile-date {
                 COMPRA: !isMobileScreen,
                 GAIN: true,
                 STOP: !isMobileScreen,
-                PROVENTO: !isMobileScreen,
-                APORTE: !isMobileScreen,
-                EVENTO_SOCIETARIO: !isMobileScreen
+                PROVENTO: false,
+                APORTE: false,
+                EVENTO_SOCIETARIO: false
             };
             let searchQuery = '';
             let chartInstance = null;
@@ -10272,13 +10272,13 @@ body.theme-light .event-tile-date {
                         visibleEventTypes.APORTE = false;
                         visibleEventTypes.EVENTO_SOCIETARIO = false;
                     } else {
-                        // Em outras resoluções (Desktop / Tablet > 768px): Gain, Compra e Stop ligados
+                        // Em outras resoluções (Desktop / Tablet > 768px): Gain, Compra e Stop ligados; Provento, Aporte e Ev. Societário desligados
                         visibleEventTypes.COMPRA = true;
                         visibleEventTypes.GAIN = true;
                         visibleEventTypes.STOP = true;
-                        visibleEventTypes.PROVENTO = true;
-                        visibleEventTypes.APORTE = true;
-                        visibleEventTypes.EVENTO_SOCIETARIO = true;
+                        visibleEventTypes.PROVENTO = false;
+                        visibleEventTypes.APORTE = false;
+                        visibleEventTypes.EVENTO_SOCIETARIO = false;
                     }
                 }
                 syncLegendButtons();
