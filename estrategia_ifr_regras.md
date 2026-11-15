@@ -40,12 +40,15 @@ Para cada ativo/dia, o motor avalia nesta ordem exata:
 
 ### Prioridade 4 — Nova Entrada 1 (E1)
 - **Condição:** Sem trade ativo no ticker, `caixa >= 3300`, `ifr < 30.0`, `currentPe > 0`, `pl2a > 0` e `currentPe < pl2a`
-- **Filtro Anti-Grupamento (Inplit):** Bloqueio estrito de compra se a ação sofreu inplit ou grupamento (`REVERSE_SPLIT` ou `share_multiplier < 1.0`) nos últimos 2 anos.
+- **Filtro Anti-Grupamento (Inplit):** Ao acionar o gatilho de compra, o `processar-ifr.js` consulta no Cloud Firestore (`bloqueios_inplit_ifr/{ticker}`) se a ação está na lista de empresas bloqueadas (`marketDate <= bloqueado_ate`).
 
 ---
 
 ## 4. Filtros de Carteira e Restrições de Compra
-- **Filtro Anti-Grupamento / Inplit (Últimos 2 Anos):** Ações que sofreram inplit ou grupamento de ações (`REVERSE_SPLIT` ou fator multiplicador `< 1.0`) em qualquer momento dentro da janela móvel dos últimos 2 anos estão **terminantemente proibidas de entrar na seleção de compra (E1)**.
+- **Filtro Anti-Grupamento / Inplit (Últimos 2 Anos via Banco Dedicado no Firebase):**
+  - Ações que sofreram inplit ou grupamento (`corporate_actions` com `REVERSE_SPLIT` / `share_multiplier < 1.0` ou `b3_corporate_events_cache`) ficam armazenadas na coleção `bloqueios_inplit_ifr` do Cloud Firestore com `data_ultimo_inplit` e `bloqueado_ate` (+2 anos após o último inplit).
+  - Uma rotina semanal (`atualizar-bloqueios-inplit.js`, via `.github/workflows/bloqueios-inplit-ifr.yml` no `Atualizador`, todo sábado às 15h00 BRT) mantém essa coleção atualizada, removendo automaticamente empresas que já cumpriram os 2 anos.
+  - No processamento diário (`processar-ifr.js`), não é feita verificação SQL de inplits na consulta de fechamentos; a verificação no Firebase ocorre sob demanda exclusivamente quando uma ação aciona o gatilho E1.
 - **Máximo de Ativos Simultâneos:** `<!-- ex: 10 ativos -->`
 - **Máximo de Ativos por Setor:** `<!-- ex: 2 ativos por setor -->`
 - **Critério de Desempate (se houver mais sinais que vagas):** `<!-- ex: menor IFR(21) primeiro -->`

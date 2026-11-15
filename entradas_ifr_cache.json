@@ -179,7 +179,9 @@
           "preco": 23.55
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.702Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.702Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "ABEV3": {
       "ticker": "ABEV3",
@@ -335,7 +337,9 @@
           "preco": 15.75
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.702Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.702Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "ALOS3": {
       "ticker": "ALOS3",
@@ -491,7 +495,9 @@
           "preco": 26.7
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.702Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.702Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "ALPA4": {
       "ticker": "ALPA4",
@@ -647,7 +653,9 @@
           "preco": 12.99
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.702Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.702Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "ALUP11": {
       "ticker": "ALUP11",
@@ -803,7 +811,9 @@
           "preco": 33.09
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.702Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.702Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "AMBP3": {
       "ticker": "AMBP3",
@@ -959,7 +969,9 @@
           "preco": 0.13
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.702Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.702Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "ANIM3": {
       "ticker": "ANIM3",
@@ -1115,7 +1127,9 @@
           "preco": 2.5
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.702Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.702Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "ASAI3": {
       "ticker": "ASAI3",
@@ -1271,7 +1285,9 @@
           "preco": 9.47
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.703Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.703Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "AURE3": {
       "ticker": "AURE3",
@@ -1427,7 +1443,9 @@
           "preco": 11.8
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.703Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.703Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "AZZA3": {
       "ticker": "AZZA3",
@@ -1583,7 +1601,9 @@
           "preco": 16.9
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.703Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.703Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "B3SA3": {
       "ticker": "B3SA3",
@@ -1739,7 +1759,9 @@
           "preco": 14.76
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.703Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.703Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "BBAS3": {
       "ticker": "BBAS3",
@@ -1895,7 +1917,9 @@
           "preco": 15.48
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.703Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.703Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "BBDC3": {
       "ticker": "BBDC3",
@@ -2051,7 +2075,9 @@
           "preco": 13.29
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.703Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.703Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "BBDC4": {
       "ticker": "BBDC4",
@@ -2207,7 +2233,9 @@
           "preco": 14.32
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.703Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.703Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "BBSE3": {
       "ticker": "BBSE3",
@@ -2363,7 +2391,9 @@
           "preco": 37.68
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.703Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.703Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "BEEF3": {
       "ticker": "BEEF3",
@@ -2519,7 +2549,9 @@
           "preco": 3.18
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.703Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.703Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "BHIA3": {
       "ticker": "BHIA3",
@@ -2675,7 +2707,9 @@
           "preco": 0.68
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.703Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.703Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "BPAC11": {
       "ticker": "BPAC11",
@@ -2831,7 +2865,9 @@
           "preco": 54.14
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.703Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.703Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "BRAP4": {
       "ticker": "BRAP4",
@@ -2987,7 +3023,9 @@
           "preco": 18.36
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.704Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.704Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "BRAV3": {
       "ticker": "BRAV3",
@@ -3143,7 +3181,9 @@
           "preco": 14.51
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.704Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.704Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "BRKM5": {
       "ticker": "BRKM5",
@@ -3299,7 +3339,9 @@
           "preco": 3.07
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.704Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.704Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "BRSR6": {
       "ticker": "BRSR6",
@@ -3455,7 +3497,9 @@
           "preco": 12.91
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.704Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.704Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "CASH3": {
       "ticker": "CASH3",
@@ -3611,7 +3655,9 @@
           "preco": 4
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.704Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.704Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "CBAV3": {
       "ticker": "CBAV3",
@@ -3767,7 +3813,9 @@
           "preco": 11.36
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.704Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.704Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "CEAB3": {
       "ticker": "CEAB3",
@@ -3923,7 +3971,9 @@
           "preco": 7.95
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.704Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.704Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "CMIG3": {
       "ticker": "CMIG3",
@@ -4079,7 +4129,9 @@
           "preco": 17.25
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.704Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.704Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "CMIG4": {
       "ticker": "CMIG4",
@@ -4235,7 +4287,9 @@
           "preco": 10.62
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.704Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.704Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "CMIN3": {
       "ticker": "CMIN3",
@@ -4391,7 +4445,9 @@
           "preco": 4.82
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.704Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.704Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "COGN3": {
       "ticker": "COGN3",
@@ -4547,7 +4603,9 @@
           "preco": 1.58
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.705Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.705Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "CPFE3": {
       "ticker": "CPFE3",
@@ -4703,7 +4761,9 @@
           "preco": 44.5
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.705Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.705Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "CPLE3": {
       "ticker": "CPLE3",
@@ -4859,7 +4919,9 @@
           "preco": 15.15
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.705Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.705Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "CSAN3": {
       "ticker": "CSAN3",
@@ -5015,7 +5077,9 @@
           "preco": 2.85
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.705Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.705Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "CSMG3": {
       "ticker": "CSMG3",
@@ -5171,7 +5235,9 @@
           "preco": 54.78
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.705Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.705Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "CSNA3": {
       "ticker": "CSNA3",
@@ -5327,7 +5393,9 @@
           "preco": 4.23
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.705Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.705Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "CURY3": {
       "ticker": "CURY3",
@@ -5483,7 +5551,9 @@
           "preco": 28.32
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.705Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.705Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "CVCB3": {
       "ticker": "CVCB3",
@@ -5639,7 +5709,9 @@
           "preco": 0.84
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.705Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.705Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "CXSE3": {
       "ticker": "CXSE3",
@@ -5795,7 +5867,9 @@
           "preco": 21.58
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.705Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.705Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "CYRE3": {
       "ticker": "CYRE3",
@@ -5951,7 +6025,9 @@
           "preco": 19
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.706Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.706Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "DASA3": {
       "ticker": "DASA3",
@@ -6107,7 +6183,9 @@
           "preco": 3.63
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.706Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.706Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "DIRR3": {
       "ticker": "DIRR3",
@@ -6263,7 +6341,9 @@
           "preco": 9.25
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.706Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.706Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "DXCO3": {
       "ticker": "DXCO3",
@@ -6419,7 +6499,9 @@
           "preco": 4.74
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.713Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.713Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "ECOR3": {
       "ticker": "ECOR3",
@@ -6575,7 +6657,9 @@
           "preco": 5.64
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.713Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.713Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "EGIE3": {
       "ticker": "EGIE3",
@@ -6731,7 +6815,9 @@
           "preco": 26.35
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "ENGI11": {
       "ticker": "ENGI11",
@@ -6887,7 +6973,9 @@
           "preco": 47.39
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "EQTL3": {
       "ticker": "EQTL3",
@@ -7043,7 +7131,9 @@
           "preco": 34.09
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "EZTC3": {
       "ticker": "EZTC3",
@@ -7199,7 +7289,9 @@
           "preco": 9.62
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "FLRY3": {
       "ticker": "FLRY3",
@@ -7355,7 +7447,9 @@
           "preco": 21.05
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "FRAS3": {
       "ticker": "FRAS3",
@@ -7511,7 +7605,9 @@
           "preco": 20.79
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "GGBR3": {
       "ticker": "GGBR3",
@@ -7667,7 +7763,9 @@
           "preco": 21.06
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "GGBR4": {
       "ticker": "GGBR4",
@@ -7823,7 +7921,9 @@
           "preco": 24.97
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "GGPS3": {
       "ticker": "GGPS3",
@@ -7979,7 +8079,9 @@
           "preco": 10.61
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "GMAT3": {
       "ticker": "GMAT3",
@@ -8135,7 +8237,9 @@
           "preco": 3.84
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "GOAU4": {
       "ticker": "GOAU4",
@@ -8291,7 +8395,9 @@
           "preco": 11.07
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "HAPV3": {
       "ticker": "HAPV3",
@@ -8448,7 +8554,8 @@
         }
       ],
       "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
-      "teve_inplit_2a": true
+      "teve_inplit_2a": true,
+      "bloqueado_inplit_ate": "2027-06-06"
     },
     "HBSA3": {
       "ticker": "HBSA3",
@@ -8604,7 +8711,9 @@
           "preco": 3.34
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "HYPE3": {
       "ticker": "HYPE3",
@@ -8760,7 +8869,9 @@
           "preco": 22.21
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "IGTI11": {
       "ticker": "IGTI11",
@@ -8916,7 +9027,9 @@
           "preco": 22.5
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "INTB3": {
       "ticker": "INTB3",
@@ -9072,7 +9185,9 @@
           "preco": 15.32
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "IRBR3": {
       "ticker": "IRBR3",
@@ -9228,7 +9343,9 @@
           "preco": 57.53
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "ITSA3": {
       "ticker": "ITSA3",
@@ -9384,7 +9501,9 @@
           "preco": 13.9
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "ITSA4": {
       "ticker": "ITSA4",
@@ -9540,7 +9659,9 @@
           "preco": 13.57
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "ITUB3": {
       "ticker": "ITUB3",
@@ -9696,7 +9817,9 @@
           "preco": 45.82
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "ITUB4": {
       "ticker": "ITUB4",
@@ -9852,7 +9975,9 @@
           "preco": 41.68
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "JHSF3": {
       "ticker": "JHSF3",
@@ -10008,7 +10133,9 @@
           "preco": 9.87
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "JSLG3": {
       "ticker": "JSLG3",
@@ -10164,7 +10291,9 @@
           "preco": 5.91
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "KEPL3": {
       "ticker": "KEPL3",
@@ -10320,7 +10449,9 @@
           "preco": 6.84
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "KLBN11": {
       "ticker": "KLBN11",
@@ -10476,7 +10607,9 @@
           "preco": 17.64
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "KLBN4": {
       "ticker": "KLBN4",
@@ -10632,7 +10765,9 @@
           "preco": 3.51
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "LEVE3": {
       "ticker": "LEVE3",
@@ -10788,7 +10923,9 @@
           "preco": 31.03
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "LJQQ3": {
       "ticker": "LJQQ3",
@@ -10944,7 +11081,9 @@
           "preco": 1.07
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "LREN3": {
       "ticker": "LREN3",
@@ -11100,7 +11239,9 @@
           "preco": 9.4
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "LWSA3": {
       "ticker": "LWSA3",
@@ -11256,7 +11397,9 @@
           "preco": 3.27
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "MDIA3": {
       "ticker": "MDIA3",
@@ -11412,7 +11555,9 @@
           "preco": 17.36
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "MGLU3": {
       "ticker": "MGLU3",
@@ -11568,7 +11713,9 @@
           "preco": 7.07
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "MOVI3": {
       "ticker": "MOVI3",
@@ -11724,7 +11871,9 @@
           "preco": 6
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "MRVE3": {
       "ticker": "MRVE3",
@@ -11880,7 +12029,9 @@
           "preco": 4.77
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "MULT3": {
       "ticker": "MULT3",
@@ -12036,7 +12187,9 @@
           "preco": 27.32
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "MYPK3": {
       "ticker": "MYPK3",
@@ -12192,7 +12345,9 @@
           "preco": 10.51
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "ONCO3": {
       "ticker": "ONCO3",
@@ -12348,7 +12503,9 @@
           "preco": 0.87
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "ORVR3": {
       "ticker": "ORVR3",
@@ -12504,7 +12661,9 @@
           "preco": 18.6
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "PCAR3": {
       "ticker": "PCAR3",
@@ -12660,7 +12819,9 @@
           "preco": 2.39
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "PETR3": {
       "ticker": "PETR3",
@@ -12816,7 +12977,9 @@
           "preco": 51.05
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "PETR4": {
       "ticker": "PETR4",
@@ -12972,7 +13135,9 @@
           "preco": 44.7
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "PGMN3": {
       "ticker": "PGMN3",
@@ -13128,7 +13293,9 @@
           "preco": 2.41
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "PLPL3": {
       "ticker": "PLPL3",
@@ -13284,7 +13451,9 @@
           "preco": 4.7
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "POMO4": {
       "ticker": "POMO4",
@@ -13440,7 +13609,9 @@
           "preco": 3.72
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "POSI3": {
       "ticker": "POSI3",
@@ -13596,7 +13767,9 @@
           "preco": 3.37
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "PRIO3": {
       "ticker": "PRIO3",
@@ -13752,7 +13925,9 @@
           "preco": 63.3
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "PSSA3": {
       "ticker": "PSSA3",
@@ -13908,7 +14083,9 @@
           "preco": 45.94
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "RADL3": {
       "ticker": "RADL3",
@@ -14064,7 +14241,9 @@
           "preco": 14.26
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "RAIL3": {
       "ticker": "RAIL3",
@@ -14220,7 +14399,9 @@
           "preco": 15.56
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "RANI3": {
       "ticker": "RANI3",
@@ -14376,7 +14557,9 @@
           "preco": 8.18
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "RAPT4": {
       "ticker": "RAPT4",
@@ -14532,7 +14715,9 @@
           "preco": 3.89
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "RDOR3": {
       "ticker": "RDOR3",
@@ -14688,7 +14873,9 @@
           "preco": 34.24
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "RECV3": {
       "ticker": "RECV3",
@@ -14844,7 +15031,9 @@
           "preco": 10.55
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "RENT3": {
       "ticker": "RENT3",
@@ -15000,7 +15189,9 @@
           "preco": 29.58
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "SANB11": {
       "ticker": "SANB11",
@@ -15156,7 +15347,9 @@
           "preco": 28.39
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "SANB4": {
       "ticker": "SANB4",
@@ -15312,7 +15505,9 @@
           "preco": 14.16
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "SAPR11": {
       "ticker": "SAPR11",
@@ -15468,7 +15663,9 @@
           "preco": 32.47
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "SAPR4": {
       "ticker": "SAPR4",
@@ -15624,7 +15821,9 @@
           "preco": 6.4
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "SBFG3": {
       "ticker": "SBFG3",
@@ -15780,7 +15979,9 @@
           "preco": 4.78
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "SBSP3": {
       "ticker": "SBSP3",
@@ -15936,7 +16137,9 @@
           "preco": 26.93
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "SIMH3": {
       "ticker": "SIMH3",
@@ -16093,7 +16296,8 @@
         }
       ],
       "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
-      "teve_inplit_2a": true
+      "teve_inplit_2a": true,
+      "bloqueado_inplit_ate": "2028-02-18"
     },
     "SLCE3": {
       "ticker": "SLCE3",
@@ -16249,7 +16453,9 @@
           "preco": 18.36
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "SMFT3": {
       "ticker": "SMFT3",
@@ -16405,7 +16611,9 @@
           "preco": 17.85
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "SMTO3": {
       "ticker": "SMTO3",
@@ -16561,7 +16769,9 @@
           "preco": 18.43
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "SUZB3": {
       "ticker": "SUZB3",
@@ -16717,7 +16927,9 @@
           "preco": 56.04
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "TAEE11": {
       "ticker": "TAEE11",
@@ -16873,7 +17085,9 @@
           "preco": 41.57
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "TIMS3": {
       "ticker": "TIMS3",
@@ -17029,7 +17243,9 @@
           "preco": 21.49
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "TOTS3": {
       "ticker": "TOTS3",
@@ -17185,7 +17401,9 @@
           "preco": 32.07
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "TTEN3": {
       "ticker": "TTEN3",
@@ -17341,7 +17559,9 @@
           "preco": 10.7
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "TUPY3": {
       "ticker": "TUPY3",
@@ -17497,7 +17717,9 @@
           "preco": 19.1
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "UGPA3": {
       "ticker": "UGPA3",
@@ -17653,7 +17875,9 @@
           "preco": 31.72
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "UNIP6": {
       "ticker": "UNIP6",
@@ -17809,7 +18033,9 @@
           "preco": 51.68
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "USIM5": {
       "ticker": "USIM5",
@@ -17965,7 +18191,9 @@
           "preco": 4.75
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "VALE3": {
       "ticker": "VALE3",
@@ -18121,7 +18349,9 @@
           "preco": 63.95
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "VAMO3": {
       "ticker": "VAMO3",
@@ -18277,7 +18507,9 @@
           "preco": 2.62
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "VBBR3": {
       "ticker": "VBBR3",
@@ -18433,7 +18665,9 @@
           "preco": 29.92
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.716Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.716Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "VIVA3": {
       "ticker": "VIVA3",
@@ -18589,7 +18823,9 @@
           "preco": 17.17
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.716Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.716Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "VIVT3": {
       "ticker": "VIVT3",
@@ -18745,7 +18981,9 @@
           "preco": 33.62
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.716Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.716Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "VLID3": {
       "ticker": "VLID3",
@@ -18901,7 +19139,9 @@
           "preco": 15.15
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.716Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.716Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "VULC3": {
       "ticker": "VULC3",
@@ -19057,7 +19297,9 @@
           "preco": 11.51
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.716Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.716Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "VVEO3": {
       "ticker": "VVEO3",
@@ -19213,7 +19455,9 @@
           "preco": 0.57
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.716Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.716Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "WEGE3": {
       "ticker": "WEGE3",
@@ -19369,7 +19613,9 @@
           "preco": 51.65
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.716Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.716Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     },
     "YDUQ3": {
       "ticker": "YDUQ3",
@@ -19525,7 +19771,9 @@
           "preco": 9.38
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.716Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.716Z",
+      "teve_inplit_2a": false,
+      "bloqueado_inplit_ate": null
     }
   },
   "trades": {
@@ -29699,5 +29947,28 @@
       "variacao_pct_total": 18.33,
       "quantidade_ativos_posicionados": 14
     }
-  ]
+  ],
+  "bloqueios_inplit": {
+    "HAPV3": {
+      "ticker": "HAPV3",
+      "empresa": "HAPVIDA",
+      "data_ultimo_inplit": "2025-06-06",
+      "bloqueado_ate": "2027-06-06",
+      "proporcao": "15:1"
+    },
+    "GFSA3": {
+      "ticker": "GFSA3",
+      "empresa": "GFSA3",
+      "data_ultimo_inplit": "2025-06-13",
+      "bloqueado_ate": "2027-06-13",
+      "proporcao": "20:1"
+    },
+    "SIMH3": {
+      "ticker": "SIMH3",
+      "empresa": "SIMPAR",
+      "data_ultimo_inplit": "2026-02-18",
+      "bloqueado_ate": "2028-02-18",
+      "proporcao": "2:1"
+    }
+  }
 }

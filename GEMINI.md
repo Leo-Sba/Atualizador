@@ -122,7 +122,7 @@ O bloco `#macroSecFiscal` (**Receitas e Despesas do Governo Central vs. Dívida/
 
 ## 📒 Regras de Contabilidade IFR, Rotas Limpas e Sincronização de Deploy
 1. **Sincronização Obrigatória com `Leo-Sba/Atualizador`:**
-   - O `daily_update.yml` (Estágio 6) compila o `dashboard.html` em produção usando o `generate_dashboard.py` de dentro do repositório `Atualizador`. Sempre que editar `generate_dashboard.py` ou os scripts de IFR (`contabil-ifr.js`, `dados-mercado-ifr.js`, `fechamento-contabil.js`, `processar-ifr.js`), copie e faça `git push` para `Atualizador` além de atualizar `Preco_Lucro` e `Dashboard_Deploy\index.html`.
+   - O `daily_update.yml` (Estágio 6) compila o `dashboard.html` em produção usando o `generate_dashboard.py` de dentro do repositório `Atualizador`. Sempre que editar `generate_dashboard.py` ou os scripts de IFR (`contabil-ifr.js`, `dados-mercado-ifr.js`, `fechamento-contabil.js`, `processar-ifr.js`, `atualizar-bloqueios-inplit.js`), copie e faça `git push` para `Atualizador` além de atualizar `Preco_Lucro` e `Dashboard_Deploy\index.html`.
 2. **Cache Fiscal no Build:**
    - Garantir que `macro_fiscal_cache.json` esteja no diretório de execução ao rodar `python generate_dashboard.py`, evitando `MACRO_FISCAL_DATA = {}`.
 3. **Contabilidade Diária (`Entradas > IFR`):**
@@ -147,8 +147,8 @@ O bloco `#macroSecFiscal` (**Receitas e Despesas do Governo Central vs. Dívida/
 9. **Visualização Mobile do Gráfico de Evolução IFR (`#chartIfrEvolucao`):**
    - **Legenda no Mobile (`<= 768px`):** Somente o botão de **`Gain`** (`data-ev-type="GAIN"`) inicia **ligado/ativo** por padrão. Todos os outros 5 botões de legenda (`Compra`, `Stop`, `Provento`, `Aporte`, `Ev. Societário`) iniciam **desligados** com a classe `inactive` (`visibleEventTypes = false`), exibindo apenas as bolinhas de Gain (16 eventos) para evitar poluição visual no gráfico. Nas demais resoluções (Desktop / Tablet > 768px), os botões de trading (`Gain`, `Compra` e `Stop`) iniciam ligados, enquanto os botões secundários (`Provento`, `Aporte` e `Ev. Societário`) iniciam desligados por padrão.
    - Os raios dos pontos no mobile são ajustados proporcionalmente para `4.5px` (hover `7px`), permitindo ao usuário reativar ou desativar qualquer evento com um toque na legenda.
-10. **Filtro Anti-Grupamento (Inplit) na Estratégia IFR:**
-   - Ações que sofreram inplit ou grupamento (`REVERSE_SPLIT` ou `share_multiplier < 1.0` na tabela `corporate_actions`) nos últimos 2 anos estão **terminantemente proibidas de entrar na seleção de compra (E1)**.
-   - O `fetchLatestMarketQuotes()` em `processar-ifr.js` mapeia os inplits recentes via CTE `inplits_2a` e marca `ativo.teve_inplit_2a = true`.
-   - No gatilho de abertura de novos trades (Etapa 1 / E1) do `processar-ifr.js`, ativos com `ativo.teve_inplit_2a` são sumariamente ignorados. No frontend (`generate_dashboard.py`), o contador do Radar IFR<30 também desconta ativos bloqueados por grupamento recente.
+10. **Filtro Anti-Grupamento (Inplit) na Estratégia IFR (Banco Firebase + Rotina Semanal):**
+   - Ações que sofreram inplit ou grupamento (`corporate_actions` / `b3_corporate_events_cache`, excluindo operações simultâneas neutras ou de desdobramento líquido) nos últimos 2 anos ficam registradas na coleção **`bloqueios_inplit_ifr/{ticker}`** do Cloud Firestore, contendo `data_ultimo_inplit` e `bloqueado_ate` (exatamente 2 anos após o último inplit).
+   - **Rotina Semanal (`atualizar-bloqueios-inplit.js`):** Executada automaticamente todo **sábado à tarde (15h00 BRT / 18h00 UTC)** pelo workflow `.github/workflows/bloqueios-inplit-ifr.yml` no repositório `Atualizador`. Atualiza bloqueios vigentes no Firestore, remove empresas que já expiraram o prazo de 2 anos e sincroniza `teve_inplit_2a` / `bloqueado_inplit_ate` em `ativos_ifr` e `entradas_ifr_cache.json`.
+   - **Execução Diária (`processar-ifr.js`):** A query diária do Supabase não verifica inplits; apenas quando um ativo atinge o gatilho de compra E1 (`ifr < 30 && currentPe < pl2a`), o motor consulta sob demanda `bloqueios_inplit_ifr/{ticker}` no Firebase e bloqueia a compra caso `marketDate <= bloqueado_ate`. No frontend (`generate_dashboard.py`), o contador do Radar IFR<30 desconta ativos marcados com `teve_inplit_2a`.
 

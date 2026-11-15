@@ -58,14 +58,59 @@ rules_version = '2';
 //      - benchmark_ibov_pct: number (opcional) - Rentabilidade acumulada do Ibovespa
 //      - created_at: timestamp / string
 //
-// 5. Coleção: macro_fiscal
-//    Document ID: {docId} (ex: 'governo_central_historico')
+// 5. Coleção: ledger_ifr  (Livro-razão contábil diário - IMUTÁVEL)
+//    Document ID: {lancamentoId}
 //    Campos:
-//      - updated_at: timestamp / string - Data/hora da última sincronização
-//      - reference_month: string - Mês de referência da série fiscal
-//      - source: string - Fonte oficial dos dados (ex: Tesouro Nacional / BCB)
-//      - kpis: map - Indicadores consolidados de receitas, despesas e dívida/PIB
-//      - series: list / map - Série histórica mensal completa
+//      - id: string - Identificador do lançamento
+//      - data: string (YYYY-MM-DD) - Data contábil do lançamento
+//      - tipo: string ('APORTE_INICIAL', 'APORTE', 'RETIRADA', 'COMPRA', 'VENDA',
+//              'PROVENTO', 'EVENTO_SOCIETARIO', 'ESTORNO')
+//      - ticker: string | null - Ativo relacionado (null p/ movimentos de caixa)
+//      - trade_id: string | null - Trade relacionado em trades_ifr
+//      - quantidade: number - Quantidade de ações movimentadas
+//      - preco: number - Preço unitário
+//      - valor_caixa: number - Efeito no caixa com sinal (+ entrada / - saída)
+//      - descricao: string - Histórico textual do lançamento
+//      - hash: string - Hash de integridade do lançamento
+//
+// 6. Coleção: fechamentos_ifr  (Fechamento contábil diário - IMUTÁVEL)
+//    Document ID: {data} (YYYY-MM-DD)
+//    Campos:
+//      - patrimonio: map - Patrimônio total do dia
+//      - caixa: map - Saldos e movimentações de caixa
+//      - investido: map - Valor investido, incluindo posicoes: list
+//      - resultados: map - Resultados realizados / não realizados
+//      - rentabilidade: map - Retornos diário / acumulado
+//      - eficiencia: map - Métricas de eficiência da estratégia
+//      - conciliacao: map - Conciliação caixa x ledger x posições
+//      - validacoes: map - Resultado das checagens de consistência
+//      - eventos: list - Eventos ocorridos no dia
+//      - lancamentos: list - Lançamentos do ledger consolidados no dia
+//      - hash_anterior: string - Hash do fechamento anterior (encadeamento)
+//      - hash: string - Hash de integridade deste fechamento
+//
+// 7. Coleção: fechamentos_resumo  (Série compacta anual para o gráfico)
+//    Document ID: {ano} (ex: '2026')
+//    Campos:
+//      - serie: list - Série compacta de pontos diários usada pelo gráfico
+//
+// 8. Coleção: macro_fiscal  (Série Histórica Fiscal - gravação exclusiva via Admin SDK)
+//    Document ID: {docId}
+//    Campos:
+//      - Série Histórica Fiscal: Receitas, Despesas do Governo Central e Dívida/PIB
+//
+// 9. Coleção: bloqueios_inplit_ifr  (Bloqueios por grupamento/inplit - gravação exclusiva via Admin SDK)
+//    Document ID: {ticker} (ex: 'GFSA3', 'AMER3')
+//    Campos:
+//      - ticker: string - Código de negociação do ativo na B3
+//      - empresa: string - Nome de pregão da empresa
+//      - data_ultimo_inplit: string (YYYY-MM-DD) - Data do último grupamento/inplit considerado
+//      - bloqueado_ate: string (YYYY-MM-DD) - Data limite da restrição (2 anos após o último inplit)
+//      - fator_multiplicador: number | null - Fator multiplicador do grupamento (< 1.0)
+//      - proporcao: string - Proporção legível do grupamento (ex: '20:1')
+//      - descricao: string - Descrição do evento societário
+//      - ativo: bool - Indica se o bloqueio está vigente
+//      - updated_at: string / timestamp - Data/hora da última sincronização
 //
 // ===============================================================
 // Modelo de Autorização e Princípios de Segurança:
@@ -130,8 +175,44 @@ service cloud.firestore {
       allow write: if isClientWriteAllowed();
     }
 
-    // 5. Série Histórica Fiscal (Receitas, Despesas do Governo Central e Dívida/PIB)
+    // ===============================================================
+    // Contabilidade Diária (Ledger) - gravação exclusiva via Admin SDK
+    // ===============================================================
+
+    // 5. Livro-razão contábil imutável (lançamentos)
+    match /ledger_ifr/{lancamentoId} {
+      allow read: if true;
+      allow write: if isClientWriteAllowed();
+    }
+
+    // 6. Fechamento contábil diário imutável (ID = 'YYYY-MM-DD')
+    match /fechamentos_ifr/{data} {
+      allow read: if true;
+      allow write: if isClientWriteAllowed();
+    }
+
+    // 7. Resumo anual compacto para o gráfico (ID = ano)
+    match /fechamentos_resumo/{ano} {
+      allow read: if true;
+      allow write: if isClientWriteAllowed();
+    }
+
+    // ===============================================================
+    // Dados Macroeconômicos e Fiscais - gravação exclusiva via Admin SDK
+    // ===============================================================
+
+    // 8. Série Histórica Fiscal (Receitas, Despesas do Governo Central e Dívida/PIB)
     match /macro_fiscal/{docId} {
+      allow read: if true;
+      allow write: if isClientWriteAllowed();
+    }
+
+    // ===============================================================
+    // Restrições Operacionais (Inplit/Grupamento) - gravação exclusiva via Admin SDK
+    // ===============================================================
+
+    // 9. Empresas bloqueadas por grupamento/inplit (ID = ticker, vigência = 2 anos)
+    match /bloqueios_inplit_ifr/{ticker} {
       allow read: if true;
       allow write: if isClientWriteAllowed();
     }
