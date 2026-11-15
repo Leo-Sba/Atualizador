@@ -11491,7 +11491,7 @@ body.theme-light .event-tile-date {
                     kpiWin.className = 'ifr-kpi-val ' + (ef.taxa_acerto >= 50 ? 'pos' : '');
                 }
                 if (kpiScore) kpiScore.innerText = `(${ef.vencedoras} Gains · ${ef.perdedoras} Stops · Méd ${formatPct(ef.retorno_medio_capital_pct)})`;
-                const radarCount = Object.values(ifrData.ativos || {}).filter(a => a.ifr_21 && a.ifr_21 < 30).length || 0;
+                const radarCount = Object.values(ifrData.ativos || {}).filter(a => a.ifr_21 && a.ifr_21 < 30 && !a.teve_inplit_2a).length || 0;
                 if (kpiPf) {
                     const pfStr = ef.profit_factor === null || ef.profit_factor === undefined ? '∞' : Number(ef.profit_factor).toFixed(2).replace('.', ',');
                     kpiPf.innerHTML = `PF: ${pfStr} · Radar IFR&lt;30: <strong id="kpiIfrRadarCount" style="color:#38bdf8;">${radarCount} Ações</strong>`;

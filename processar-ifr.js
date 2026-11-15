@@ -111,6 +111,13 @@ async function fetchLatestMarketQuotes() {
           AND dm.price_earnings < 150
         GROUP BY dm.security_id
         HAVING AVG(dm.price_earnings) > 0
+    ),
+    inplits_2a AS (
+        SELECT DISTINCT c.security_id
+        FROM corporate_actions c, data_recente dr
+        WHERE (c.share_multiplier < 1.0 OR c.event_type = 'REVERSE_SPLIT')
+          AND c.effective_date >= (dr.max_date - INTERVAL '2 years')
+          AND COALESCE(UPPER(c.status), '') NOT IN ('CANCELLED', 'CANCELADO', 'REJECTED')
     )
     SELECT 
         s.ticker, 
@@ -119,12 +126,14 @@ async function fetchLatestMarketQuotes() {
         dm.reference_date::text AS ref_date,
         dm.close_price::float   AS close_price, 
         dm.price_earnings::float AS price_earnings,
-        ROUND(m.pl_medio_2a::numeric, 2)::float AS pl_medio_2a
+        ROUND(m.pl_medio_2a::numeric, 2)::float AS pl_medio_2a,
+        (inp.security_id IS NOT NULL) AS teve_inplit_2a
     FROM daily_metrics dm
     JOIN data_recente dr ON dm.reference_date = dr.max_date
     JOIN securities s ON dm.security_id = s.id
     JOIN companies c ON s.company_id = c.id
     LEFT JOIN media_pl_2a m ON dm.security_id = m.security_id
+    LEFT JOIN inplits_2a inp ON dm.security_id = inp.security_id
     WHERE dm.close_price > 0
     ORDER BY s.ticker ASC;
   `;
@@ -148,7 +157,8 @@ async function fetchLatestMarketQuotes() {
         sector: row.sector,
         close: Number(row.close_price.toFixed(2)),
         pe: (row.price_earnings && row.price_earnings > 0) ? Number(row.price_earnings.toFixed(2)) : null,
-        plMedio2a: (row.pl_medio_2a && row.pl_medio_2a > 0) ? Number(row.pl_medio_2a.toFixed(2)) : null
+        plMedio2a: (row.pl_medio_2a && row.pl_medio_2a > 0) ? Number(row.pl_medio_2a.toFixed(2)) : null,
+        teveInplit2a: Boolean(row.teve_inplit_2a)
       };
     }
   }
@@ -261,6 +271,7 @@ async function processarEstrategiaIFR() {
     ativo.ultimo_preco = currentClose;
     ativo.ultimo_pl = currentPe;
     if (currentPl2a !== undefined) ativo.pl_medio_historico_2a = currentPl2a;
+    ativo.teve_inplit_2a = Boolean(quote.teveInplit2a);
     ativo.ifr_21 = newRsi;
     ativo.avg_gain_wilder = newAvgGain;
     ativo.avg_loss_wilder = newAvgLoss;
@@ -427,6 +438,12 @@ async function processarEstrategiaIFR() {
   for (const [ticker, ativo] of Object.entries(ativos)) {
     if (ativo.status_trade && ativo.status_trade !== 'SEM_OPERACAO') continue;
     if (ativo.trade_ativo_id) continue;
+
+    // Filtro Anti-Grupamento (Inplit nos últimos 2 anos): estritamente proibido abrir nova compra
+    if (ativo.teve_inplit_2a) {
+      console.log(`⛔ [FILTRO GRUPAMENTO] ${ticker} ignorado para nova compra (E1): teve inplit/grupamento nos últimos 2 anos.`);
+      continue;
+    }
 
     const currentClose = ativo.ultimo_preco;
     const currentPe = ativo.ultimo_pl;

@@ -147,3 +147,8 @@ O bloco `#macroSecFiscal` (**Receitas e Despesas do Governo Central vs. Dívida/
 9. **Visualização Mobile do Gráfico de Evolução IFR (`#chartIfrEvolucao`):**
    - **Legenda no Mobile (`<= 768px`):** Somente o botão de **`Gain`** (`data-ev-type="GAIN"`) inicia **ligado/ativo** por padrão. Todos os outros 5 botões de legenda (`Compra`, `Stop`, `Provento`, `Aporte`, `Ev. Societário`) iniciam **desligados** com a classe `inactive` (`visibleEventTypes = false`), exibindo apenas as bolinhas de Gain (16 eventos) para evitar poluição visual no gráfico. Nas demais resoluções (Desktop / Tablet > 768px), os botões de trading (`Gain`, `Compra` e `Stop`) iniciam ligados, enquanto os botões secundários (`Provento`, `Aporte` e `Ev. Societário`) iniciam desligados por padrão.
    - Os raios dos pontos no mobile são ajustados proporcionalmente para `4.5px` (hover `7px`), permitindo ao usuário reativar ou desativar qualquer evento com um toque na legenda.
+10. **Filtro Anti-Grupamento (Inplit) na Estratégia IFR:**
+   - Ações que sofreram inplit ou grupamento (`REVERSE_SPLIT` ou `share_multiplier < 1.0` na tabela `corporate_actions`) nos últimos 2 anos estão **terminantemente proibidas de entrar na seleção de compra (E1)**.
+   - O `fetchLatestMarketQuotes()` em `processar-ifr.js` mapeia os inplits recentes via CTE `inplits_2a` e marca `ativo.teve_inplit_2a = true`.
+   - No gatilho de abertura de novos trades (Etapa 1 / E1) do `processar-ifr.js`, ativos com `ativo.teve_inplit_2a` são sumariamente ignorados. No frontend (`generate_dashboard.py`), o contador do Radar IFR<30 também desconta ativos bloqueados por grupamento recente.
+

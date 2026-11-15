@@ -8447,7 +8447,8 @@
           "preco": 5.32
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.714Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.714Z",
+      "teve_inplit_2a": true
     },
     "HBSA3": {
       "ticker": "HBSA3",
@@ -16091,7 +16092,8 @@
           "preco": 5.55
         }
       ],
-      "ultima_atualizacao": "2026-11-13T13:21:21.715Z"
+      "ultima_atualizacao": "2026-11-13T13:21:21.715Z",
+      "teve_inplit_2a": true
     },
     "SLCE3": {
       "ticker": "SLCE3",
