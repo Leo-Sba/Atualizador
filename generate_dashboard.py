@@ -3224,9 +3224,14 @@ body.theme-light .event-tile-date {
                     <span id="badgeIfrCountText">5 Ativos</span>
                 </span>
             </button>
+            <button class="app-tab-btn" id="btnTabLearn" onclick="switchAppTab('learn')">
+                🎓 <span>APRENDA A INVESTIR</span>
+                <span class="sector-count-badge" id="badgeLearnProgress">0/6</span>
+            </button>
 
             <!-- Alternador Global de Tema (Botão Único: 🌙 Escuro / ☀️ Claro) -->
-            <div class="app-tab-theme-toggle">
+            <div class="app-tab-theme-toggle" style="display: inline-flex; align-items: center; gap: 6px;">
+                <button class="period-btn" id="btnContextualGuide" onclick="TutorialModule.startContextualGuide()" title="Iniciar guia interativo desta tela" style="font-size: 12px; padding: 6px 10px; display: inline-flex; align-items: center; gap: 5px; font-weight: 600; color: var(--accent);">🎓 <span class="hide-mobile-xs">Guia da Tela</span></button>
                 <button class="period-btn" id="btnThemeToggle" onclick="toggleTheme()" title="Alternar para Modo Claro" aria-label="Alternar para Modo Claro" style="font-size: 14px; padding: 6px 10px;">☀️</button>
             </div>
         </div>
@@ -3289,7 +3294,7 @@ body.theme-light .event-tile-date {
 
 <div class="control-group">
 
-                    <div class="period-selector">
+                    <div class="period-selector" id="detailPeriodSelector">
 
                         <button class="period-btn" data-period-years="1" onclick="setPeriod(1, this)">1 Ano</button>
 
@@ -3339,7 +3344,7 @@ body.theme-light .event-tile-date {
 
             </div>
 
-            <div class="card card-green">
+            <div class="card card-green" id="kpiCardPL">
 
                 <span class="card-label">P/L (TTM)</span>
 
@@ -3439,7 +3444,7 @@ body.theme-light .event-tile-date {
 
 
 
-            <div class="chart-box">
+            <div class="chart-box" id="boxChartPL">
 
                 <div class="chart-header">
 
@@ -3707,8 +3712,9 @@ body.theme-light .event-tile-date {
             <!-- Cabeçalho & Filtros do Heatmap -->
             <div class="heatmap-header-card">
                 <div>
-                    <h2 style="font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+                    <h2 style="font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
                         🗺️ Heatmap do Mercado por P/L (TTM)
+                        <button type="button" class="btn-tutorial-inline" onclick="TutorialModule.startContextualGuide()" title="Abrir guia interativo desta tela">🎓 Como ler esta tela</button>
                     </h2>
                     <p style="font-size: 12px; color: var(--text-muted); margin: 0;">
                         Todas as ações agrupadas por setor econômico. Clique em qualquer bloco para abrir a análise detalhada.
@@ -3728,7 +3734,7 @@ body.theme-light .event-tile-date {
                     </div>
 
                     <div class="control-group" style="margin: 0;" title="Período utilizado para calcular o P/L Médio (Méd:) e o desconto/prêmio (%) de cada ação">
-                        <div class="period-selector">
+                        <div class="period-selector" id="heatmapPeriodSelector">
                             <button class="period-btn" data-period-years="1" onclick="setPeriod(1, this)">1 Ano</button>
                             <button class="period-btn" data-period-years="2" onclick="setPeriod(2, this)">2 Anos</button>
                             <button class="period-btn active" data-period-years="5" onclick="setPeriod(5, this)">5 Anos</button>
@@ -3738,7 +3744,7 @@ body.theme-light .event-tile-date {
                 </div>
 
                 <!-- Legenda Oficial e Filtro Interativo por Faixas de P/L -->
-                <div class="heatmap-legend" style="width: 100%; padding-top: 10px; border-top: 1px solid var(--border); margin-top: 8px;">
+                <div class="heatmap-legend" id="heatmapLegendBar" style="width: 100%; padding-top: 10px; border-top: 1px solid var(--border); margin-top: 8px;">
                     <span style="color: var(--text-muted); font-weight: 600; margin-right: 4px;">Filtrar P/L:</span>
                     <span class="legend-item legend-item-all active" id="btnFilterPlAll" onclick="filterHeatmapPL('ALL', this)" title="Exibir todas as ações">🌐 Todas</span>
                     <span class="legend-item color-pl-limao" id="btnFilterPl_0_8" onclick="filterHeatmapPL('0_8', this)" title="Filtrar ações com P/L de 0 a 8x">🟢 0 a 8x</span>
@@ -3760,8 +3766,9 @@ body.theme-light .event-tile-date {
         <div id="tabEventsContent">
             <div class="heatmap-header-card">
                 <div>
-                    <h2 style="font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+                    <h2 style="font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
                         🔄 Histórico de Splits, Inplits, Bonificações & Cisões (B3)
+                        <button type="button" class="btn-tutorial-inline" onclick="TutorialModule.startContextualGuide()" title="Abrir guia interativo desta tela">🎓 Como ler esta tela</button>
                     </h2>
                     <p style="font-size: 12px; color: var(--text-muted); margin: 0;">
                         Mapeamento oficial da B3 com data-com, data de aprovação e proporção/fator. Clique em qualquer card para abrir os gráficos da empresa.
@@ -3799,7 +3806,7 @@ body.theme-light .event-tile-date {
                 </div>
 
                 <!-- Legenda Oficial e Filtro Interativo por Tipo de Evento -->
-                <div class="heatmap-legend" style="width: 100%; padding-top: 10px; border-top: 1px solid var(--border); margin-top: 8px;">
+                <div class="heatmap-legend" id="eventsLegendBar" style="width: 100%; padding-top: 10px; border-top: 1px solid var(--border); margin-top: 8px;">
                     <span style="color: var(--text-muted); font-weight: 600; margin-right: 4px;">Filtrar Evento:</span>
                     <span class="legend-item legend-item-all active" id="btnFilterEvAll" onclick="filterEventsType('ALL', this)" title="Exibir todos os eventos societários">🌐 Todos (<span id="cntEvAll">0</span>)</span>
                     <span class="legend-item color-ev-split" id="btnFilterEvSplit" onclick="filterEventsType('SPLIT', this)" title="Desdobramento de Ações (Split) - Multiplica quantidade de ações">🟢 Split / Desdobramento (<span id="cntEvSplit">0</span>)</span>
@@ -4137,7 +4144,7 @@ body.theme-light .event-tile-date {
             </div>
 
             <!-- KPIs Contábeis no Topo (6 Blocos) -->
-            <div class="ifr-kpi-grid ifr-kpi-grid-6">
+            <div class="ifr-kpi-grid ifr-kpi-grid-6" id="ifrKpiGrid">
                 <div class="ifr-kpi-card">
                     <div class="ifr-kpi-title">
                         <span>Patrimônio Total (NAV)</span>
@@ -4200,7 +4207,7 @@ body.theme-light .event-tile-date {
             </div>
 
             <!-- Gráfico de Evolução Patrimonial -->
-            <div class="ifr-chart-card">
+            <div class="ifr-chart-card" id="ifrChartCard">
                 <div class="ifr-chart-header">
                     <div>
                         <div class="ifr-chart-title">
@@ -4370,6 +4377,213 @@ body.theme-light .event-tile-date {
 
         </div>
 
+        <!-- =====================================================================
+        ABA 6: APRENDA A INVESTIR (/aprenda) — Tutorial Interativo
+        ===================================================================== -->
+        <div id="tabLearnContent" style="display: none;">
+            <!-- Hero & Progresso -->
+            <div class="learn-hero-card">
+                <div class="learn-hero-grid">
+                    <div class="learn-hero-copy">
+                        <span class="learn-kicker">ACADEMIA VALOR DAS AÇÕES · METODOLOGIA P/L + ROE</span>
+                        <h2 class="learn-hero-title">Aprenda a encontrar ações descontadas na Bolsa</h2>
+                        <p class="learn-hero-sub">
+                            Descubra como utilizar indicadores fundamentalistas e dados históricos para identificar empresas que podem estar sendo negociadas abaixo de seu valuation histórico.
+                        </p>
+                    </div>
+                    <div class="learn-progress-panel">
+                        <div class="learn-progress-head">
+                            <span>Seu Progresso no Tutorial</span>
+                            <strong id="learnProgressCount">0 de 6 módulos (0%)</strong>
+                        </div>
+                        <div class="learn-progress-track">
+                            <div class="learn-progress-fill" id="learnProgressBarFill" style="width: 0%;"></div>
+                        </div>
+                        <div class="learn-progress-hint" id="learnProgressHint">
+                            Comece pelo Módulo 1 ou escolha qualquer aula abaixo.
+                        </div>
+                        <div class="learn-progress-actions">
+                            <button type="button" class="learn-btn-primary" id="btnLearnContinue" onclick="TutorialModule.continueCourse()">
+                                ▶ Iniciar Curso
+                            </button>
+                            <button type="button" class="learn-btn-ghost" id="btnLearnReset" onclick="TutorialModule.resetProgress()" title="Reiniciar todo o progresso das aulas">
+                                ↺ Reiniciar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grade dos 6 Módulos -->
+            <div class="learn-section-block">
+                <div class="learn-section-header">
+                    <div>
+                        <span class="learn-kicker">TRILHA PRÁTICA NO DASHBOARD</span>
+                        <h3>6 Módulos Interativos</h3>
+                    </div>
+                    <span class="learn-section-note">O guia destaca os gráficos e filtros reais do sistema enquanto você aprende.</span>
+                </div>
+                <div class="learn-modules-grid" id="learnModulesGrid">
+                    <!-- Preenchido dinamicamente por TutorialModule.renderLearnHome() -->
+                </div>
+            </div>
+
+            <!-- Grandes Investidores ("Nos Ombros de Gigantes") -->
+            <div class="learn-section-card">
+                <div class="learn-section-header">
+                    <div>
+                        <span class="learn-kicker">FUNDAMENTAÇÃO CLÁSSICA · VALUE &amp; FACTOR INVESTING</span>
+                        <h3>Grandes Investidores que Usam esta Filosofia</h3>
+                    </div>
+                    <span class="learn-section-note">Inspiração teórica da literatura financeira mundial</span>
+                </div>
+                <div class="learn-mentors-grid">
+                    <div class="learn-mentor-card">
+                        <div class="learn-mentor-top">
+                            <strong>Benjamin Graham</strong>
+                            <span class="learn-mentor-tag">Módulos 2 e 4</span>
+                        </div>
+                        <p class="learn-mentor-quote">“A margem de segurança é sempre dependente do preço pago.”</p>
+                        <p class="learn-mentor-desc">Pai do Value Investing. Defende exigir desconto relevante (25% a 50%) sobre o múltiplo histórico para proteger contra erros de projeção.</p>
+                        <span class="learn-mentor-pillar">Pilar: Margem de Segurança (P/L)</span>
+                    </div>
+                    <div class="learn-mentor-card">
+                        <div class="learn-mentor-top">
+                            <strong>Warren Buffett &amp; Munger</strong>
+                            <span class="learn-mentor-tag">Módulo 3</span>
+                        </div>
+                        <p class="learn-mentor-quote">“É muito melhor comprar uma empresa maravilhosa a um preço justo do que uma empresa justa a um preço maravilhoso.”</p>
+                        <p class="learn-mentor-desc">Priorizam negócios com vantagem competitiva medida por retorno consistente sobre o patrimônio líquido (ROE &gt; 15%).</p>
+                        <span class="learn-mentor-pillar">Pilar: Qualidade &amp; ROE &gt; 15%</span>
+                    </div>
+                    <div class="learn-mentor-card">
+                        <div class="learn-mentor-top">
+                            <strong>Joel Greenblatt</strong>
+                            <span class="learn-mentor-tag">Módulo 6</span>
+                        </div>
+                        <p class="learn-mentor-quote">“Compre empresas boas (alto retorno sobre o capital) quando estiverem baratas (baixo múltiplo de lucro).”</p>
+                        <p class="learn-mentor-desc">Criador da Fórmula Mágica (Gotham Capital), demonstrou o poder estatístico de combinar exatamente P/L baixo + ROE alto.</p>
+                        <span class="learn-mentor-pillar">Pilar: Fórmula P/L + ROE</span>
+                    </div>
+                    <div class="learn-mentor-card">
+                        <div class="learn-mentor-top">
+                            <strong>John Neff</strong>
+                            <span class="learn-mentor-tag">Módulos 2, 5 e 6</span>
+                        </div>
+                        <p class="learn-mentor-quote">“O mercado exagera tanto no pessimismo quanto no otimismo; compre na compressão do múltiplo.”</p>
+                        <p class="learn-mentor-desc">À frente do Fundo Windsor por 31 anos, comprava empresas sólidas com P/L comprimido vs. média e dividendos, vendendo na expansão.</p>
+                        <span class="learn-mentor-pillar">Pilar: Reversão à Média + Proventos</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel Duplo: Estudo de Caso ABEV3 + Simulador de Fundo /ifr -->
+            <div class="learn-dual-grid">
+                <!-- Estudo de Caso ABEV3 -->
+                <div class="learn-section-card learn-case-card">
+                    <div class="learn-section-header" style="margin-bottom: 12px;">
+                        <div>
+                            <span class="learn-kicker" style="color: var(--accent-yellow);">ESTUDO DE CASO · EXEMPLO HISTÓRICO DA CAPTURA</span>
+                            <h3>ABEV3 — Diagnóstico pela Metodologia</h3>
+                        </div>
+                        <span class="learn-badge-soft">Referência didática (não é cotação atual)</span>
+                    </div>
+
+                    <div class="learn-case-metrics">
+                        <div class="learn-metric-chip"><span>Preço Ref.</span><strong>R$ 15,79</strong></div>
+                        <div class="learn-metric-chip"><span>P/L Atual</span><strong>15,57x</strong></div>
+                        <div class="learn-metric-chip"><span>P/L Médio 24m</span><strong>14,24x</strong></div>
+                        <div class="learn-metric-chip"><span>ROE</span><strong style="color: var(--accent-green);">18,0%</strong></div>
+                        <div class="learn-metric-chip"><span>LPA Aprox.</span><strong>R$ 1,01</strong></div>
+                    </div>
+
+                    <div class="learn-case-zones">
+                        <div class="learn-zone-box entry">
+                            <span class="zone-lbl">P/L de Entrada (Média × 0,75)</span>
+                            <strong>10,68x → R$ 10,84</strong>
+                            <small>Preço estimado com desconto de 25% sobre P/L médio de 14,24x</small>
+                        </div>
+                        <div class="learn-zone-box exit">
+                            <span class="zone-lbl">P/L de Saída (Média × 1,25)</span>
+                            <strong>17,80x → ~R$ 17,98</strong>
+                            <small>Preço estimado em zona de prêmio (+25% sobre P/L médio)</small>
+                        </div>
+                    </div>
+
+                    <div class="learn-case-conclusion">
+                        <strong>Conclusão didática:</strong> A empresa atende ao filtro de qualidade (<strong>ROE 18% &gt; 15%</strong>), mas <strong>não atende ao critério de desconto no P/L</strong> (15,57x está acima do P/L de entrada de 10,68x).
+                    </div>
+
+                    <div class="learn-case-live-strip" id="learnCaseLiveAbcv3">
+                        <!-- Preenchido com dados reais de DATA['ABEV3'] se disponível -->
+                    </div>
+
+                    <div class="learn-card-footer-actions">
+                        <button type="button" class="learn-btn-primary" onclick="TutorialModule.startModule(2)">▶ Ver ABEV3 no Guia Interativo</button>
+                        <button type="button" class="learn-btn-ghost" onclick="TutorialModule.openCaseStudyDetail()">Abrir ABEV3 nos Gráficos ↗</button>
+                    </div>
+                </div>
+
+                <!-- Simulador de Fundo Sistemático /ifr -->
+                <div class="learn-section-card learn-ifr-card">
+                    <div class="learn-section-header" style="margin-bottom: 12px;">
+                        <div>
+                            <span class="learn-kicker" style="color: var(--accent-green);">LABORATÓRIO VIVO NO DASHBOARD (/ifr)</span>
+                            <h3>⚡ Simulador de Fundo Sistemático</h3>
+                        </div>
+                        <span class="learn-badge-soft ok">Conciliado Diariamente</span>
+                    </div>
+
+                    <p class="learn-ifr-desc">
+                        Quer acompanhar a metodologia rodando com contabilidade real? A aba <strong>Entradas &gt; IFR</strong> (<code>/ifr</code>) simula um fundo sistemático que só abre posição quando o <strong>P/L atual está abaixo do P/L médio de 2 anos</strong> em conjunto com sinal técnico de sobrevenda (<code>IFR(21) &lt; 30</code>).
+                    </p>
+
+                    <div class="learn-case-metrics" style="grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));">
+                        <div class="learn-metric-chip"><span>Patrimônio (NAV)</span><strong id="learnIfrNav">R$ --</strong></div>
+                        <div class="learn-metric-chip"><span>Rentabilidade Cota</span><strong id="learnIfrRent">--%</strong></div>
+                        <div class="learn-metric-chip"><span>Trades Encerrados</span><strong id="learnIfrTrades">--</strong></div>
+                    </div>
+
+                    <div class="learn-case-conclusion" style="border-left-color: var(--accent-blue);">
+                        <strong>Contabilidade Auditada:</strong> Capital inicial de <strong>R$ 50.000,00</strong> + aportes mensais de <strong>R$ 500,00</strong>, validando diariamente a equação <code>NAV = Caixa + Valor de Mercado das Ações</code>, com registro de proventos e livro-razão completo.
+                    </div>
+
+                    <div class="learn-card-footer-actions">
+                        <button type="button" class="learn-btn-primary" onclick="TutorialModule.startModule(6, 1)">▶ Guiar-me no Fundo /ifr</button>
+                        <button type="button" class="learn-btn-ghost" onclick="switchAppTab('ifr')">Explorar Aba /ifr ↗</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vitrine Comercial Premium (Sem bloqueios nesta v1) -->
+            <div class="learn-premium-card">
+                <div class="learn-premium-head">
+                    <div>
+                        <span class="learn-kicker" style="color: var(--accent-orange);">EVOLUÇÃO DA PLATAFORMA · EM BREVE NO PREMIUM</span>
+                        <h3>Automatize sua busca por ações descontadas</h3>
+                        <p>O tutorial e todas as ferramentas atuais são 100% gratuitos e sem bloqueios. Em breve, uma assinatura Premium trará automação completa da metodologia:</p>
+                    </div>
+                    <button type="button" class="learn-btn-premium" id="btnLearnPremiumInterest" onclick="TutorialModule.registerPremiumInterest()">
+                        ✨ Tenho Interesse no Premium
+                    </button>
+                </div>
+                <div class="learn-premium-grid">
+                    <div class="learn-premium-item"><strong>🏆 Ranking Avançado</strong><span>Lista automática das ações mais descontadas no P/L com filtro de ROE.</span></div>
+                    <div class="learn-premium-item"><strong>🎛️ Filtros Personalizados</strong><span>Combine múltiplos limites de P/L, ROE, Dividend Yield e setores.</span></div>
+                    <div class="learn-premium-item"><strong>🔔 Alertas de Oportunidades</strong><span>Aviso automático quando uma ação entrar na sua zona de desconto.</span></div>
+                    <div class="learn-premium-item"><strong>👁️ Acompanhamento</strong><span>Watchlist dedicada com distância percentual até o preço de entrada.</span></div>
+                    <div class="learn-premium-item"><strong>📜 Histórico de Sinais</strong><span>Registro das oportunidades que atingiram desconto de 25% ou 50%.</span></div>
+                    <div class="learn-premium-item"><strong>📊 Backtest da Metodologia</strong><span>Simule retornos históricos ajustando critérios de entrada e saída.</span></div>
+                    <div class="learn-premium-item"><strong>💼 Gestão de Carteira</strong><span>Controle preço médio, metas de P/L de saída e proventos recebidos.</span></div>
+                </div>
+            </div>
+
+            <!-- Disclaimer Educacional -->
+            <div class="learn-disclaimer">
+                ⚖️ <strong>Aviso Educacional:</strong> Todo o conteúdo deste tutorial é estritamente educacional e baseado em dados históricos públicos (B3 / CVM). Preços estimados dependem do Lucro por Ação utilizado e não representam garantias, previsões ou recomendações de compra ou venda de valores mobiliários.
+            </div>
+        </div>
+
         <!-- Rodapé Minimalista com Status de Atualização -->
         <footer style="margin-top: 35px; margin-bottom: 25px; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--text-muted); opacity: 0.95;">
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -4388,6 +4602,38 @@ body.theme-light .event-tile-date {
             </a>
         </footer>
 
+    </div>
+
+    <!-- Camada Independente do Guia Interativo (Spotlight + Janela Explicativa) -->
+    <div id="tutorialBackdrop" class="tutorial-backdrop" style="display: none;"></div>
+    <div id="tutorialSpotlightRing" class="tutorial-spotlight-ring" style="display: none;"></div>
+    <div id="tutorialPopover" class="tutorial-popover" role="dialog" aria-modal="false" aria-labelledby="tutStepTitle" style="display: none;">
+        <div class="tut-pop-header">
+            <div class="tut-pop-badges">
+                <span class="tut-badge-mod" id="tutModuleBadge">Módulo 1 de 6</span>
+                <span class="tut-badge-step" id="tutStepCounter">Passo 1 de 4</span>
+            </div>
+            <button type="button" class="tut-btn-close" onclick="TutorialModule.closeTour()" title="Fechar guia (progresso salvo)">✕ Fechar</button>
+        </div>
+        <div class="tut-pop-progress-track">
+            <div class="tut-pop-progress-fill" id="tutProgressBarFill" style="width: 0%;"></div>
+        </div>
+        <div class="tut-pop-body">
+            <h4 id="tutStepTitle">Título do Passo</h4>
+            <p id="tutStepDesc">Descrição.</p>
+            <div class="tut-fallback-note" id="tutFallbackNote" style="display: none;"></div>
+            <div class="tut-live-data" id="tutLiveDataBox" style="display: none;"></div>
+            <div class="tut-rule-box" id="tutRuleBox" style="display: none;"></div>
+            <div class="tut-mentor-box" id="tutMentorBox" style="display: none;"></div>
+        </div>
+        <div class="tut-pop-footer">
+            <div class="tut-dots" id="tutDots"></div>
+            <div class="tut-actions">
+                <button type="button" class="tut-btn-ghost" onclick="TutorialModule.skipModule()">Pular</button>
+                <button type="button" class="tut-btn-sec" id="btnTutPrev" onclick="TutorialModule.prevStep()">← Anterior</button>
+                <button type="button" class="tut-btn-pri" id="btnTutNext" onclick="TutorialModule.nextStep()">Próximo →</button>
+            </div>
+        </div>
     </div>
 
     <style>
@@ -6105,6 +6351,707 @@ body.theme-light .event-tile-date {
         font-weight: 600 !important;
     }
 
+    /* =====================================================================
+       ABA 6: APRENDA A INVESTIR (/aprenda) & GUIA INTERATIVO (SPOTLIGHT)
+       ===================================================================== */
+    .btn-tutorial-inline {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--accent);
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        border-radius: 999px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .btn-tutorial-inline:hover {
+        background: rgba(56, 189, 248, 0.2);
+        border-color: var(--accent);
+    }
+    body.theme-light .btn-tutorial-inline {
+        color: #0369a1;
+        background: rgba(2, 132, 199, 0.08);
+        border-color: rgba(2, 132, 199, 0.3);
+    }
+
+    #tabLearnContent {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        animation: fadeInTab 0.3s ease;
+        display: none;
+        flex-direction: column;
+        gap: 18px;
+    }
+    .learn-hero-card,
+    .learn-section-card,
+    .learn-premium-card {
+        background: var(--card-bg);
+        -webkit-backdrop-filter: var(--surface-blur);
+        backdrop-filter: var(--surface-blur);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--surface-highlight), var(--shadow-sm);
+        padding: 20px 22px;
+        margin-bottom: 18px;
+    }
+    .learn-section-block {
+        margin-bottom: 18px;
+    }
+    .learn-kicker {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 4px;
+    }
+    .learn-hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+        gap: 20px;
+        align-items: center;
+    }
+    .learn-hero-title {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        color: var(--text-main);
+        margin: 2px 0 8px 0;
+        line-height: 1.25;
+    }
+    .learn-hero-sub {
+        font-size: 13.5px;
+        color: var(--text-muted);
+        line-height: 1.55;
+        margin: 0;
+        max-width: 720px;
+    }
+    .learn-progress-panel {
+        background: var(--inset-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .learn-progress-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        color: var(--text-main);
+    }
+    .learn-progress-head strong {
+        color: var(--accent);
+        font-variant-numeric: tabular-nums;
+    }
+    .learn-progress-track {
+        width: 100%;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--border);
+        overflow: hidden;
+    }
+    .learn-progress-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #0ea5e9, #34d399);
+        transition: width 0.35s ease;
+    }
+    .learn-progress-hint {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+    .learn-progress-actions,
+    .learn-card-footer-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-top: 2px;
+    }
+    .learn-btn-primary {
+        padding: 8px 14px;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #ffffff;
+        background: linear-gradient(135deg, #0284c7, #0ea5e9);
+        border: 1px solid rgba(56, 189, 248, 0.5);
+        border-radius: 9px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .learn-btn-primary:hover {
+        filter: brightness(1.08);
+        transform: translateY(-1px);
+    }
+    .learn-btn-ghost {
+        padding: 8px 12px;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--text-main);
+        background: var(--hover-bg);
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .learn-btn-ghost:hover {
+        border-color: var(--border-strong);
+        background: rgba(255, 255, 255, 0.08);
+    }
+    body.theme-light .learn-btn-ghost:hover {
+        background: rgba(9, 9, 11, 0.06);
+    }
+    .learn-section-header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+    .learn-section-header h3 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+    .learn-section-note {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+    .learn-modules-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+    }
+    .learn-mod-card {
+        background: var(--card-bg);
+        -webkit-backdrop-filter: var(--surface-blur);
+        backdrop-filter: var(--surface-blur);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--surface-highlight), var(--shadow-sm);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 12px;
+        transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .learn-mod-card:hover {
+        border-color: rgba(56, 189, 248, 0.45);
+        transform: translateY(-2px);
+    }
+    .learn-mod-card.done {
+        border-color: rgba(52, 211, 153, 0.45);
+    }
+    .learn-mod-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .learn-mod-screen {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--accent);
+        font-family: var(--font-mono);
+    }
+    .learn-status-pill {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        background: var(--inset-bg);
+    }
+    .learn-status-pill.done {
+        color: #34d399;
+        border-color: rgba(52, 211, 153, 0.4);
+        background: rgba(16, 185, 129, 0.12);
+    }
+    .learn-status-pill.progress {
+        color: #fbbf24;
+        border-color: rgba(251, 191, 36, 0.4);
+        background: rgba(245, 158, 11, 0.12);
+    }
+    body.theme-light .learn-status-pill.done { color: #15803d; }
+    body.theme-light .learn-status-pill.progress { color: #a16207; }
+    .learn-mod-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin: 6px 0 4px 0;
+    }
+    .learn-mod-summary {
+        font-size: 12.5px;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin: 0;
+    }
+    .learn-mod-quote {
+        font-size: 12px;
+        font-style: italic;
+        color: var(--text-main);
+        background: var(--inset-bg);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin-top: 8px;
+        line-height: 1.45;
+    }
+    .learn-mod-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+        font-size: 11.5px;
+        color: var(--text-muted);
+    }
+    .learn-mentors-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+    }
+    .learn-mentor-card {
+        background: var(--inset-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    .learn-mentor-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .learn-mentor-top strong {
+        font-size: 13.5px;
+        color: var(--text-main);
+    }
+    .learn-mentor-tag {
+        font-size: 10.5px;
+        font-weight: 600;
+        padding: 2px 7px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+    }
+    .learn-mentor-quote {
+        font-size: 12px;
+        font-style: italic;
+        color: var(--text-main);
+        line-height: 1.45;
+        margin: 0;
+    }
+    .learn-mentor-desc {
+        font-size: 12px;
+        color: var(--text-muted);
+        line-height: 1.45;
+        margin: 0;
+    }
+    .learn-mentor-pillar {
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--accent);
+        padding-top: 4px;
+    }
+    .learn-dual-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+    .learn-dual-grid .learn-section-card {
+        margin-bottom: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    .learn-badge-soft {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--inset-bg);
+        color: var(--text-muted);
+    }
+    .learn-badge-soft.ok {
+        color: var(--accent-green);
+        border-color: rgba(52, 211, 153, 0.4);
+    }
+    .learn-case-metrics {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 8px;
+    }
+    .learn-metric-chip {
+        background: var(--inset-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 9px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .learn-metric-chip span {
+        font-size: 11px;
+        color: var(--text-muted);
+    }
+    .learn-metric-chip strong {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-main);
+        font-variant-numeric: tabular-nums;
+    }
+    .learn-case-zones {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+    .learn-zone-box {
+        background: var(--inset-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 11px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+    .learn-zone-box.entry { border-color: rgba(52, 211, 153, 0.4); }
+    .learn-zone-box.exit { border-color: rgba(251, 146, 60, 0.4); }
+    .learn-zone-box .zone-lbl { font-size: 11px; font-weight: 700; color: var(--accent-green); }
+    .learn-zone-box.exit .zone-lbl { color: var(--accent-orange); }
+    .learn-zone-box strong { font-size: 14.5px; color: var(--text-main); font-variant-numeric: tabular-nums; }
+    .learn-zone-box small { font-size: 11.5px; color: var(--text-muted); }
+    .learn-case-conclusion,
+    .learn-case-live-strip {
+        font-size: 12.5px;
+        color: var(--text-muted);
+        line-height: 1.5;
+        background: var(--inset-bg);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent-yellow);
+        border-radius: 9px;
+        padding: 10px 12px;
+    }
+    .learn-case-live-strip {
+        border-left-color: var(--accent-green);
+        font-size: 12px;
+    }
+    .learn-ifr-desc {
+        font-size: 12.5px;
+        color: var(--text-muted);
+        line-height: 1.55;
+        margin: 0;
+    }
+    .learn-premium-head {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 14px;
+    }
+    .learn-premium-head h3 { margin: 2px 0 4px 0; font-size: 18px; color: var(--text-main); }
+    .learn-premium-head p { margin: 0; font-size: 12.5px; color: var(--text-muted); max-width: 720px; }
+    .learn-btn-premium {
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #ffffff;
+        background: linear-gradient(135deg, #f59e0b, #ea580c);
+        border: 1px solid rgba(251, 191, 36, 0.5);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .learn-btn-premium:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .learn-btn-premium.registered {
+        background: linear-gradient(135deg, #16a34a, #059669);
+        border-color: rgba(52, 211, 153, 0.55);
+    }
+    .learn-premium-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 10px;
+    }
+    .learn-premium-item {
+        background: var(--inset-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 11px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .learn-premium-item strong { font-size: 12.5px; color: var(--text-main); }
+    .learn-premium-item span { font-size: 11.5px; color: var(--text-muted); line-height: 1.4; }
+    .learn-disclaimer {
+        font-size: 12px;
+        color: var(--text-muted);
+        text-align: center;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px dashed var(--border);
+        background: var(--inset-bg);
+        line-height: 1.5;
+    }
+
+    /* Spotlight & Janela Explicativa do Guia Interativo */
+    .tutorial-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 9990;
+        background: rgba(4, 7, 15, 0.72);
+        pointer-events: auto;
+    }
+    .tutorial-spotlight-ring {
+        position: fixed;
+        z-index: 9991;
+        pointer-events: none;
+        border-radius: 12px;
+        border: 2px solid #38bdf8;
+        box-shadow: 0 0 0 9999px rgba(4, 7, 15, 0.74), 0 0 24px rgba(56, 189, 248, 0.55);
+        transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
+    }
+    .tutorial-popover {
+        position: fixed;
+        z-index: 9995;
+        width: 430px;
+        max-width: calc(100vw - 24px);
+        background: var(--glass-bg);
+        -webkit-backdrop-filter: var(--glass-blur) saturate(160%);
+        backdrop-filter: var(--glass-blur) saturate(160%);
+        border: 1.5px solid rgba(56, 189, 248, 0.55);
+        border-radius: 14px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+        padding: 16px 18px;
+        color: var(--text-main);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        animation: glassPopIn 0.2s ease;
+    }
+    body.theme-light .tutorial-popover {
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+        border-color: #0284c7;
+    }
+    .tut-pop-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+    }
+    .tut-pop-badges {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .tut-badge-mod {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: #0284c7;
+        color: #ffffff;
+    }
+    .tut-badge-step {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--text-muted);
+        font-variant-numeric: tabular-nums;
+    }
+    .tut-btn-close {
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 7px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+    }
+    .tut-btn-close:hover {
+        color: var(--text-main);
+        background: var(--hover-bg);
+    }
+    .tut-pop-progress-track {
+        width: 100%;
+        height: 4px;
+        border-radius: 999px;
+        background: var(--border);
+        overflow: hidden;
+    }
+    .tut-pop-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #0ea5e9, #34d399);
+        transition: width 0.25s ease;
+    }
+    .tut-pop-body h4 {
+        margin: 0 0 6px 0;
+        font-size: 15.5px;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+    .tut-pop-body p {
+        margin: 0;
+        font-size: 12.5px;
+        color: var(--text-muted);
+        line-height: 1.55;
+    }
+    .tut-rule-box,
+    .tut-mentor-box,
+    .tut-live-data,
+    .tut-fallback-note {
+        margin-top: 8px;
+        padding: 8px 10px;
+        border-radius: 9px;
+        font-size: 12px;
+        line-height: 1.45;
+        border: 1px solid var(--border);
+        background: var(--inset-bg);
+    }
+    .tut-rule-box {
+        border-left: 3px solid var(--accent-green);
+        color: var(--text-main);
+        font-weight: 600;
+    }
+    .tut-mentor-box {
+        border-left: 3px solid var(--accent-yellow);
+        color: var(--text-main);
+    }
+    .tut-live-data {
+        border-left: 3px solid var(--accent);
+        color: var(--text-main);
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+    }
+    .tut-fallback-note {
+        border-left: 3px solid var(--accent-orange);
+        color: var(--accent-orange);
+    }
+    .tut-pop-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        padding-top: 8px;
+        border-top: 1px solid var(--border);
+        flex-wrap: wrap;
+    }
+    .tut-dots {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .tut-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--border-strong);
+    }
+    .tut-dot.active {
+        background: var(--accent);
+        transform: scale(1.25);
+    }
+    .tut-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: auto;
+    }
+    .tut-btn-ghost {
+        padding: 6px 8px;
+        font-size: 12px;
+        color: var(--text-muted);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    }
+    .tut-btn-ghost:hover { color: var(--text-main); }
+    .tut-btn-sec {
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--hover-bg);
+        color: var(--text-main);
+        cursor: pointer;
+    }
+    .tut-btn-sec:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+    .tut-btn-pri {
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 8px;
+        border: 1px solid rgba(56, 189, 248, 0.5);
+        background: #0284c7;
+        color: #ffffff;
+        cursor: pointer;
+    }
+    .tut-btn-pri:hover { filter: brightness(1.1); }
+
+    @media (max-width: 1120px) {
+        .learn-modules-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .learn-mentors-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .learn-dual-grid { grid-template-columns: minmax(0, 1fr); }
+        .learn-hero-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 768px) {
+        .app-tab-nav {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+        .app-tab-nav::-webkit-scrollbar {
+            display: none !important;
+        }
+        .hide-mobile-xs { display: none; }
+        .learn-modules-grid,
+        .learn-mentors-grid,
+        .learn-case-zones { grid-template-columns: minmax(0, 1fr); }
+        .learn-case-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .learn-hero-title { font-size: 20px; }
+        .tutorial-popover {
+            left: 8px !important;
+            right: 8px !important;
+            bottom: 8px !important;
+            top: auto !important;
+            width: auto !important;
+            max-width: none !important;
+            max-height: 55vh;
+            overflow-y: auto;
+        }
+    }
 
     </style>
 
@@ -6904,6 +7851,9 @@ body.theme-light .event-tile-date {
             renderCharts();
             updateHeaderSubtitle(ticker);
             updateEventsDrawerForTicker(ticker);
+            if (typeof TutorialModule !== 'undefined' && TutorialModule.track) {
+                TutorialModule.track('user_selected_stock', { ticker: ticker });
+            }
         }
 
 
@@ -6983,7 +7933,7 @@ body.theme-light .event-tile-date {
 
 
 
-        function createOrUpdateChart(chartId, label, dates, values, color, isPercent = false, prefix = '', allowNegative = false, secondaryLine = null, secondaryLabel = null, secondaryColor = '#f59e0b', showBands = false) {
+        function createOrUpdateChart(chartId, label, dates, values, color, isPercent = false, prefix = '', allowNegative = false, secondaryLine = null, secondaryLabel = null, secondaryColor = '#f59e0b', showBands = false, meanLineColor = null) {
 
             const ctx = document.getElementById(chartId).getContext('2d');
             applyGlassChartTheme();
@@ -7137,15 +8087,19 @@ body.theme-light .event-tile-date {
 
 
 
+                            const defaultMeanBorder = getComputedStyle(document.body).getPropertyValue('--mean-line').trim() || '#cbd5e1';
+                            const effectiveMeanColor = meanLineColor || defaultMeanBorder;
+                            const isCustomMean = Boolean(meanLineColor);
+
                             ds.push({
 
                                 label: `Média (${mean.toFixed(2)}${isPercent ? '%' : ''})`,
 
                                 data: meanLine,
 
-                                borderColor: getComputedStyle(document.body).getPropertyValue('--mean-line').trim() || '#cbd5e1',
+                                borderColor: effectiveMeanColor,
 
-                                borderWidth: 1.6,
+                                borderWidth: isCustomMean ? 2.2 : 1.6,
 
                                 borderDash: [5, 5],
 
@@ -7411,11 +8365,14 @@ body.theme-light .event-tile-date {
             document.getElementById('badgeEMA50').textContent = `EMA(50): ${emaValFormatted}`;
             setupDualSlider('chartPrice', fPrices, unitPrefix);
 
-            const meanPL = createOrUpdateChart('chartPL', 'P/L (TTM)', fDates, fPL, colorPL, false, '', false, null, null, colorEMA, true);
+            const meanPL = createOrUpdateChart('chartPL', 'P/L (TTM)', fDates, fPL, colorPL, false, '', false, null, null, colorEMA, true, colorPrice);
 
             document.getElementById('kpiPLMean').textContent = `Média: ${meanPL.toFixed(2)}x`;
 
-            document.getElementById('badgeMeanPL').textContent = `Média: ${meanPL.toFixed(2)}x`;
+            const badgeMeanPLEl = document.getElementById('badgeMeanPL');
+            badgeMeanPLEl.textContent = `Média: ${meanPL.toFixed(2)}x`;
+            badgeMeanPLEl.style.borderColor = colorPrice;
+            badgeMeanPLEl.style.color = colorPrice;
 
             setupDualSlider('chartPL', fPL, '', 'x');
 
@@ -8247,7 +9204,8 @@ body.theme-light .event-tile-date {
             heatmap: '/heatmap',
             events: '/eventos',
             macro: '/macro',
-            ifr: '/ifr'
+            ifr: '/ifr',
+            learn: '/aprenda'
         };
         const PATH_TO_TAB = {
             '/detalhes': 'detail',
@@ -8255,7 +9213,9 @@ body.theme-light .event-tile-date {
             '/eventos': 'events',
             '/calendario': 'events',
             '/macro': 'macro',
-            '/ifr': 'ifr'
+            '/ifr': 'ifr',
+            '/aprenda': 'learn',
+            '/tutorial': 'learn'
         };
 
         function resolveTabFromUrl() {
@@ -8284,6 +9244,8 @@ body.theme-light .event-tile-date {
             const secMacro = document.getElementById('tabMacroContent');
             const btnIfr = document.getElementById('btnTabIfr');
             const secIfr = document.getElementById('tabIfrContent');
+            const btnLearn = document.getElementById('btnTabLearn');
+            const secLearn = document.getElementById('tabLearnContent');
 
             if (btnDetail) btnDetail.classList.remove('active');
             if (btnHeatmap) btnHeatmap.classList.remove('active');
@@ -8295,6 +9257,8 @@ body.theme-light .event-tile-date {
             if (secMacro) secMacro.style.display = 'none';
             if (btnIfr) btnIfr.classList.remove('active');
             if (secIfr) secIfr.style.display = 'none';
+            if (btnLearn) btnLearn.classList.remove('active');
+            if (secLearn) secLearn.style.display = 'none';
 
             if (tab === 'detail') {
                 if (btnDetail) btnDetail.classList.add('active');
@@ -8302,6 +9266,9 @@ body.theme-light .event-tile-date {
                 setTimeout(() => {
                     if (typeof renderCharts === 'function') renderCharts();
                 }, 50);
+                if (typeof TutorialModule !== 'undefined' && TutorialModule.track) {
+                    TutorialModule.track('user_opened_detail', { ticker: currentTicker });
+                }
             } else if (tab === 'events') {
                 if (btnEvents) btnEvents.classList.add('active');
                 if (secEvents) secEvents.style.display = 'block';
@@ -8319,10 +9286,19 @@ body.theme-light .event-tile-date {
                 if (btnIfr) btnIfr.classList.add('active');
                 if (secIfr) secIfr.style.display = 'block';
                 if (typeof IfrModule !== 'undefined') IfrModule.onOpen();
+            } else if (tab === 'learn') {
+                if (btnLearn) btnLearn.classList.add('active');
+                if (secLearn) secLearn.style.display = 'block';
+                if (typeof TutorialModule !== 'undefined' && TutorialModule.onOpenLearnTab) {
+                    TutorialModule.onOpenLearnTab();
+                }
             } else {
                 if (btnHeatmap) btnHeatmap.classList.add('active');
                 if (secHeatmap) secHeatmap.style.display = 'block';
                 renderHeatmap();
+                if (typeof TutorialModule !== 'undefined' && TutorialModule.track) {
+                    TutorialModule.track('user_opened_heatmap');
+                }
             }
         }
 
@@ -8490,7 +9466,7 @@ body.theme-light .event-tile-date {
                     }
 
                     html += `
-                        <div class="heatmap-stock-tile ${colorClass}" onclick="openDetailFromHeatmap('${stock.ticker}')" title="${stock.ticker} - ${stock.name}&#10;P/L Atual: ${plStr}&#10;${meanInfoStr}&#10;Cotação: ${priceStr}&#10;Clique para ver gráficos e valuation completos">
+                        <div class="heatmap-stock-tile ${colorClass}" data-heatmap-ticker="${stock.ticker}" onclick="openDetailFromHeatmap('${stock.ticker}')" title="${stock.ticker} - ${stock.name}&#10;P/L Atual: ${plStr}&#10;${meanInfoStr}&#10;Cotação: ${priceStr}&#10;Clique para ver gráficos e valuation completos">
                             <span class="tile-view-hint">↗</span>
                             <div class="tile-header">
                                 <span class="tile-ticker">${stock.ticker}</span>
@@ -11555,9 +12531,938 @@ body.theme-light .event-tile-date {
             };
         })();
 
-        // Inicializar IfrModule e rota inicial da URL no carregamento
+        /* =====================================================================
+           MÓDULO: TutorialModule (Academia Valor das Ações & Guia Interativo)
+           ===================================================================== */
+        const TutorialModule = (function () {
+            'use strict';
+
+            const STORAGE_KEY = 'valor_acoes_tutorial_v1';
+            const ANALYTICS_KEY = 'valor_acoes_tutorial_analytics_v1';
+
+            let state = {
+                completedModules: [],
+                inProgressModule: null,
+                lastModuleId: 1,
+                lastStepIdx: 0,
+                tutorialStarted: false,
+                premiumInterested: false
+            };
+
+            let tourActive = false;
+            let activeModuleId = 1;
+            let activeStepIdx = 0;
+            let currentTargetEl = null;
+            let renderTimer = null;
+            let valuationTrackedThisView = false;
+
+            function loadState() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (parsed && typeof parsed === 'object') {
+                            state.completedModules = Array.isArray(parsed.completedModules) ? parsed.completedModules : [];
+                            state.inProgressModule = parsed.inProgressModule || null;
+                            state.lastModuleId = parsed.lastModuleId || 1;
+                            state.lastStepIdx = Number.isInteger(parsed.lastStepIdx) ? parsed.lastStepIdx : 0;
+                            state.tutorialStarted = !!parsed.tutorialStarted;
+                            state.premiumInterested = !!parsed.premiumInterested;
+                        }
+                    }
+                } catch (e) {}
+            }
+
+            function saveState() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+                } catch (e) {}
+            }
+
+            function track(eventName, payload) {
+                const info = payload || {};
+                try {
+                    const existing = JSON.parse(localStorage.getItem(ANALYTICS_KEY) || '[]');
+                    existing.push({ event: eventName, payload: info, ts: new Date().toISOString() });
+                    if (existing.length > 50) existing.splice(0, existing.length - 50);
+                    localStorage.setItem(ANALYTICS_KEY, JSON.stringify(existing));
+                } catch (e) {}
+                try {
+                    if (typeof window.gtag === 'function') window.gtag('event', eventName, info);
+                    if (typeof window.va === 'function') window.va('event', Object.assign({ name: eventName }, info));
+                    if (Array.isArray(window.dataLayer)) window.dataLayer.push(Object.assign({ event: eventName }, info));
+                    window.dispatchEvent(new CustomEvent('valoracoes:analytics', { detail: { event: eventName, payload: info } }));
+                } catch (e) {}
+            }
+
+            function fmtBrMoney(v) {
+                if (v === null || v === undefined || isNaN(v)) return 'N/D';
+                return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            function fmtBrPct(v, signed) {
+                if (v === null || v === undefined || isNaN(v)) return 'N/D';
+                const n = Number(v);
+                const s = signed && n > 0 ? '+' : '';
+                return s + n.toFixed(2).replace('.', ',') + '%';
+            }
+
+            function getLiveMetrics(ticker, years) {
+                const tk = ticker && DATA[ticker] ? ticker : (DATA['ABEV3'] ? 'ABEV3' : (DATA['ITUB4'] ? 'ITUB4' : null));
+                if (!tk || !DATA[tk]) return null;
+                const d = DATA[tk];
+                const dates = d.dates || [];
+                const prices = d.prices || [];
+                const pls = d.pl || [];
+                const roes = d.roe || [];
+                const dys = d.dy || [];
+                const n = dates.length;
+                if (!n) return null;
+
+                let startIdx = 0;
+                const yr = years || 2;
+                const lastDt = new Date(dates[n - 1]);
+                const cutoffDt = new Date(lastDt);
+                cutoffDt.setFullYear(cutoffDt.getFullYear() - yr);
+                const cutoffStr = cutoffDt.toISOString().split('T')[0];
+                for (let i = 0; i < n; i++) {
+                    if (dates[i] >= cutoffStr) {
+                        startIdx = i;
+                        break;
+                    }
+                }
+
+                const validPL = [];
+                for (let i = startIdx; i < n; i++) {
+                    const val = pls[i];
+                    if (val !== null && !isNaN(val) && val > 0) validPL.push(val);
+                }
+                const meanPL = validPL.length ? (validPL.reduce((a, b) => a + b, 0) / validPL.length) : null;
+                const curPrice = prices[n - 1];
+                const curPL = pls[n - 1];
+                const curROE = roes[n - 1];
+                const curDY = dys.length ? dys[n - 1] : null;
+                const lpa = (curPrice && curPL && curPL > 0) ? (curPrice / curPL) : null;
+                const entryPL = meanPL ? meanPL * 0.75 : null;
+                const exitPL = meanPL ? meanPL * 1.25 : null;
+                const entryPrice = (lpa && entryPL) ? lpa * entryPL : null;
+                const exitPrice = (lpa && exitPL) ? lpa * exitPL : null;
+
+                return {
+                    ticker: tk,
+                    date: dates[n - 1],
+                    curPrice,
+                    curPL,
+                    meanPL,
+                    curROE,
+                    curDY,
+                    lpa,
+                    entryPL,
+                    exitPL,
+                    entryPrice,
+                    exitPrice
+                };
+            }
+
+            function getIfrLiveSummary() {
+                const src = (typeof IFR_CACHE_DATA !== 'undefined' && IFR_CACHE_DATA) ? IFR_CACHE_DATA : {};
+                const cfg = src.config || {};
+                const ult = src.ultimo_fechamento || null;
+                const serie = Array.isArray(src.fechamentos_resumo) && src.fechamentos_resumo.length
+                    ? src.fechamentos_resumo
+                    : (Array.isArray(src.evolucao) ? src.evolucao : []);
+                const lastPt = serie.length ? serie[serie.length - 1] : null;
+
+                const nav = ult && ult.patrimonio ? ult.patrimonio.nav : (lastPt ? (lastPt.nav || lastPt.patrimonio_total) : (cfg.patrimonio_total || null));
+                const rent = ult && ult.rentabilidade ? ult.rentabilidade.rent_acum : (lastPt ? (lastPt.r_acum !== undefined ? lastPt.r_acum : lastPt.variacao_pct_total) : null);
+                const gains = cfg.total_gains !== undefined ? cfg.total_gains : 0;
+                const stops = cfg.total_stops !== undefined ? cfg.total_stops : 0;
+                const total = cfg.total_trades_finalizados !== undefined ? cfg.total_trades_finalizados : (gains + stops);
+                return { nav, rent, gains, stops, total };
+            }
+
+            const MODULES = [
+                {
+                    id: 1,
+                    title: '1. Encontrando oportunidades no mercado',
+                    screenLabel: 'Heatmap de Mercado (P/L)',
+                    mentorTag: 'Triagem Setorial',
+                    summary: 'Organização por setor econômico, identificação do ticker, filtros de P/L, comparação de períodos e seleção para análise.',
+                    quote: 'Visualize o mercado de forma organizada e encontre empresas que merecem uma investigação mais profunda.',
+                    steps: [
+                        {
+                            tab: 'heatmap',
+                            selector: '#heatmapContainer',
+                            title: 'Organização por Setor Econômico',
+                            desc: 'No Heatmap, todas as ações da B3 aparecem agrupadas por setor econômico. Comparar empresas do mesmo setor evita distorções entre bancos, elétricas e varejo.',
+                            rule: 'Mensagem principal: Visualize o mercado de forma organizada e encontre empresas que merecem investigação mais profunda.',
+                            mentorNote: '💡 Dica prática: comece pelos setores que você compreende melhor e observe quais blocos exibem desconto frente à média histórica.'
+                        },
+                        {
+                            tab: 'heatmap',
+                            selector: '#heatmapLegendBar',
+                            title: 'Interpretação e Filtros por Faixa de P/L',
+                            desc: 'As cores representam faixas de Preço/Lucro (0 a 8x, 8 a 15x, 15 a 25x, etc.). Clique em qualquer item da legenda para filtrar instantaneamente empresas negociadas a múltiplos menores.',
+                            rule: 'Foco educacional: múltiplos menores indicam preço mais baixo relativo ao lucro atual, mas exigem verificação de qualidade.',
+                            mentorNote: '💡 Benjamin Graham: múltiplos baixos são o ponto de partida da triagem quantitativa, nunca o critério único.'
+                        },
+                        {
+                            tab: 'heatmap',
+                            selector: '#heatmapPeriodSelector',
+                            title: 'Comparação entre Períodos Históricos',
+                            desc: 'Alternar entre 1, 2, 5 e 10 anos recalcula o P/L médio de referência e o desconto/prêmio percentual (▼ desconto ou ▲ prêmio) exibido em cada bloco.',
+                            rule: 'Base da metodologia: utilize 2 Anos (24 meses) para medir o comportamento recente de valuation de cada empresa.',
+                            mentorNote: '💡 Se uma ação está com desconto relevante em 2 Anos, ela merece ir para a análise detalhada.'
+                        },
+                        {
+                            tab: 'heatmap',
+                            selector: '[data-heatmap-ticker="ABEV3"], .heatmap-stock-tile',
+                            title: 'Identificando o Ticker e Abrindo Detalhes',
+                            desc: 'Cada cartão exibe o ticker, a cotação atual, o P/L (TTM) e a variação frente à média histórica. Clicar em qualquer ação abre imediatamente sua Visão Detalhada.',
+                            rule: 'Próximo passo: vamos analisar um ativo na Visão Detalhada para investigar seu histórico de P/L.',
+                            mentorNote: '💡 Estudo de caso: a ABEV3 será usada como referência didática nos próximos módulos — você também pode testar qualquer ação real.'
+                        }
+                    ]
+                },
+                {
+                    id: 2,
+                    title: '2. Entendendo o Preço/Lucro',
+                    screenLabel: 'Visão Detalhada do Ativo',
+                    mentorTag: 'Benjamin Graham & John Neff',
+                    summary: 'Significado do P/L, relação entre preço e lucro por ação, média histórica de 24 meses e identificação de desconto/prêmio.',
+                    quote: 'Descubra quanto o mercado está pagando atualmente pelos lucros da empresa em comparação com seu próprio histórico.',
+                    steps: [
+                        {
+                            tab: 'detail',
+                            needsStock: true,
+                            preferredPeriod: 2,
+                            selector: '#kpiCardPL',
+                            title: 'O que é Preço/Lucro (P/L) e Leitura Atual',
+                            desc: 'O P/L divide o preço da ação pelo Lucro por Ação (LPA) dos últimos 12 meses. Ele indica quantos anos de lucro atual equivalem ao preço pago hoje — e aqui já é comparado à média histórica.',
+                            rule: 'Mensagem principal: Descubra quanto o mercado paga hoje pelos lucros em comparação com o próprio histórico.',
+                            mentorNote: '💡 Exemplo de captura (ABEV3): Preço R$ 15,79 com LPA ~R$ 1,01 resulta em P/L de 15,57x (acima da média de 14,24x).',
+                            liveDataFn: function (tk) {
+                                const m = getLiveMetrics(tk, 2);
+                                if (!m || !m.curPL) return null;
+                                return 'Dados reais (' + m.ticker + '): P/L Atual ' + m.curPL.toFixed(2) + 'x | Média 24m ' + (m.meanPL ? m.meanPL.toFixed(2) + 'x' : 'N/D');
+                            }
+                        },
+                        {
+                            tab: 'detail',
+                            needsStock: true,
+                            preferredPeriod: 2,
+                            selector: '#detailPeriodSelector',
+                            title: 'Comparação com o Histórico de 24 Meses',
+                            desc: 'Selecionamos a janela de 2 Anos (24 meses) para medir o múltiplo médio recente da empresa, evitando distorções de ciclos muito antigos ou anomalias pontuais.',
+                            rule: 'Parâmetro temporal padrão: janela de 24 meses (2 Anos).',
+                            mentorNote: '💡 Você também pode ajustar o slider temporal abaixo do gráfico de preço para inspecionar intervalos específicos.'
+                        },
+                        {
+                            tab: 'detail',
+                            needsStock: true,
+                            preferredPeriod: 2,
+                            selector: '#boxChartPL',
+                            title: 'Identificando Desconto e Prêmio no Gráfico de P/L',
+                            desc: 'Compare a linha verde do P/L diário com a linha média tracejada. Quando o P/L atual cai 25% ou mais abaixo da média de 24 meses, identifica-se uma potencial zona de desconto; acima da média, há prêmio.',
+                            rule: 'Regra da metodologia: P/L atual <= P/L médio de 24 meses × 0,75',
+                            mentorNote: '💡 John Neff (Fundo Windsor): comprava empresas sólidas quando o P/L comprimia abaixo da sua média histórica.',
+                            liveDataFn: function (tk) {
+                                const m = getLiveMetrics(tk, 2);
+                                if (!m || !m.meanPL) return null;
+                                const status = m.curPL && m.curPL <= m.entryPL ? 'DENTRO DA ZONA DE DESCONTO' : 'ACIMA DA ZONA DE ENTRADA';
+                                return m.ticker + ' (24m): P/L Entrada (0,75x) = ' + m.entryPL.toFixed(2) + 'x | Atual = ' + (m.curPL ? m.curPL.toFixed(2) + 'x' : 'N/D') + ' (' + status + ')';
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 3,
+                    title: '3. Identificando empresas rentáveis',
+                    screenLabel: 'ROE Histórico (TTM %)',
+                    mentorTag: 'Warren Buffett & Munger',
+                    summary: 'Conceito e interpretação do ROE, evolução histórica, critério mínimo de 15% e relação com dívida e patrimônio líquido.',
+                    quote: 'Não procure somente empresas baratas. Procure empresas que também demonstrem capacidade de gerar retorno sobre o capital dos acionistas.',
+                    steps: [
+                        {
+                            tab: 'detail',
+                            needsStock: true,
+                            preferredPeriod: 2,
+                            selector: '#kpiCardROE',
+                            title: 'Conceito e Interpretação do ROE Atual',
+                            desc: 'O ROE (Return on Equity) mede quanto lucro líquido a empresa gera para cada real de patrimônio líquido dos acionistas. Ele separa empresas boas e descontadas de armadilhas baratas ("value traps").',
+                            rule: 'Critério de qualidade da metodologia: ROE > 15%',
+                            mentorNote: '💡 Warren Buffett: priorizar negócios com retorno elevado e consistente sobre o capital próprio.',
+                            liveDataFn: function (tk) {
+                                const m = getLiveMetrics(tk, 2);
+                                if (!m || m.curROE === null || m.curROE === undefined) return null;
+                                return 'ROE real (' + m.ticker + '): ' + m.curROE.toFixed(1) + '% (' + (m.curROE > 15 ? '✅ Atende > 15%' : '❌ Abaixo de 15%') + ')';
+                            }
+                        },
+                        {
+                            tab: 'detail',
+                            needsStock: true,
+                            preferredPeriod: 2,
+                            selector: '#boxChartROE',
+                            title: 'Evolução Histórica, Dívida e Patrimônio Líquido',
+                            desc: 'Avalie se o ROE permanece acima de 15% de forma recorrente. Atenção: um ROE artificialmente alto pode ocorrer quando o patrimônio líquido encolhe por prejuízos passados ou excesso de dívida — analise sempre a saúde financeira junto.',
+                            rule: 'Estudo ABEV3 (captura): ROE de 18% atende ao filtro de rentabilidade (> 15%), mas exige preço descontado no P/L.',
+                            mentorNote: '💡 Mensagem principal: Nunca olhe apenas para o P/L baixo sem confirmar que a empresa é rentável e sustentável.'
+                        }
+                    ]
+                },
+                {
+                    id: 4,
+                    title: '4. Descobrindo possíveis preços de entrada',
+                    screenLabel: 'Precificação Justa & Zonas de Compra',
+                    mentorTag: 'Margem de Segurança',
+                    summary: 'Lucro por ação (LPA), P/L médio, descontos de 25% e 50%, preços estimados e diferença para valor intrínseco.',
+                    quote: 'Converta múltiplos históricos em faixas objetivas de preço usando o Lucro por Ação atual — sempre com transparência sobre suas premissas.',
+                    steps: [
+                        {
+                            tab: 'detail',
+                            needsStock: true,
+                            preferredPeriod: 2,
+                            selector: '#badgeLPA',
+                            title: 'O Papel do Lucro por Ação (LPA)',
+                            desc: 'A tabela de precificação multiplica o Lucro por Ação (LPA TTM) pelos múltiplos históricos da própria empresa (Preço Estimado = LPA × Múltiplo P/L).',
+                            rule: 'Atenção: os preços estimados dependem diretamente do LPA utilizado e NÃO representam garantias ou previsões.',
+                            mentorNote: '💡 Se os lucros da empresa caírem nos próximos trimestres, os preços estimados também recuam proporcionalmente.',
+                            liveDataFn: function (tk) {
+                                const m = getLiveMetrics(tk, 2);
+                                if (!m || !m.lpa) return null;
+                                return m.ticker + ' ao vivo: Preço ' + fmtBrMoney(m.curPrice) + ' | LPA TTM ~' + fmtBrMoney(m.lpa);
+                            }
+                        },
+                        {
+                            tab: 'detail',
+                            needsStock: true,
+                            preferredPeriod: 2,
+                            selector: '#boxValuationGeneral',
+                            title: 'Zonas de Desconto (-25% e -50%) vs. Valor Intrínseco',
+                            desc: 'Veja as linhas de P/L Médio, Desconto de 25% (entrada) e Desconto de 50% (desconto profundo). Lembre-se: valuation histórico compara o preço ao histórico de múltiplos da empresa, enquanto valor intrínseco estima fluxos de caixa futuros.',
+                            rule: 'Exemplo ABEV3 (captura): LPA ~R$ 1,01 × 10,68x (-25%) = R$ 10,84 de entrada estimada (vs. preço ref. R$ 15,79).',
+                            mentorNote: '💡 Benjamin Graham: quanto maior a margem de segurança exigida, menor o risco de pagar caro por projeções otimistas.',
+                            liveDataFn: function (tk) {
+                                const m = getLiveMetrics(tk, 2);
+                                if (!m || !m.entryPrice) return null;
+                                return m.ticker + ' (Base 24m): P/L Entrada ' + m.entryPL.toFixed(2) + 'x → Estimado ' + fmtBrMoney(m.entryPrice);
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 5,
+                    title: '5. Analisando dividendos e eventos',
+                    screenLabel: 'Dividend Yield + Splits & Eventos',
+                    mentorTag: 'Ajustes Históricos B3',
+                    summary: 'Dividend Yield, histórico de dividendos, proventos, desdobramentos (splits), grupamentos (inplits) e cuidados históricos.',
+                    quote: 'Proventos compõem o retorno total, e eventos societários explicam saltos aparentes em séries não ajustadas.',
+                    steps: [
+                        {
+                            tab: 'detail',
+                            needsStock: true,
+                            preferredPeriod: 2,
+                            selector: '#kpiCardDY',
+                            title: 'Dividend Yield (TTM) e Proventos',
+                            desc: 'O Dividend Yield (DY) mostra quanto a empresa distribuiu em dividendos e JCP nos últimos 12 meses em proporção ao preço atual da ação.',
+                            rule: 'Dica: quando o preço cai com lucros estáveis, o DY tende a subir — reforçando a atratividade da margem de segurança.',
+                            mentorNote: '💡 John Neff somava o Dividend Yield à taxa de crescimento dos lucros para avaliar o retorno total potencial.',
+                            liveDataFn: function (tk) {
+                                const m = getLiveMetrics(tk, 2);
+                                if (!m || m.curDY === null || m.curDY === undefined) return null;
+                                return 'Dividend Yield atual (' + m.ticker + '): ' + m.curDY.toFixed(2) + '%';
+                            }
+                        },
+                        {
+                            tab: 'detail',
+                            needsStock: true,
+                            preferredPeriod: 2,
+                            selector: '#boxChartDY',
+                            title: 'Histórico de Dividendos e Proventos da B3',
+                            desc: 'Acompanhe o comportamento do DY no gráfico histórico. Logo abaixo, na gaveta "Histórico de Proventos, Splits & Grupamentos", você confere cada pagamento oficial da B3 (Data-Com e valor).',
+                            rule: 'Cuidado: dividendos extraordinários pontuais podem inflar o DY de 12M temporariamente — observe sempre a média.',
+                            mentorNote: '💡 Verifique consistência de pagamentos antes de assumir que um DY elevado se repetirá todos os anos.'
+                        },
+                        {
+                            tab: 'events',
+                            selector: '#eventsLegendBar',
+                            title: 'Desdobramentos (Splits), Grupamentos (Inplits) e Comparações',
+                            desc: 'Um Split (desdobramento) multiplica a quantidade de ações e divide preço e LPA; um Inplit (grupamento) consolida ações e multiplica preço e LPA. Comparações históricas só são válidas com ajuste retroativo oficial.',
+                            rule: 'Cuidado histórico: nunca compare preços ou LPA antigos sem verificar se houve Split, Inplit ou Bonificação no período.',
+                            mentorNote: '💡 Nesta aba você audita todos os eventos societários oficiais da B3 que o sistema já ajusta nas séries históricas.'
+                        }
+                    ]
+                },
+                {
+                    id: 6,
+                    title: '6. Transformando dados em uma estratégia',
+                    screenLabel: 'Estratégia Completa + Simulador /ifr',
+                    mentorTag: 'Joel Greenblatt + Simulador /ifr',
+                    summary: 'Combinação P/L + ROE, entrada e saída (1,25x média), riscos, diversificação e prática ao vivo no fundo simulado /ifr.',
+                    quote: 'Disciplina de entrada, critério claro de saída, diversificação e reavaliação constante transformam indicadores em método.',
+                    steps: [
+                        {
+                            tab: 'detail',
+                            needsStock: true,
+                            preferredPeriod: 2,
+                            selector: '#boxValuationGeneral',
+                            title: 'Critérios Completos de Entrada, Saída e Riscos',
+                            desc: 'Entrada: ROE > 15% + P/L <= Média 24m × 0,75. Saída: quando a ação retorna a prêmio elevado (P/L >= Média 24m × 1,25 — na captura da ABEV3: 17,80x ≈ R$ 17,98). Diversifique entre setores e reavalie sempre que os lucros ou fundamentos mudarem.',
+                            rule: 'Regra de saída: P/L de saída >= P/L médio de 24 meses × 1,25 | Reavaliar se fundamentos piorarem.',
+                            mentorNote: '💡 Joel Greenblatt (Fórmula Mágica): combinar rentabilidade alta + múltiplo baixo de forma disciplinada evita decisões emocionais.'
+                        },
+                        {
+                            tab: 'ifr',
+                            selector: '#ifrConciliacaoBar',
+                            title: 'Laboratório Vivo: O Simulador de Fundo (/ifr)',
+                            desc: 'A aba Entradas > IFR (/ifr) simula diariamente um fundo sistemático real (R$ 50.000 iniciais + aportes de R$ 500/mês) que utiliza exatamente o filtro fundamentalista de P/L abaixo da média de 2 anos combinado ao timing técnico IFR(21) < 30.',
+                            rule: 'Contabilidade auditada: NAV = Caixa + Valor de Mercado das Ações validado a cada pregão.',
+                            mentorNote: '💡 Veja na prática como regras sistemáticas eliminam achismos na execução diária de carteira.',
+                            liveDataFn: function () {
+                                const ifr = getIfrLiveSummary();
+                                if (!ifr.nav) return null;
+                                return 'Fundo /ifr ao vivo: NAV ' + fmtBrMoney(ifr.nav) + ' | Cota ' + fmtBrPct(ifr.rent, true) + ' | Gains: ' + ifr.gains;
+                            }
+                        },
+                        {
+                            tab: 'ifr',
+                            selector: '#ifrKpiGrid',
+                            title: 'Gestão de Caixa, Diversificação e Riscos na Prática',
+                            desc: 'Observe como o simulador controla caixa livre (D+0), capital alocado por posição, resultado líquido e taxa de acerto (Gains vs. Stops). Nenhuma metodologia dispensa controle de risco, diversificação e reserva de liquidez.',
+                            rule: 'Risco da metodologia: lucros passados podem cair ("value trap"); acompanhe balanços trimestrais na CVM.',
+                            mentorNote: '💡 Acompanhar resultados reais evita manter capital preso em empresas cujo fundamento se deteriorou.'
+                        },
+                        {
+                            tab: 'ifr',
+                            selector: '#ifrChartCard',
+                            title: 'Acompanhamento de Resultados e Próximos Passos',
+                            desc: 'Na curva patrimonial você acompanha cada compra, dividendo recebido, aporte e saída no lucro. Parabéns por concluir os 6 módulos! Visite a aba APRENDA A INVESTIR para revisar seu progresso ou conhecer os futuros recursos Premium.',
+                            rule: 'Tutorial concluído: agora você domina o fluxo completo do Heatmap à Estratégia + Simulador /ifr.',
+                            mentorNote: '💡 Na página inicial do tutorial você pode registrar interesse nos alertas, rankings automáticos e backtests do plano Premium.'
+                        }
+                    ]
+                }
+            ];
+
+            function syncProgressBadges() {
+                const doneCount = state.completedModules.length;
+                const total = MODULES.length;
+                const pct = Math.round((doneCount / total) * 100);
+
+                const navBadge = document.getElementById('badgeLearnProgress');
+                if (navBadge) navBadge.textContent = doneCount + '/' + total;
+
+                const countEl = document.getElementById('learnProgressCount');
+                if (countEl) countEl.textContent = doneCount + ' de ' + total + ' módulos (' + pct + '%)';
+
+                const fillEl = document.getElementById('learnProgressBarFill');
+                if (fillEl) fillEl.style.width = pct + '%';
+
+                const hintEl = document.getElementById('learnProgressHint');
+                if (hintEl) {
+                    if (doneCount === total) {
+                        hintEl.textContent = 'Parabéns! Você concluiu todos os 6 módulos da metodologia.';
+                    } else if (state.inProgressModule) {
+                        hintEl.textContent = 'Aula em andamento: Módulo ' + state.inProgressModule + '. Retome de onde parou.';
+                    } else if (doneCount > 0) {
+                        hintEl.textContent = 'Ótimo ritmo! Continue para o próximo módulo disponível.';
+                    } else {
+                        hintEl.textContent = 'Comece pelo Módulo 1 ou escolha qualquer aula abaixo.';
+                    }
+                }
+
+                const btnContinue = document.getElementById('btnLearnContinue');
+                if (btnContinue) {
+                    if (doneCount === total) {
+                        btnContinue.textContent = '↺ Revisar Curso Completo';
+                    } else if (state.inProgressModule) {
+                        btnContinue.textContent = '▶ Retomar Módulo ' + state.inProgressModule;
+                    } else {
+                        const nextMod = MODULES.find(m => !state.completedModules.includes(m.id)) || MODULES[0];
+                        btnContinue.textContent = (doneCount === 0 && !state.tutorialStarted) ? '▶ Iniciar Curso' : ('▶ Continuar Módulo ' + nextMod.id);
+                    }
+                }
+
+                const btnPrem = document.getElementById('btnLearnPremiumInterest');
+                if (btnPrem) {
+                    if (state.premiumInterested) {
+                        btnPrem.textContent = '✓ Interesse Registrado!';
+                        btnPrem.classList.add('registered');
+                    } else {
+                        btnPrem.textContent = '✨ Tenho Interesse no Premium';
+                        btnPrem.classList.remove('registered');
+                    }
+                }
+            }
+
+            function renderLearnHome() {
+                syncProgressBadges();
+
+                const grid = document.getElementById('learnModulesGrid');
+                if (grid) {
+                    grid.innerHTML = MODULES.map(mod => {
+                        const isDone = state.completedModules.includes(mod.id);
+                        const isProg = !isDone && state.inProgressModule === mod.id;
+                        const statusClass = isDone ? 'done' : (isProg ? 'progress' : '');
+                        const statusText = isDone ? 'Concluído ✓' : (isProg ? 'Em andamento ⏳' : 'Não iniciado');
+                        const btnLabel = isDone ? 'Revisar Aula' : (isProg ? 'Retomar ▶' : 'Iniciar Aula ▶');
+
+                        return '<div class="learn-mod-card ' + statusClass + '">' +
+                            '<div>' +
+                                '<div class="learn-mod-top">' +
+                                    '<span class="learn-mod-screen">' + escHtml(mod.screenLabel) + '</span>' +
+                                    '<span class="learn-status-pill ' + statusClass + '">' + statusText + '</span>' +
+                                '</div>' +
+                                '<h4 class="learn-mod-title">' + escHtml(mod.title) + '</h4>' +
+                                '<p class="learn-mod-summary">' + escHtml(mod.summary) + '</p>' +
+                                '<div class="learn-mod-quote">“' + escHtml(mod.quote) + '”</div>' +
+                            '</div>' +
+                            '<div class="learn-mod-footer">' +
+                                '<span>🎓 ' + escHtml(mod.mentorTag) + ' · ' + mod.steps.length + ' passos</span>' +
+                                '<button type="button" class="learn-btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="TutorialModule.startModule(' + mod.id + ')">' + btnLabel + '</button>' +
+                            '</div>' +
+                        '</div>';
+                    }).join('');
+                }
+
+                // Preencher dados reais ao vivo da ABEV3 na comparação do estudo de caso
+                const liveStrip = document.getElementById('learnCaseLiveAbcv3');
+                if (liveStrip) {
+                    const abev = getLiveMetrics('ABEV3', 2);
+                    if (abev && abev.curPrice && abev.curPL) {
+                        const roeOk = abev.curROE !== null && abev.curROE > 15;
+                        const plOk = abev.entryPL !== null && abev.curPL <= abev.entryPL;
+                        liveStrip.innerHTML =
+                            '<strong>📡 Dados Atuais no Sistema (ABEV3 · 24 meses em ' + escHtml(abev.date) + '):</strong> ' +
+                            'Preço <strong>' + fmtBrMoney(abev.curPrice) + '</strong> · ' +
+                            'P/L <strong>' + abev.curPL.toFixed(2) + 'x</strong> · ' +
+                            'Média 24m <strong>' + (abev.meanPL ? abev.meanPL.toFixed(2) + 'x' : 'N/D') + '</strong> · ' +
+                            'ROE <strong>' + (abev.curROE !== null ? abev.curROE.toFixed(1) + '%' : 'N/D') + '</strong> · ' +
+                            'Entrada (-25%): <strong>' + (abev.entryPrice ? fmtBrMoney(abev.entryPrice) : 'N/D') + '</strong> ' +
+                            '(' + (roeOk ? '✅ ROE > 15%' : '⚠️ ROE <= 15%') + ' · ' + (plOk ? '✅ No desconto' : '⏳ Acima da entrada') + ')';
+                        liveStrip.style.display = 'block';
+                    } else {
+                        liveStrip.style.display = 'none';
+                    }
+                }
+
+                // Preencher dados reais do Simulador /ifr
+                const ifr = getIfrLiveSummary();
+                const ifrNavEl = document.getElementById('learnIfrNav');
+                const ifrRentEl = document.getElementById('learnIfrRent');
+                const ifrTrEl = document.getElementById('learnIfrTrades');
+                if (ifrNavEl) ifrNavEl.textContent = ifr.nav ? fmtBrMoney(ifr.nav) : 'R$ 50.000,00+';
+                if (ifrRentEl) {
+                    ifrRentEl.textContent = (ifr.rent !== null && ifr.rent !== undefined) ? fmtBrPct(ifr.rent, true) : '--%';
+                    ifrRentEl.style.color = (ifr.rent || 0) >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+                }
+                if (ifrTrEl) ifrTrEl.textContent = ifr.total ? (ifr.total + ' (' + ifr.gains + ' Gains)') : '--';
+            }
+
+            function ensureContextForStep(mod, step) {
+                const targetTab = step.tab || 'detail';
+                if (currentAppTab !== targetTab) {
+                    switchAppTab(targetTab);
+                }
+                if (step.needsStock) {
+                    if (['IBOV', 'IFNC', 'SEGUROS'].includes(currentTicker)) {
+                        const fallbackTk = DATA['ABEV3'] ? 'ABEV3' : (DATA['ITUB4'] ? 'ITUB4' : Object.keys(DATA)[0]);
+                        if (fallbackTk && typeof changeTicker === 'function') {
+                            changeTicker(fallbackTk);
+                        }
+                    }
+                }
+                if (step.preferredPeriod && typeof currentYears !== 'undefined' && currentYears !== step.preferredPeriod) {
+                    if (typeof setPeriod === 'function') {
+                        setPeriod(step.preferredPeriod, null);
+                    }
+                }
+                if (targetTab === 'heatmap' && step.selector && step.selector.includes('data-heatmap-ticker')) {
+                    const exists = document.querySelector(step.selector);
+                    if (!exists && typeof filterHeatmapSector === 'function') {
+                        heatmapSelectedSector = 'ALL';
+                        heatmapSearchQuery = '';
+                        heatmapSelectedPL = 'ALL';
+                        const secSel = document.getElementById('heatmapSectorFilter');
+                        const inp = document.getElementById('heatmapFilterInput');
+                        if (secSel) secSel.value = 'ALL';
+                        if (inp) inp.value = '';
+                        renderHeatmap();
+                    }
+                }
+            }
+
+            function updateSpotlightGeometry() {
+                if (!tourActive) return;
+                const pop = document.getElementById('tutorialPopover');
+                const ring = document.getElementById('tutorialSpotlightRing');
+                const backdrop = document.getElementById('tutorialBackdrop');
+                const fbNote = document.getElementById('tutFallbackNote');
+                if (!pop || !ring || !backdrop) return;
+
+                const isMobile = window.innerWidth <= 768;
+                let rect = null;
+                if (currentTargetEl && document.body.contains(currentTargetEl)) {
+                    const r = currentTargetEl.getBoundingClientRect();
+                    if (r.width > 0 && r.height > 0) {
+                        rect = r;
+                    }
+                }
+
+                if (rect) {
+                    const pad = 6;
+                    const top = Math.max(4, rect.top - pad);
+                    const left = Math.max(4, rect.left - pad);
+                    const width = Math.min(window.innerWidth - 8, rect.width + pad * 2);
+                    const height = Math.min(window.innerHeight - 8, rect.height + pad * 2);
+
+                    ring.style.display = 'block';
+                    ring.style.top = top + 'px';
+                    ring.style.left = left + 'px';
+                    ring.style.width = width + 'px';
+                    ring.style.height = height + 'px';
+                    backdrop.style.display = 'none';
+                    if (fbNote) fbNote.style.display = 'none';
+
+                    if (!isMobile) {
+                        pop.style.transform = '';
+                        const popRect = pop.getBoundingClientRect();
+                        const popW = popRect.width || 430;
+                        const popH = popRect.height || 300;
+                        const margin = 14;
+
+                        let pTop = rect.bottom + margin;
+                        let pLeft = rect.left;
+
+                        if (pTop + popH > window.innerHeight - 12) {
+                            const aboveTop = rect.top - popH - margin;
+                            if (aboveTop >= 12) {
+                                pTop = aboveTop;
+                            } else {
+                                pTop = Math.max(12, Math.min(window.innerHeight - popH - 12, rect.top));
+                                const rightLeft = rect.right + margin;
+                                const leftLeft = rect.left - popW - margin;
+                                if (rightLeft + popW <= window.innerWidth - 12) {
+                                    pLeft = rightLeft;
+                                } else if (leftLeft >= 12) {
+                                    pLeft = leftLeft;
+                                }
+                            }
+                        }
+
+                        pLeft = Math.max(12, Math.min(window.innerWidth - popW - 12, pLeft));
+                        pTop = Math.max(12, Math.min(window.innerHeight - popH - 12, pTop));
+                        pop.style.top = pTop + 'px';
+                        pop.style.left = pLeft + 'px';
+                        pop.style.right = 'auto';
+                        pop.style.bottom = 'auto';
+                    } else {
+                        pop.style.top = '';
+                        pop.style.left = '';
+                        pop.style.right = '';
+                        pop.style.bottom = '';
+                        pop.style.transform = '';
+                    }
+                } else {
+                    ring.style.display = 'none';
+                    backdrop.style.display = 'block';
+                    if (fbNote) {
+                        fbNote.textContent = 'ℹ️ Elemento não disponível na visualização atual — exibindo explicação alternativa para que você possa continuar.';
+                        fbNote.style.display = 'block';
+                    }
+                    if (!isMobile) {
+                        pop.style.top = '50%';
+                        pop.style.left = '50%';
+                        pop.style.right = 'auto';
+                        pop.style.bottom = 'auto';
+                        pop.style.transform = 'translate(-50%, -50%)';
+                    }
+                }
+            }
+
+            function renderCurrentStep() {
+                const mod = MODULES.find(m => m.id === activeModuleId);
+                if (!mod) return closeTour();
+                const step = mod.steps[activeStepIdx];
+                if (!step) return closeTour();
+
+                state.lastModuleId = activeModuleId;
+                state.lastStepIdx = activeStepIdx;
+                if (!state.completedModules.includes(activeModuleId)) {
+                    state.inProgressModule = activeModuleId;
+                }
+                saveState();
+                syncProgressBadges();
+
+                ensureContextForStep(mod, step);
+
+                const pop = document.getElementById('tutorialPopover');
+                if (!pop) return;
+
+                document.getElementById('tutModuleBadge').textContent = 'Módulo ' + mod.id + ' de ' + MODULES.length;
+                document.getElementById('tutStepCounter').textContent = 'Passo ' + (activeStepIdx + 1) + ' de ' + mod.steps.length;
+                document.getElementById('tutProgressBarFill').style.width = Math.round(((activeStepIdx + 1) / mod.steps.length) * 100) + '%';
+                document.getElementById('tutStepTitle').textContent = step.title;
+                document.getElementById('tutStepDesc').textContent = step.desc;
+
+                const ruleBox = document.getElementById('tutRuleBox');
+                if (ruleBox) {
+                    if (step.rule) {
+                        ruleBox.textContent = step.rule;
+                        ruleBox.style.display = 'block';
+                    } else {
+                        ruleBox.style.display = 'none';
+                    }
+                }
+
+                const mentorBox = document.getElementById('tutMentorBox');
+                if (mentorBox) {
+                    if (step.mentorNote) {
+                        mentorBox.textContent = step.mentorNote;
+                        mentorBox.style.display = 'block';
+                    } else {
+                        mentorBox.style.display = 'none';
+                    }
+                }
+
+                const liveBox = document.getElementById('tutLiveDataBox');
+                if (liveBox) {
+                    const liveTxt = typeof step.liveDataFn === 'function' ? step.liveDataFn(currentTicker) : null;
+                    if (liveTxt) {
+                        liveBox.textContent = '📡 ' + liveTxt;
+                        liveBox.style.display = 'block';
+                    } else {
+                        liveBox.style.display = 'none';
+                    }
+                }
+
+                const dotsEl = document.getElementById('tutDots');
+                if (dotsEl) {
+                    dotsEl.innerHTML = mod.steps.map((_, idx) =>
+                        '<span class="tut-dot ' + (idx === activeStepIdx ? 'active' : '') + '"></span>'
+                    ).join('');
+                }
+
+                const btnPrev = document.getElementById('btnTutPrev');
+                if (btnPrev) btnPrev.disabled = (activeModuleId === 1 && activeStepIdx === 0);
+
+                const btnNext = document.getElementById('btnTutNext');
+                if (btnNext) {
+                    const isLastStep = activeStepIdx === mod.steps.length - 1;
+                    btnNext.textContent = isLastStep
+                        ? (mod.id === MODULES.length ? 'Concluir Tutorial ✓' : 'Concluir Módulo →')
+                        : 'Próximo →';
+                }
+
+                pop.style.display = 'flex';
+
+                if (renderTimer) clearTimeout(renderTimer);
+                renderTimer = setTimeout(() => {
+                    currentTargetEl = step.selector ? document.querySelector(step.selector) : null;
+                    if (currentTargetEl) {
+                        const r = currentTargetEl.getBoundingClientRect();
+                        if (r.width > 0 && r.height > 0) {
+                            currentTargetEl.scrollIntoView({
+                                behavior: 'smooth',
+                                block: window.innerWidth <= 768 ? 'start' : 'center',
+                                inline: 'nearest'
+                            });
+                        }
+                    }
+                    updateSpotlightGeometry();
+                    setTimeout(updateSpotlightGeometry, 280);
+                }, 140);
+            }
+
+            function startModule(moduleId, stepIdx) {
+                const mod = MODULES.find(m => m.id === moduleId) || MODULES[0];
+                if (!state.tutorialStarted) {
+                    state.tutorialStarted = true;
+                    track('tutorial_started', { module: mod.id });
+                }
+                tourActive = true;
+                activeModuleId = mod.id;
+                activeStepIdx = Number.isInteger(stepIdx) ? Math.max(0, Math.min(stepIdx, mod.steps.length - 1)) : 0;
+                track('module_started', { module: mod.id, title: mod.title });
+                renderCurrentStep();
+            }
+
+            function continueCourse() {
+                if (state.inProgressModule) {
+                    const resumeIdx = (state.lastModuleId === state.inProgressModule) ? state.lastStepIdx : 0;
+                    startModule(state.inProgressModule, resumeIdx);
+                    return;
+                }
+                const nextMod = MODULES.find(m => !state.completedModules.includes(m.id));
+                if (nextMod) {
+                    startModule(nextMod.id, 0);
+                } else {
+                    startModule(1, 0);
+                }
+            }
+
+            function nextStep() {
+                const mod = MODULES.find(m => m.id === activeModuleId);
+                if (!mod) return closeTour();
+                if (activeStepIdx < mod.steps.length - 1) {
+                    activeStepIdx += 1;
+                    renderCurrentStep();
+                } else {
+                    if (!state.completedModules.includes(mod.id)) {
+                        state.completedModules.push(mod.id);
+                    }
+                    if (state.inProgressModule === mod.id) state.inProgressModule = null;
+                    saveState();
+                    track('module_completed', { module: mod.id, title: mod.title });
+
+                    if (mod.id < MODULES.length) {
+                        activeModuleId = mod.id + 1;
+                        activeStepIdx = 0;
+                        track('module_started', { module: activeModuleId });
+                        renderCurrentStep();
+                    } else {
+                        track('tutorial_completed', { total_modules: MODULES.length });
+                        closeTour();
+                        switchAppTab('learn');
+                    }
+                }
+            }
+
+            function prevStep() {
+                if (activeStepIdx > 0) {
+                    activeStepIdx -= 1;
+                    renderCurrentStep();
+                } else if (activeModuleId > 1) {
+                    activeModuleId -= 1;
+                    const prevMod = MODULES.find(m => m.id === activeModuleId);
+                    activeStepIdx = prevMod ? prevMod.steps.length - 1 : 0;
+                    renderCurrentStep();
+                }
+            }
+
+            function skipModule() {
+                const mod = MODULES.find(m => m.id === activeModuleId);
+                if (mod && mod.id < MODULES.length) {
+                    activeModuleId = mod.id + 1;
+                    activeStepIdx = 0;
+                    track('module_started', { module: activeModuleId, skipped_from: mod.id });
+                    renderCurrentStep();
+                } else {
+                    closeTour();
+                }
+            }
+
+            function closeTour() {
+                tourActive = false;
+                currentTargetEl = null;
+                if (renderTimer) clearTimeout(renderTimer);
+                const pop = document.getElementById('tutorialPopover');
+                const ring = document.getElementById('tutorialSpotlightRing');
+                const backdrop = document.getElementById('tutorialBackdrop');
+                if (pop) pop.style.display = 'none';
+                if (ring) ring.style.display = 'none';
+                if (backdrop) backdrop.style.display = 'none';
+                if (currentAppTab === 'learn') {
+                    renderLearnHome();
+                } else {
+                    syncProgressBadges();
+                }
+            }
+
+            function resetProgress() {
+                state.completedModules = [];
+                state.inProgressModule = null;
+                state.lastModuleId = 1;
+                state.lastStepIdx = 0;
+                state.tutorialStarted = false;
+                saveState();
+                renderLearnHome();
+            }
+
+            function startContextualGuide() {
+                if (currentAppTab === 'heatmap') {
+                    startModule(1, 0);
+                } else if (currentAppTab === 'detail') {
+                    startModule(2, 0);
+                } else if (currentAppTab === 'events') {
+                    startModule(5, 2);
+                } else if (currentAppTab === 'ifr') {
+                    startModule(6, 1);
+                } else {
+                    continueCourse();
+                }
+            }
+
+            function openCaseStudyDetail() {
+                switchAppTab('detail');
+                if (DATA['ABEV3'] && typeof changeTicker === 'function') {
+                    changeTicker('ABEV3');
+                }
+                if (typeof setPeriod === 'function') {
+                    setPeriod(2, null);
+                }
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function registerPremiumInterest() {
+                state.premiumInterested = true;
+                saveState();
+                track('premium_interest_clicked', { source: currentAppTab });
+                syncProgressBadges();
+            }
+
+            function setupValuationObserver() {
+                if (typeof IntersectionObserver === 'undefined') return;
+                const valBox = document.getElementById('boxValuationGeneral');
+                if (!valBox) return;
+                const obs = new IntersectionObserver(entries => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && currentAppTab === 'detail' && !valuationTrackedThisView) {
+                            valuationTrackedThisView = true;
+                            track('user_visited_valuation', { ticker: currentTicker });
+                        }
+                    });
+                }, { threshold: 0.35 });
+                obs.observe(valBox);
+            }
+
+            return {
+                init: function () {
+                    loadState();
+                    syncProgressBadges();
+                    setupValuationObserver();
+                    window.addEventListener('resize', updateSpotlightGeometry);
+                    window.addEventListener('scroll', updateSpotlightGeometry, true);
+                    document.addEventListener('keydown', function (e) {
+                        if (!tourActive) return;
+                        const tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
+                        if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+                        if (e.key === 'Escape') closeTour();
+                        else if (e.key === 'ArrowRight') nextStep();
+                        else if (e.key === 'ArrowLeft') prevStep();
+                    });
+                },
+                onOpenLearnTab: function () {
+                    renderLearnHome();
+                },
+                startModule: startModule,
+                continueCourse: continueCourse,
+                nextStep: nextStep,
+                prevStep: prevStep,
+                skipModule: skipModule,
+                closeTour: closeTour,
+                resetProgress: resetProgress,
+                startContextualGuide: startContextualGuide,
+                openCaseStudyDetail: openCaseStudyDetail,
+                registerPremiumInterest: registerPremiumInterest,
+                track: track
+            };
+        })();
+
+        // Inicializar IfrModule, TutorialModule e rota inicial da URL no carregamento
         document.addEventListener('DOMContentLoaded', () => {
             if (typeof IfrModule !== 'undefined') IfrModule.init();
+            if (typeof TutorialModule !== 'undefined') TutorialModule.init();
             const initialTab = resolveTabFromUrl();
             if (initialTab !== 'detail') {
                 switchAppTab(initialTab, false);
