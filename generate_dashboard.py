@@ -12718,8 +12718,8 @@ body.theme-light .event-tile-date {
                             tab: 'heatmap',
                             selector: '[data-heatmap-ticker="ABEV3"], .heatmap-stock-tile',
                             title: 'Identificando o Ticker e Abrindo Detalhes',
-                            desc: 'Cada cartão exibe o ticker, a cotação atual, o P/L (TTM) e a variação frente à média histórica. Clicar em qualquer ação abre imediatamente sua Visão Detalhada.',
-                            rule: 'Próximo passo: vamos analisar um ativo na Visão Detalhada para investigar seu histórico de P/L.',
+                            desc: 'Cada cartão exibe o ticker, a cotação atual, o P/L (TTM) e, logo ao lado, o desconto ou prêmio percentual (▼ -%) em relação à média do período selecionado. Na triagem, busque ações com P/L baixo combinado a um percentual negativo — quanto mais negativo, maior o desconto frente ao próprio histórico (especialmente a partir de -25%). Clicar em qualquer ação abre sua Visão Detalhada.',
+                            rule: 'O que buscar no card: P/L baixo + percentual negativo (▼) vs. a média do período selecionado — quanto mais negativo, maior o desconto histórico.',
                             mentorNote: '💡 Estudo de caso: a ABEV3 será usada como referência didática nos próximos módulos — você também pode testar qualquer ação real.'
                         }
                     ]
