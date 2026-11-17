@@ -25,10 +25,15 @@ import os
 import json
 import math
 import logging
-from datetime import datetime, date, timedelta
+import argparse
+import urllib.request
+from datetime import datetime, date, timedelta, timezone
 import psycopg2
 from psycopg2.extras import execute_batch
 from dotenv import load_dotenv
+
+BRT_TZ = timezone(timedelta(hours=-3))
+GITHUB_REPO = "Leo-Sba/Atualizador"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 load_dotenv()
@@ -473,10 +478,372 @@ def audit_accounting_facts(cur):
 
     return anomalies
 
+def _parse_iso_to_brt(iso_str):
+    if not iso_str:
+        return None
+    try:
+        dt = datetime.fromisoformat(str(iso_str).replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(BRT_TZ)
+    except Exception:
+        return None
+
+
+def _fmt_duration(start_iso, end_iso):
+    s_dt = _parse_iso_to_brt(start_iso)
+    e_dt = _parse_iso_to_brt(end_iso)
+    if not s_dt or not e_dt:
+        return "--"
+    secs = max(0, int((e_dt - s_dt).total_seconds()))
+    if secs < 60:
+        return f"{secs}s"
+    mins, rem = divmod(secs, 60)
+    if mins < 60:
+        return f"{mins}m {rem:02d}s"
+    hrs, mins = divmod(mins, 60)
+    return f"{hrs}h {mins:02d}m"
+
+
+def _normalize_status(status, conclusion):
+    if status in ("in_progress", "queued", "waiting", "pending"):
+        return "running"
+    if conclusion == "success":
+        return "success"
+    if conclusion in ("failure", "timed_out", "action_required"):
+        return "failure"
+    if conclusion in ("cancelled", "skipped"):
+        return "cancelled"
+    return "unknown"
+
+
+def _gh_fetch_json(url, timeout=12):
+    headers = {
+        "User-Agent": "PrecoLucro-Audit/1.0",
+        "Accept": "application/vnd.github+json",
+    }
+    gh_tok = os.getenv("GITHUB_TOKEN")
+    if gh_tok:
+        headers["Authorization"] = f"Bearer {gh_tok}"
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return json.loads(resp.read().decode("utf-8"))
+
+
+def collect_updaters_execution_history():
+    """
+    Coleta do GitHub Actions (Leo-Sba/Atualizador) o histórico detalhado por data/hora
+    de todos os atualizadores e dos 6 estágios do Pipeline Diário, além de consolidar
+    o histórico dos últimos 5 dias de execução de cada item.
+    """
+    logging.info("Coletando histórico de execuções dos atualizadores (GitHub Actions)...")
+
+    UPDATER_DEFS = [
+        {
+            "id": "daily_pipeline",
+            "name": "Pipeline Diário em Cascata B3 & CVM (Geral)",
+            "category": "Pipeline Diário",
+            "schedule": "Seg–Sex às 19:30 BRT",
+            "kind": "workflow",
+            "path": ".github/workflows/daily_update.yml",
+        },
+        {
+            "id": "stage_1",
+            "name": "↳ Estágio 1: Ingestão de Mercado (Preços & Proventos)",
+            "category": "Pipeline Diário",
+            "schedule": "Seg–Sex • Cascata 1/6",
+            "kind": "job",
+            "match": ["1. ingestao"],
+        },
+        {
+            "id": "stage_2",
+            "name": "↳ Estágio 2: Motor Fundamentalista (P/L, P/VP, ROE, DY)",
+            "category": "Pipeline Diário",
+            "schedule": "Seg–Sex • Cascata 2/6",
+            "kind": "job",
+            "match": ["2. calculo"],
+        },
+        {
+            "id": "stage_3",
+            "name": "↳ Estágio 3: Consolidação de Índices (IBOV, IFNC & Calendário)",
+            "category": "Pipeline Diário",
+            "schedule": "Seg–Sex • Cascata 3/6",
+            "kind": "job",
+            "match": ["3. consolidacao"],
+        },
+        {
+            "id": "stage_4",
+            "name": "↳ Estágio 4: Auto-Cura & Auditoria Contínua de Anomalias",
+            "category": "Auditoria",
+            "schedule": "Seg–Sex • Cascata 4/6",
+            "kind": "job",
+            "match": ["4. auto-cura"],
+            "fallback_path": ".github/workflows/audit_anomalies.yml",
+        },
+        {
+            "id": "stage_5",
+            "name": "↳ Estágio 5: Macro BCB/Focus & Curva Tesouro Transparente",
+            "category": "Macro & Juros",
+            "schedule": "Seg–Sex • Cascata 5/6",
+            "kind": "job",
+            "match": ["5. macro"],
+        },
+        {
+            "id": "stage_6",
+            "name": "↳ Estágio 6: Compilação do Dashboard & Deploy Vercel",
+            "category": "Deploy Web",
+            "schedule": "Seg–Sex • Cascata 6/6",
+            "kind": "job",
+            "match": ["compilacao do dashboard"],
+        },
+        {
+            "id": "ifr_tracker",
+            "name": "Rastreador & Máquina de Estados (Entradas > IFR)",
+            "category": "Estratégia IFR",
+            "schedule": "Seg–Sex às 18:30 BRT",
+            "kind": "workflow",
+            "path": ".github/workflows/rastreador-ifr.yml",
+        },
+        {
+            "id": "macro_intraday",
+            "name": "Macro & Curva Intradiária (BCB / Focus / Tesouro)",
+            "category": "Macro & Juros",
+            "schedule": "Seg–Sex (10:23, 13:23, 16:23, 18:45)",
+            "kind": "workflow",
+            "path": ".github/workflows/macro_intraday.yml",
+        },
+        {
+            "id": "fiscal_03am",
+            "name": "Atualização Fiscal 03h AM (RTN Tesouro & Dívida/PIB)",
+            "category": "Macro & Juros",
+            "schedule": "Diário às 03:00 BRT",
+            "kind": "workflow",
+            "path": ".github/workflows/fiscal_03am.yml",
+        },
+        {
+            "id": "bloqueios_inplit",
+            "name": "Banco Anti-Grupamento / Inplit (IFR → Firestore)",
+            "category": "Estratégia IFR",
+            "schedule": "Sábado às 15:00 BRT",
+            "kind": "workflow",
+            "path": ".github/workflows/bloqueios-inplit-ifr.yml",
+        },
+        {
+            "id": "weekly_splits",
+            "name": "Manutenção e Ajuste Incremental de Splits / Inplits (B3)",
+            "category": "Manutenção B3",
+            "schedule": "Domingo às 08:00 BRT",
+            "kind": "workflow",
+            "path": ".github/workflows/weekly_splits.yml",
+        },
+    ]
+
+    runs_url = f"https://api.github.com/repos/{GITHUB_REPO}/actions/runs?per_page=100"
+    runs_data = _gh_fetch_json(runs_url)
+    runs = runs_data.get("workflow_runs", [])
+
+    # Buscar os jobs das últimas 6 execuções do Pipeline Diário
+    daily_runs = [r for r in runs if r.get("path") == ".github/workflows/daily_update.yml"][:6]
+    daily_jobs_by_run = {}
+    for dr in daily_runs:
+        try:
+            jdata = _gh_fetch_json(dr["jobs_url"], timeout=10)
+            daily_jobs_by_run[dr["id"]] = jdata.get("jobs", [])
+        except Exception as je:
+            logging.warning(f"Falha ao buscar jobs da execução {dr.get('id')}: {je}")
+
+    workflow_runs_by_path = {}
+    for r in runs:
+        p = r.get("path") or ""
+        workflow_runs_by_path.setdefault(p, []).append(r)
+
+    def _build_entry(dt_brt, status_norm, start_iso, end_iso, trigger, html_url, note=""):
+        return {
+            "sort_ts": dt_brt.timestamp() if dt_brt else 0,
+            "day_key": dt_brt.strftime("%Y-%m-%d") if dt_brt else "",
+            "day_short": dt_brt.strftime("%d/%m") if dt_brt else "--/--",
+            "executed_at": dt_brt.strftime("%d/%m/%Y às %H:%M:%S") if dt_brt else "--",
+            "duration": _fmt_duration(start_iso, end_iso),
+            "status": status_norm,
+            "trigger": trigger,
+            "html_url": html_url,
+            "note": note,
+        }
+
+    def _collect_items_for_def(udef):
+        entries = []
+        if udef["kind"] == "workflow":
+            for r in workflow_runs_by_path.get(udef["path"], []):
+                dt_brt = _parse_iso_to_brt(r.get("created_at"))
+                st = _normalize_status(r.get("status"), r.get("conclusion"))
+                entries.append(
+                    _build_entry(
+                        dt_brt,
+                        st,
+                        r.get("run_started_at") or r.get("created_at"),
+                        r.get("updated_at"),
+                        r.get("event", "schedule"),
+                        r.get("html_url", ""),
+                        r.get("name", ""),
+                    )
+                )
+        else:
+            matches = udef.get("match", [])
+            for dr in daily_runs:
+                for job in daily_jobs_by_run.get(dr["id"], []):
+                    jname = (job.get("name") or "").lower()
+                    if any(m in jname for m in matches):
+                        s_iso = job.get("started_at") or dr.get("created_at")
+                        dt_brt = _parse_iso_to_brt(s_iso)
+                        st = _normalize_status(job.get("status"), job.get("conclusion"))
+                        entries.append(
+                            _build_entry(
+                                dt_brt,
+                                st,
+                                s_iso,
+                                job.get("completed_at") or dr.get("updated_at"),
+                                dr.get("event", "schedule"),
+                                job.get("html_url") or dr.get("html_url", ""),
+                                job.get("name", ""),
+                            )
+                        )
+            fb_path = udef.get("fallback_path")
+            if fb_path:
+                for r in workflow_runs_by_path.get(fb_path, []):
+                    dt_brt = _parse_iso_to_brt(r.get("created_at"))
+                    st = _normalize_status(r.get("status"), r.get("conclusion"))
+                    entries.append(
+                        _build_entry(
+                            dt_brt,
+                            st,
+                            r.get("run_started_at") or r.get("created_at"),
+                            r.get("updated_at"),
+                            r.get("event", "workflow_dispatch"),
+                            r.get("html_url", ""),
+                            r.get("name", ""),
+                        )
+                    )
+        entries.sort(key=lambda x: x["sort_ts"], reverse=True)
+        return entries
+
+    updaters_status = []
+    for udef in UPDATER_DEFS:
+        entries = _collect_items_for_def(udef)
+        latest = entries[0] if entries else None
+
+        # Agrupar pelos últimos 5 dias de execução (mantendo o resultado mais recente de cada dia)
+        by_day = {}
+        day_counts = {}
+        for e in entries:
+            dk = e["day_key"]
+            if not dk:
+                continue
+            day_counts[dk] = day_counts.get(dk, 0) + 1
+            if dk not in by_day:
+                by_day[dk] = e
+
+        recent_days_desc = sorted(by_day.keys(), reverse=True)[:5]
+        recent_days_asc = list(reversed(recent_days_desc))
+        history_5d = []
+        # Preencher à esquerda caso tenha menos de 5 dias registrados ainda
+        for _ in range(5 - len(recent_days_asc)):
+            history_5d.append({
+                "date": "--/--",
+                "status": "empty",
+                "detail": "Sem execução registrada neste intervalo",
+            })
+        for dk in recent_days_asc:
+            item = by_day[dk]
+            cnt = day_counts[dk]
+            st_lbl = {"success": "Sucesso", "failure": "Falha", "running": "Em andamento", "cancelled": "Cancelado"}.get(item["status"], item["status"])
+            extra = f" • {cnt} execuções no dia" if cnt > 1 else ""
+            history_5d.append({
+                "date": item["day_short"],
+                "status": item["status"],
+                "detail": f"{item['executed_at']} • {st_lbl} ({item['duration']}){extra}",
+            })
+
+        updaters_status.append({
+            "id": udef["id"],
+            "name": udef["name"],
+            "category": udef["category"],
+            "schedule": udef["schedule"],
+            "last_run_at": latest["executed_at"] if latest else "Aguardando 1ª execução",
+            "duration": latest["duration"] if latest else "--",
+            "status": latest["status"] if latest else "empty",
+            "run_url": latest["html_url"] if latest else f"https://github.com/{GITHUB_REPO}/actions",
+            "history_5d": history_5d,
+        })
+
+    # Listagem cronológica completa (todos os workflows + estágios individuais do pipeline)
+    execution_log = []
+    WF_DISPLAY = {
+        ".github/workflows/daily_update.yml": ("Pipeline Diário B3 & CVM (Geral)", "Pipeline Diário"),
+        ".github/workflows/rastreador-ifr.yml": ("Rastreador & Máquina de Estados (IFR)", "Estratégia IFR"),
+        ".github/workflows/macro_intraday.yml": ("Macro & Curva Intradiária (BCB/Tesouro)", "Macro & Juros"),
+        ".github/workflows/fiscal_03am.yml": ("Atualização Fiscal 03h AM (RTN & Dívida/PIB)", "Macro & Juros"),
+        ".github/workflows/bloqueios-inplit-ifr.yml": ("Banco Anti-Inplit (IFR → Firestore)", "Estratégia IFR"),
+        ".github/workflows/weekly_splits.yml": ("Ajuste Incremental de Splits / Inplits", "Manutenção B3"),
+        ".github/workflows/audit_anomalies.yml": ("Auditoria & Auto-Cura Manual", "Auditoria"),
+        ".github/workflows/test_vercel_deploy.yml": ("Teste de Deploy Vercel", "Deploy Web"),
+    }
+
+    for r in runs[:55]:
+        p = r.get("path") or ""
+        disp_name, cat = WF_DISPLAY.get(p, (r.get("name") or "Workflow", "Outros"))
+        dt_brt = _parse_iso_to_brt(r.get("created_at"))
+        st = _normalize_status(r.get("status"), r.get("conclusion"))
+        execution_log.append({
+            "sort_ts": dt_brt.timestamp() if dt_brt else 0,
+            "executed_at": dt_brt.strftime("%d/%m/%Y às %H:%M:%S") if dt_brt else "--",
+            "updater_name": disp_name,
+            "category": cat,
+            "trigger": "Agendado (Cron)" if r.get("event") == "schedule" else "Manual / Dispatch",
+            "duration": _fmt_duration(r.get("run_started_at") or r.get("created_at"), r.get("updated_at")),
+            "status": st,
+            "html_url": r.get("html_url", ""),
+        })
+
+    for dr in daily_runs[:4]:
+        for job in daily_jobs_by_run.get(dr["id"], []):
+            jname = job.get("name") or "Estágio Pipeline"
+            jlow = jname.lower()
+            cat = "Pipeline Diário"
+            if "auto-cura" in jlow or "auditoria" in jlow:
+                cat = "Auditoria"
+            elif "macro" in jlow:
+                cat = "Macro & Juros"
+            elif "compilacao" in jlow or "vercel" in jlow:
+                cat = "Deploy Web"
+            s_iso = job.get("started_at") or dr.get("created_at")
+            dt_brt = _parse_iso_to_brt(s_iso)
+            st = _normalize_status(job.get("status"), job.get("conclusion"))
+            execution_log.append({
+                "sort_ts": dt_brt.timestamp() if dt_brt else 0,
+                "executed_at": dt_brt.strftime("%d/%m/%Y às %H:%M:%S") if dt_brt else "--",
+                "updater_name": f"↳ Estágio {jname}",
+                "category": cat,
+                "trigger": "Cascata (Daily)",
+                "duration": _fmt_duration(s_iso, job.get("completed_at")),
+                "status": st,
+                "html_url": job.get("html_url") or dr.get("html_url", ""),
+            })
+
+    execution_log.sort(key=lambda x: x["sort_ts"], reverse=True)
+    for row in execution_log:
+        row.pop("sort_ts", None)
+
+    return {
+        "updaters_synced_at": datetime.now(BRT_TZ).strftime("%d/%m/%Y às %H:%M:%S"),
+        "updaters_status": updaters_status,
+        "execution_log": execution_log[:60],
+    }
+
+
 def run_anomaly_detection():
     logging.info("=" * 70)
     logging.info("INICIANDO SUBSISTEMA DE AUDITORIA E DETECÇÃO DE ANOMALIAS B3/CVM")
-    logging.info(f"Horário de execução: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+    logging.info(f"Horário de execução: {datetime.now(BRT_TZ).strftime('%d/%m/%Y %H:%M:%S')}")
     logging.info("=" * 70)
 
     conn = get_db_connection()
@@ -523,13 +890,32 @@ def run_anomaly_detection():
         conn.commit()
         logging.info("[OK] Tabela audit_anomaly_logs atualizada com sucesso no banco de dados!")
 
+        updaters_info = {}
+        try:
+            updaters_info = collect_updaters_execution_history()
+        except Exception as ue:
+            logging.warning(f"Aviso ao coletar histórico de atualizadores: {ue}")
+            if os.path.exists("anomalies_data.json"):
+                try:
+                    prev_data = json.load(open("anomalies_data.json", "r", encoding="utf-8"))
+                    updaters_info = {
+                        "updaters_synced_at": prev_data.get("updaters_synced_at"),
+                        "updaters_status": prev_data.get("updaters_status", []),
+                        "execution_log": prev_data.get("execution_log", []),
+                    }
+                except Exception:
+                    pass
+
         # Exportar arquivo leve local para o front-end estático
         export_payload = {
-            "executed_at": datetime.now().strftime("%d/%m/%Y às %H:%M"),
+            "executed_at": datetime.now(BRT_TZ).strftime("%d/%m/%Y às %H:%M"),
             "total_active": len(unique_anomalies),
             "critical_count": sum(1 for a in unique_anomalies if a["severity"] == "CRITICAL"),
             "warning_count": sum(1 for a in unique_anomalies if a["severity"] == "WARNING"),
-            "anomalies": unique_anomalies
+            "anomalies": unique_anomalies,
+            "updaters_synced_at": updaters_info.get("updaters_synced_at"),
+            "updaters_status": updaters_info.get("updaters_status", []),
+            "execution_log": updaters_info.get("execution_log", []),
         }
 
         with open("anomalies_data.json", "w", encoding="utf-8") as f:
@@ -544,5 +930,30 @@ def run_anomaly_detection():
         cur.close()
         conn.close()
 
+
+def refresh_updaters_in_json():
+    """Atualiza apenas os metadados de execução dos atualizadores no anomalies_data.json."""
+    existing = {"executed_at": datetime.now(BRT_TZ).strftime("%d/%m/%Y às %H:%M"), "total_active": 0, "critical_count": 0, "warning_count": 0, "anomalies": []}
+    if os.path.exists("anomalies_data.json"):
+        try:
+            with open("anomalies_data.json", "r", encoding="utf-8") as f:
+                existing = json.load(f)
+        except Exception:
+            pass
+    updaters_info = collect_updaters_execution_history()
+    existing["updaters_synced_at"] = updaters_info.get("updaters_synced_at")
+    existing["updaters_status"] = updaters_info.get("updaters_status", [])
+    existing["execution_log"] = updaters_info.get("execution_log", [])
+    with open("anomalies_data.json", "w", encoding="utf-8") as f:
+        json.dump(existing, f, ensure_ascii=False, indent=2)
+    logging.info("[OK] Histórico de atualizadores atualizado em anomalies_data.json!")
+
+
 if __name__ == "__main__":
-    run_anomaly_detection()
+    parser = argparse.ArgumentParser(description="Auditoria Contínua e Histórico de Atualizadores")
+    parser.add_argument("--updaters-only", action="store_true", help="Atualiza apenas status e histórico dos atualizadores em anomalies_data.json")
+    args = parser.parse_args()
+    if args.updaters_only:
+        refresh_updaters_in_json()
+    else:
+        run_anomaly_detection()

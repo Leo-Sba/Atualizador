@@ -521,6 +521,327 @@
             box-shadow: 0 0 8px rgba(0, 230, 118, 0.6);
             animation: pulseDot 2s infinite ease-in-out;
         }
+
+        /* Sync Status & Refresh Controls */
+        .sync-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 11.5px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--badge-ok-bg);
+            border: 1px solid var(--badge-ok-border);
+            color: var(--badge-ok-text);
+            white-space: nowrap;
+        }
+
+        .sync-pill.snapshot {
+            background: rgba(148, 163, 184, 0.12);
+            border-color: var(--border);
+            color: var(--text-muted);
+        }
+
+        .refresh-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .refresh-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .kpi-card.kpi-updaters::before { background: var(--accent-green); }
+        .kpi-card.kpi-updaters .kpi-value { color: var(--accent-green); }
+        .kpi-sub {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Quick Section Jump Bar */
+        .section-nav-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .section-nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 8px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 12.5px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .section-nav-link:hover {
+            color: var(--text-main);
+            border-color: var(--accent-blue);
+        }
+
+        /* Section Cards & Headers */
+        .audit-section {
+            margin-bottom: 28px;
+        }
+
+        .section-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            font-size: 16.5px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-subtitle {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .section-legend {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 11.5px;
+            color: var(--text-muted);
+        }
+
+        .legend-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-mini-box {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        .legend-mini-box.ok { background: var(--accent-green); }
+        .legend-mini-box.fail { background: var(--accent-red); }
+        .legend-mini-box.running { background: var(--accent-blue); }
+        .legend-mini-box.empty { border: 1px dashed var(--text-muted); }
+
+        /* 5-Day Sequential Status Boxes */
+        .hist-5d-strip {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .hist-day-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .hist-box {
+            width: 28px;
+            height: 26px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: help;
+            transition: transform 0.15s ease;
+        }
+
+        .hist-box:hover {
+            transform: scale(1.1);
+        }
+
+        .hist-box.ok {
+            background: rgba(0, 230, 118, 0.18);
+            border: 1px solid rgba(0, 230, 118, 0.55);
+            color: var(--accent-green);
+            box-shadow: 0 0 8px rgba(0, 230, 118, 0.15);
+        }
+
+        body.theme-light .hist-box.ok {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #15803d;
+            box-shadow: none;
+        }
+
+        .hist-box.fail {
+            background: rgba(255, 51, 102, 0.18);
+            border: 1px solid rgba(255, 51, 102, 0.55);
+            color: var(--accent-red);
+        }
+
+        body.theme-light .hist-box.fail {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+
+        .hist-box.running {
+            background: rgba(0, 210, 255, 0.18);
+            border: 1px solid rgba(0, 210, 255, 0.55);
+            color: var(--accent-blue);
+            animation: pulseDot 1.6s infinite ease-in-out;
+        }
+
+        .hist-box.cancelled {
+            background: rgba(255, 145, 0, 0.15);
+            border: 1px solid rgba(255, 145, 0, 0.45);
+            color: var(--accent-orange);
+        }
+
+        .hist-box.empty {
+            background: transparent;
+            border: 1px dashed var(--border-hover);
+            color: var(--text-muted);
+            opacity: 0.65;
+        }
+
+        .hist-day-lbl {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--text-muted);
+            line-height: 1;
+        }
+
+        /* Updater Table Specifics */
+        .updater-name-cell {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .updater-row-stage {
+            background: rgba(255, 255, 255, 0.012);
+        }
+
+        body.theme-light .updater-row-stage {
+            background: rgba(15, 23, 42, 0.015);
+        }
+
+        .updater-row-stage .updater-name-cell {
+            font-weight: 500;
+            padding-left: 12px;
+            border-left: 2px solid rgba(0, 210, 255, 0.35);
+            font-size: 12.5px;
+        }
+
+        .schedule-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 3px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .status-badge.success {
+            background: var(--badge-ok-bg);
+            border: 1px solid var(--badge-ok-border);
+            color: var(--badge-ok-text);
+        }
+
+        .status-badge.failure {
+            background: var(--badge-critical-bg);
+            border: 1px solid var(--badge-critical-border);
+            color: var(--badge-critical-text);
+        }
+
+        .status-badge.running {
+            background: rgba(0, 210, 255, 0.14);
+            border: 1px solid rgba(0, 210, 255, 0.45);
+            color: var(--accent-blue);
+        }
+
+        .status-badge.cancelled {
+            background: var(--badge-warning-bg);
+            border: 1px solid var(--badge-warning-border);
+            color: var(--badge-warning-text);
+        }
+
+        .status-badge.empty {
+            background: rgba(148, 163, 184, 0.1);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .log-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 9px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--accent-blue);
+            font-size: 11.5px;
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: all 0.18s ease;
+        }
+
+        .log-link-btn:hover {
+            border-color: var(--accent-blue);
+            background: rgba(0, 210, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 14px 12px 48px 12px; }
+            .header-actions { width: 100%; justify-content: flex-end; }
+            .hist-box { width: 24px; height: 22px; font-size: 11px; }
+            .hist-5d-strip { gap: 4px; }
+        }
     </style>
 </head>
 <body>
@@ -551,6 +872,10 @@
             </div>
 
             <div class="header-actions">
+                <span class="sync-pill snapshot" id="syncStatusPill" title="Fonte dos dados de execução dos atualizadores">📦 Snapshot</span>
+                <button type="button" class="refresh-btn" id="refreshUpdatersBtn" onclick="refreshLiveGitHubRuns(true)" title="Buscar execuções mais recentes no GitHub Actions">
+                    ↻ Atualizar
+                </button>
                 <button class="theme-toggle-btn" id="themeToggleBtn" title="Alternar Modo Escuro / Claro">
                     <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"/>
@@ -569,6 +894,11 @@
 
         <!-- KPI Cards Grid -->
         <section class="kpi-grid">
+            <div class="kpi-card kpi-updaters">
+                <span class="kpi-label">Atualizadores &amp; Estágios</span>
+                <span class="kpi-value" id="kpiUpdatersHealth">--/-- OK</span>
+                <span class="kpi-sub" id="kpiUpdatersSub">Sincronizando...</span>
+            </div>
             <div class="kpi-card kpi-total">
                 <span class="kpi-label">Anomalias Ativas</span>
                 <span class="kpi-value" id="kpiTotal">0</span>
@@ -582,10 +912,127 @@
                 <span class="kpi-value" id="kpiWarning">0</span>
             </div>
             <div class="kpi-card kpi-date">
-                <span class="kpi-label">Última Execução</span>
+                <span class="kpi-label">Última Auditoria B3/CVM</span>
                 <span class="kpi-value" id="kpiExecutedAt">--/--/----</span>
             </div>
         </section>
+
+        <!-- Navegação Rápida por Seção -->
+        <nav class="section-nav-bar">
+            <a href="#secUpdaters" class="section-nav-link">⚡ Painel de Atualizadores (5 Dias)</a>
+            <a href="#secExecutionLog" class="section-nav-link">🕒 Listagem por Data e Hora (<span id="navLogCount">0</span>)</a>
+            <a href="#secAnomalies" class="section-nav-link">⚠️ Anomalias B3 / CVM (<span id="navAnomCount">0</span>)</a>
+        </nav>
+
+        <!-- Seção 1: Status dos Atualizadores & Histórico de 5 Dias -->
+        <section class="audit-section" id="secUpdaters">
+            <div class="section-header-bar">
+                <div>
+                    <h2 class="section-title">⚡ Atualizadores &amp; Pipelines Automáticos (Histórico de 5 Dias)</h2>
+                    <p class="section-subtitle">Monitoramento diário dos estágios B3/CVM, Rastreador IFR, Macro/Tesouro, Fiscal e Manutenção de Splits. Passe o cursor sobre as caixas para ver data/hora exatas.</p>
+                </div>
+                <div class="section-legend">
+                    <span class="legend-chip"><span class="legend-mini-box ok"></span> Sucesso</span>
+                    <span class="legend-chip"><span class="legend-mini-box fail"></span> Falha</span>
+                    <span class="legend-chip"><span class="legend-mini-box running"></span> Executando</span>
+                    <span class="legend-chip"><span class="legend-mini-box empty"></span> Sem execução</span>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-wrapper" style="max-height: none;">
+                    <table id="updatersTable">
+                        <thead>
+                            <tr>
+                                <th>Atualizador / Estágio</th>
+                                <th>Agendamento</th>
+                                <th>Última Execução (BRT)</th>
+                                <th>Duração</th>
+                                <th>Status Atual</th>
+                                <th>Histórico (Últimos 5 Dias)</th>
+                                <th>Log</th>
+                            </tr>
+                        </thead>
+                        <tbody id="updatersTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 30px; color: var(--text-muted);">
+                                    Carregando status dos atualizadores...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 2: Listagem Cronológica de Todos os Updates e Execuções por Data e Hora -->
+        <section class="audit-section" id="secExecutionLog">
+            <div class="section-header-bar">
+                <div>
+                    <h2 class="section-title">🕒 Histórico Detalhado de Execuções &amp; Updates (Data e Hora)</h2>
+                    <p class="section-subtitle">Registro cronológico completo de todas as execuções de workflows e estágios individuais em horário de Brasília (BRT).</p>
+                </div>
+            </div>
+
+            <div class="filter-panel">
+                <div class="search-box">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="logSearchInput" class="search-input" placeholder="Filtrar por atualizador, estágio, data (ex: 16/11) ou gatilho...">
+                </div>
+
+                <div class="filter-buttons">
+                    <button class="filter-pill log-status-pill active" data-log-status="ALL">Todos</button>
+                    <button class="filter-pill log-status-pill" data-log-status="success">🟢 Sucessos</button>
+                    <button class="filter-pill log-status-pill pill-critical" data-log-status="failure">🔴 Falhas</button>
+
+                    <select id="logCategoryFilter" class="category-select">
+                        <option value="ALL">Todas as Categorias</option>
+                        <option value="Pipeline Diário">Pipeline Diário</option>
+                        <option value="Macro & Juros">Macro &amp; Juros</option>
+                        <option value="Estratégia IFR">Estratégia IFR</option>
+                        <option value="Auditoria">Auditoria</option>
+                        <option value="Manutenção B3">Manutenção B3</option>
+                        <option value="Deploy Web">Deploy Web</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-wrapper" style="max-height: 520px;">
+                    <table id="executionLogTable">
+                        <thead>
+                            <tr>
+                                <th>Data / Hora (BRT)</th>
+                                <th>Atualizador / Etapa</th>
+                                <th>Categoria</th>
+                                <th>Gatilho</th>
+                                <th>Duração</th>
+                                <th>Resultado</th>
+                                <th>Log</th>
+                            </tr>
+                        </thead>
+                        <tbody id="executionLogBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 30px; color: var(--text-muted);">
+                                    Carregando histórico cronológico...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 3: Anomalias Estatísticas & Contábeis -->
+        <div class="section-header-bar" id="secAnomalies">
+            <div>
+                <h2 class="section-title">⚠️ Anomalias Estatísticas &amp; Contábeis B3 / CVM</h2>
+                <p class="section-subtitle">Detecção pós-atualização de distorções em base acionária, splits, proporções de Units e múltiplos extremos.</p>
+            </div>
+        </div>
 
         <!-- Filtros e Barra de Busca -->
         <section class="filter-panel">
@@ -651,13 +1098,23 @@
 
     <script>
         let allAnomalies = [];
+        let updatersStatus = [];
+        let executionLog = [];
         let currentFilter = 'ALL';
         let currentCategory = 'ALL';
         let searchTerm = '';
 
-        // Alternância de Tema (Obsidian Dark vs Clean Light)
+        let logStatusFilter = 'ALL';
+        let logCategoryFilter = 'ALL';
+        let logSearchTerm = '';
+
+        const GH_REPO = 'Leo-Sba/Atualizador';
+        const GH_CACHE_KEY = 'pl_gh_audit_cache_v1';
+        const GH_CACHE_TTL_MS = 120 * 1000;
+
+        // Alternância de Tema (Obsidian Dark vs Clean Light - sincronizado com o dashboard principal)
         const themeBtn = document.getElementById('themeToggleBtn');
-        const savedTheme = localStorage.getItem('preco_lucro_theme') || 'dark';
+        const savedTheme = localStorage.getItem('fundamentalista_theme') || localStorage.getItem('preco_lucro_theme') || 'obsidian';
 
         if (savedTheme === 'light') {
             document.body.classList.add('theme-light');
@@ -666,24 +1123,430 @@
         themeBtn.addEventListener('click', () => {
             document.body.classList.toggle('theme-light');
             const isLight = document.body.classList.contains('theme-light');
-            localStorage.setItem('preco_lucro_theme', isLight ? 'light' : 'dark');
+            localStorage.setItem('fundamentalista_theme', isLight ? 'light' : 'obsidian');
         });
 
-        // Carregar dados de anomalias
+        function escHtml(v) {
+            return String(v === null || v === undefined ? '' : v)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function safeHref(url) {
+            const s = String(url || '').trim();
+            if (s.startsWith('https://') || s.startsWith('http://')) return s;
+            return 'https://github.com/Leo-Sba/Atualizador/actions';
+        }
+
+        function statusLabelHtml(st) {
+            if (st === 'success') return '<span class="status-badge success">🟢 Sucesso</span>';
+            if (st === 'failure') return '<span class="status-badge failure">🔴 Falha</span>';
+            if (st === 'running') return '<span class="status-badge running">⏳ Em execução</span>';
+            if (st === 'cancelled') return '<span class="status-badge cancelled">⚠️ Cancelado</span>';
+            return '<span class="status-badge empty">— Aguardando</span>';
+        }
+
+        function histBoxSymbol(st) {
+            if (st === 'success') return '✓';
+            if (st === 'failure') return '✕';
+            if (st === 'running') return '●';
+            if (st === 'cancelled') return '!';
+            return '—';
+        }
+
+        function histBoxClass(st) {
+            if (st === 'success') return 'ok';
+            if (st === 'failure') return 'fail';
+            if (st === 'running') return 'running';
+            if (st === 'cancelled') return 'cancelled';
+            return 'empty';
+        }
+
+        function renderUpdatersSection(syncedAt) {
+            const tbody = document.getElementById('updatersTableBody');
+            const healthEl = document.getElementById('kpiUpdatersHealth');
+            const subEl = document.getElementById('kpiUpdatersSub');
+            if (!tbody) return;
+
+            const activeItems = updatersStatus.filter(u => u.status !== 'empty');
+            const okItems = activeItems.filter(u => u.status === 'success');
+            if (healthEl) {
+                healthEl.textContent = activeItems.length ? `${okItems.length}/${activeItems.length} OK` : '--/-- OK';
+                healthEl.style.color = (activeItems.length && okItems.length === activeItems.length) ? 'var(--accent-green)' : 'var(--accent-orange)';
+            }
+            if (subEl) {
+                subEl.textContent = syncedAt ? `Sync: ${syncedAt}` : `${updatersStatus.length} itens monitorados`;
+            }
+
+            if (!updatersStatus.length) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:28px; color:var(--text-muted);">Nenhum histórico de atualizador disponível ainda.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = updatersStatus.map(u => {
+                const isStage = String(u.id || '').startsWith('stage_');
+                const boxesHtml = (u.history_5d || []).map(h => {
+                    const cls = histBoxClass(h.status);
+                    const sym = histBoxSymbol(h.status);
+                    return `
+                        <div class="hist-day-col">
+                            <span class="hist-box ${cls}" title="${escHtml(h.detail || h.date)}">${sym}</span>
+                            <span class="hist-day-lbl">${escHtml(h.date || '--/--')}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <tr class="${isStage ? 'updater-row-stage' : ''}">
+                        <td><div class="updater-name-cell">${escHtml(u.name)}</div></td>
+                        <td><span class="schedule-pill">${escHtml(u.schedule)}</span></td>
+                        <td class="metric-cell detected">${escHtml(u.last_run_at || '--')}</td>
+                        <td class="metric-cell">${escHtml(u.duration || '--')}</td>
+                        <td>${statusLabelHtml(u.status)}</td>
+                        <td><div class="hist-5d-strip">${boxesHtml}</div></td>
+                        <td><a href="${escHtml(safeHref(u.run_url))}" target="_blank" rel="noopener noreferrer" class="log-link-btn">Log ↗</a></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderExecutionLog() {
+            const tbody = document.getElementById('executionLogBody');
+            const navCnt = document.getElementById('navLogCount');
+            if (navCnt) navCnt.textContent = executionLog.length;
+            if (!tbody) return;
+
+            const q = logSearchTerm.toLowerCase();
+            const filtered = executionLog.filter(row => {
+                const matchSt = (logStatusFilter === 'ALL') || (row.status === logStatusFilter);
+                const matchCat = (logCategoryFilter === 'ALL') || (row.category === logCategoryFilter);
+                const matchQ = !q ||
+                    (row.updater_name && row.updater_name.toLowerCase().includes(q)) ||
+                    (row.executed_at && row.executed_at.toLowerCase().includes(q)) ||
+                    (row.category && row.category.toLowerCase().includes(q)) ||
+                    (row.trigger && row.trigger.toLowerCase().includes(q));
+                return matchSt && matchCat && matchQ;
+            });
+
+            if (!filtered.length) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">Nenhuma execução corresponde aos filtros selecionados.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(row => `
+                <tr>
+                    <td class="metric-cell detected" style="white-space:nowrap;">${escHtml(row.executed_at)}</td>
+                    <td class="updater-name-cell">${escHtml(row.updater_name)}</td>
+                    <td><span class="category-tag">${escHtml(row.category)}</span></td>
+                    <td class="metric-cell">${escHtml(row.trigger)}</td>
+                    <td class="metric-cell">${escHtml(row.duration)}</td>
+                    <td>${statusLabelHtml(row.status)}</td>
+                    <td><a href="${escHtml(safeHref(row.html_url))}" target="_blank" rel="noopener noreferrer" class="log-link-btn">Log ↗</a></td>
+                </tr>
+            `).join('');
+        }
+
+        // Helpers de Data BRT para Atualização Ao Vivo via GitHub Actions API
+        function toBrtParts(isoStr) {
+            if (!isoStr) return null;
+            const d = new Date(isoStr);
+            if (isNaN(d.getTime())) return null;
+            const brtMs = d.getTime() - (3 * 3600 * 1000);
+            const b = new Date(brtMs);
+            const pad = n => String(n).padStart(2, '0');
+            const yyyy = b.getUTCFullYear();
+            const mm = pad(b.getUTCMonth() + 1);
+            const dd = pad(b.getUTCDate());
+            const hh = pad(b.getUTCHours());
+            const mi = pad(b.getUTCMinutes());
+            const ss = pad(b.getUTCSeconds());
+            return {
+                ts: d.getTime(),
+                dayKey: `${yyyy}-${mm}-${dd}`,
+                dayShort: `${dd}/${mm}`,
+                fullStr: `${dd}/${mm}/${yyyy} às ${hh}:${mi}:${ss}`
+            };
+        }
+
+        function fmtDurationMs(startIso, endIso) {
+            if (!startIso || !endIso) return '--';
+            const s = new Date(startIso).getTime();
+            const e = new Date(endIso).getTime();
+            if (isNaN(s) || isNaN(e)) return '--';
+            const secs = Math.max(0, Math.floor((e - s) / 1000));
+            if (secs < 60) return `${secs}s`;
+            const mins = Math.floor(secs / 60);
+            const rem = secs % 60;
+            if (mins < 60) return `${mins}m ${String(rem).padStart(2, '0')}s`;
+            return `${Math.floor(mins / 60)}h ${String(mins % 60).padStart(2, '0')}m`;
+        }
+
+        function normGhStatus(status, conclusion) {
+            if (status === 'in_progress' || status === 'queued' || status === 'waiting' || status === 'pending') return 'running';
+            if (conclusion === 'success') return 'success';
+            if (conclusion === 'failure' || conclusion === 'timed_out' || conclusion === 'action_required') return 'failure';
+            if (conclusion === 'cancelled' || conclusion === 'skipped') return 'cancelled';
+            return 'unknown';
+        }
+
+        function buildLiveGitHubPayload(runs, dailyJobsMap) {
+            const UPDATER_DEFS = [
+                { id: 'daily_pipeline', name: 'Pipeline Diário em Cascata B3 & CVM (Geral)', category: 'Pipeline Diário', schedule: 'Seg–Sex às 19:30 BRT', kind: 'workflow', path: '.github/workflows/daily_update.yml' },
+                { id: 'stage_1', name: '↳ Estágio 1: Ingestão de Mercado (Preços & Proventos)', category: 'Pipeline Diário', schedule: 'Seg–Sex • Cascata 1/6', kind: 'job', match: ['1. ingestao'] },
+                { id: 'stage_2', name: '↳ Estágio 2: Motor Fundamentalista (P/L, P/VP, ROE, DY)', category: 'Pipeline Diário', schedule: 'Seg–Sex • Cascata 2/6', kind: 'job', match: ['2. calculo'] },
+                { id: 'stage_3', name: '↳ Estágio 3: Consolidação de Índices (IBOV, IFNC & Calendário)', category: 'Pipeline Diário', schedule: 'Seg–Sex • Cascata 3/6', kind: 'job', match: ['3. consolidacao'] },
+                { id: 'stage_4', name: '↳ Estágio 4: Auto-Cura & Auditoria Contínua de Anomalias', category: 'Auditoria', schedule: 'Seg–Sex • Cascata 4/6', kind: 'job', match: ['4. auto-cura'], fallbackPath: '.github/workflows/audit_anomalies.yml' },
+                { id: 'stage_5', name: '↳ Estágio 5: Macro BCB/Focus & Curva Tesouro Transparente', category: 'Macro & Juros', schedule: 'Seg–Sex • Cascata 5/6', kind: 'job', match: ['5. macro'] },
+                { id: 'stage_6', name: '↳ Estágio 6: Compilação do Dashboard & Deploy Vercel', category: 'Deploy Web', schedule: 'Seg–Sex • Cascata 6/6', kind: 'job', match: ['compilacao do dashboard'] },
+                { id: 'ifr_tracker', name: 'Rastreador & Máquina de Estados (Entradas > IFR)', category: 'Estratégia IFR', schedule: 'Seg–Sex às 18:30 BRT', kind: 'workflow', path: '.github/workflows/rastreador-ifr.yml' },
+                { id: 'macro_intraday', name: 'Macro & Curva Intradiária (BCB / Focus / Tesouro)', category: 'Macro & Juros', schedule: 'Seg–Sex (10:23, 13:23, 16:23, 18:45)', kind: 'workflow', path: '.github/workflows/macro_intraday.yml' },
+                { id: 'fiscal_03am', name: 'Atualização Fiscal 03h AM (RTN Tesouro & Dívida/PIB)', category: 'Macro & Juros', schedule: 'Diário às 03:00 BRT', kind: 'workflow', path: '.github/workflows/fiscal_03am.yml' },
+                { id: 'bloqueios_inplit', name: 'Banco Anti-Grupamento / Inplit (IFR → Firestore)', category: 'Estratégia IFR', schedule: 'Sábado às 15:00 BRT', kind: 'workflow', path: '.github/workflows/bloqueios-inplit-ifr.yml' },
+                { id: 'weekly_splits', name: 'Manutenção e Ajuste Incremental de Splits / Inplits (B3)', category: 'Manutenção B3', schedule: 'Domingo às 08:00 BRT', kind: 'workflow', path: '.github/workflows/weekly_splits.yml' }
+            ];
+
+            const byPath = {};
+            runs.forEach(r => {
+                const p = r.path || '';
+                if (!byPath[p]) byPath[p] = [];
+                byPath[p].push(r);
+            });
+            const dailyRuns = (byPath['.github/workflows/daily_update.yml'] || []).slice(0, 6);
+
+            const stText = { success: 'Sucesso', failure: 'Falha', running: 'Em andamento', cancelled: 'Cancelado' };
+
+            const nextUpdaters = UPDATER_DEFS.map(def => {
+                const entries = [];
+                if (def.kind === 'workflow') {
+                    (byPath[def.path] || []).forEach(r => {
+                        const dt = toBrtParts(r.created_at);
+                        if (!dt) return;
+                        entries.push({
+                            ts: dt.ts, dayKey: dt.dayKey, dayShort: dt.dayShort, executed_at: dt.fullStr,
+                            duration: fmtDurationMs(r.run_started_at || r.created_at, r.updated_at),
+                            status: normGhStatus(r.status, r.conclusion),
+                            html_url: r.html_url
+                        });
+                    });
+                } else {
+                    dailyRuns.forEach(dr => {
+                        (dailyJobsMap[dr.id] || []).forEach(job => {
+                            const jn = (job.name || '').toLowerCase();
+                            if (def.match.some(m => jn.includes(m))) {
+                                const sIso = job.started_at || dr.created_at;
+                                const dt = toBrtParts(sIso);
+                                if (!dt) return;
+                                entries.push({
+                                    ts: dt.ts, dayKey: dt.dayKey, dayShort: dt.dayShort, executed_at: dt.fullStr,
+                                    duration: fmtDurationMs(sIso, job.completed_at || dr.updated_at),
+                                    status: normGhStatus(job.status, job.conclusion),
+                                    html_url: job.html_url || dr.html_url
+                                });
+                            }
+                        });
+                    });
+                    if (def.fallbackPath) {
+                        (byPath[def.fallbackPath] || []).forEach(r => {
+                            const dt = toBrtParts(r.created_at);
+                            if (!dt) return;
+                            entries.push({
+                                ts: dt.ts, dayKey: dt.dayKey, dayShort: dt.dayShort, executed_at: dt.fullStr,
+                                duration: fmtDurationMs(r.run_started_at || r.created_at, r.updated_at),
+                                status: normGhStatus(r.status, r.conclusion),
+                                html_url: r.html_url
+                            });
+                        });
+                    }
+                }
+                entries.sort((a, b) => b.ts - a.ts);
+                const latest = entries[0] || null;
+
+                const byDay = {};
+                const counts = {};
+                entries.forEach(e => {
+                    counts[e.dayKey] = (counts[e.dayKey] || 0) + 1;
+                    if (!byDay[e.dayKey]) byDay[e.dayKey] = e;
+                });
+                const daysAsc = Object.keys(byDay).sort().slice(-5);
+                const history5d = [];
+                for (let i = 0; i < 5 - daysAsc.length; i++) {
+                    history5d.push({ date: '--/--', status: 'empty', detail: 'Sem execução registrada neste intervalo' });
+                }
+                daysAsc.forEach(dk => {
+                    const it = byDay[dk];
+                    const cnt = counts[dk];
+                    const extra = cnt > 1 ? ` • ${cnt} execuções no dia` : '';
+                    history5d.push({
+                        date: it.dayShort,
+                        status: it.status,
+                        detail: `${it.executed_at} • ${stText[it.status] || it.status} (${it.duration})${extra}`
+                    });
+                });
+
+                return {
+                    id: def.id,
+                    name: def.name,
+                    category: def.category,
+                    schedule: def.schedule,
+                    last_run_at: latest ? latest.executed_at : 'Aguardando 1ª execução',
+                    duration: latest ? latest.duration : '--',
+                    status: latest ? latest.status : 'empty',
+                    run_url: latest ? latest.html_url : `https://github.com/${GH_REPO}/actions`,
+                    history_5d: history5d
+                };
+            });
+
+            const WF_DISPLAY = {
+                '.github/workflows/daily_update.yml': ['Pipeline Diário B3 & CVM (Geral)', 'Pipeline Diário'],
+                '.github/workflows/rastreador-ifr.yml': ['Rastreador & Máquina de Estados (IFR)', 'Estratégia IFR'],
+                '.github/workflows/macro_intraday.yml': ['Macro & Curva Intradiária (BCB/Tesouro)', 'Macro & Juros'],
+                '.github/workflows/fiscal_03am.yml': ['Atualização Fiscal 03h AM (RTN & Dívida/PIB)', 'Macro & Juros'],
+                '.github/workflows/bloqueios-inplit-ifr.yml': ['Banco Anti-Inplit (IFR → Firestore)', 'Estratégia IFR'],
+                '.github/workflows/weekly_splits.yml': ['Ajuste Incremental de Splits / Inplits', 'Manutenção B3'],
+                '.github/workflows/audit_anomalies.yml': ['Auditoria & Auto-Cura Manual', 'Auditoria'],
+                '.github/workflows/test_vercel_deploy.yml': ['Teste de Deploy Vercel', 'Deploy Web']
+            };
+
+            const nextLog = [];
+            runs.slice(0, 55).forEach(r => {
+                const pair = WF_DISPLAY[r.path || ''] || [r.name || 'Workflow', 'Outros'];
+                const dt = toBrtParts(r.created_at);
+                if (!dt) return;
+                nextLog.push({
+                    sort_ts: dt.ts,
+                    executed_at: dt.fullStr,
+                    updater_name: pair[0],
+                    category: pair[1],
+                    trigger: r.event === 'schedule' ? 'Agendado (Cron)' : 'Manual / Dispatch',
+                    duration: fmtDurationMs(r.run_started_at || r.created_at, r.updated_at),
+                    status: normGhStatus(r.status, r.conclusion),
+                    html_url: r.html_url
+                });
+            });
+
+            dailyRuns.slice(0, 4).forEach(dr => {
+                (dailyJobsMap[dr.id] || []).forEach(job => {
+                    const jn = job.name || 'Estágio Pipeline';
+                    const jl = jn.toLowerCase();
+                    let cat = 'Pipeline Diário';
+                    if (jl.includes('auto-cura') || jl.includes('auditoria')) cat = 'Auditoria';
+                    else if (jl.includes('macro')) cat = 'Macro & Juros';
+                    else if (jl.includes('compilacao') || jl.includes('vercel')) cat = 'Deploy Web';
+                    const sIso = job.started_at || dr.created_at;
+                    const dt = toBrtParts(sIso);
+                    if (!dt) return;
+                    nextLog.push({
+                        sort_ts: dt.ts,
+                        executed_at: dt.fullStr,
+                        updater_name: `↳ Estágio ${jn}`,
+                        category: cat,
+                        trigger: 'Cascata (Daily)',
+                        duration: fmtDurationMs(sIso, job.completed_at),
+                        status: normGhStatus(job.status, job.conclusion),
+                        html_url: job.html_url || dr.html_url
+                    });
+                });
+            });
+
+            nextLog.sort((a, b) => b.sort_ts - a.sort_ts);
+            const nowBrt = toBrtParts(new Date().toISOString());
+            return {
+                synced_at: nowBrt ? nowBrt.fullStr : '--',
+                updaters_status: nextUpdaters,
+                execution_log: nextLog.slice(0, 60)
+            };
+        }
+
+        async function refreshLiveGitHubRuns(force = false) {
+            const pill = document.getElementById('syncStatusPill');
+            const btn = document.getElementById('refreshUpdatersBtn');
+            if (btn) btn.disabled = true;
+
+            try {
+                if (!force) {
+                    const cachedRaw = sessionStorage.getItem(GH_CACHE_KEY);
+                    if (cachedRaw) {
+                        const cached = JSON.parse(cachedRaw);
+                        if (cached && cached.ts && (Date.now() - cached.ts) < GH_CACHE_TTL_MS && cached.payload) {
+                            updatersStatus = cached.payload.updaters_status || updatersStatus;
+                            executionLog = cached.payload.execution_log || executionLog;
+                            renderUpdatersSection(cached.payload.synced_at);
+                            renderExecutionLog();
+                            if (pill) {
+                                pill.className = 'sync-pill';
+                                pill.textContent = '🟢 GitHub Actions ao vivo';
+                            }
+                            if (btn) btn.disabled = false;
+                            return;
+                        }
+                    }
+                }
+
+                const res = await fetch(`https://api.github.com/repos/${GH_REPO}/actions/runs?per_page=100`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                const runs = data.workflow_runs || [];
+                const dailyRuns = runs.filter(r => r.path === '.github/workflows/daily_update.yml').slice(0, 6);
+
+                const dailyJobsMap = {};
+                await Promise.all(dailyRuns.map(async dr => {
+                    try {
+                        const jr = await fetch(dr.jobs_url);
+                        if (jr.ok) {
+                            const jd = await jr.json();
+                            dailyJobsMap[dr.id] = jd.jobs || [];
+                        }
+                    } catch (e) {}
+                }));
+
+                const livePayload = buildLiveGitHubPayload(runs, dailyJobsMap);
+                sessionStorage.setItem(GH_CACHE_KEY, JSON.stringify({ ts: Date.now(), payload: livePayload }));
+
+                updatersStatus = livePayload.updaters_status;
+                executionLog = livePayload.execution_log;
+                renderUpdatersSection(livePayload.synced_at);
+                renderExecutionLog();
+
+                if (pill) {
+                    pill.className = 'sync-pill';
+                    pill.textContent = '🟢 GitHub Actions ao vivo';
+                }
+            } catch (err) {
+                console.warn('Usando snapshot local de atualizadores:', err);
+                if (pill) {
+                    pill.className = 'sync-pill snapshot';
+                    pill.textContent = '📦 Snapshot local';
+                }
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        }
+
+        // Carregar dados de anomalias + snapshot inicial de atualizadores
         async function loadAnomalies() {
             try {
-                const res = await fetch('anomalies_data.json');
+                const res = await fetch('anomalies_data.json', { cache: 'no-store' });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
 
                 allAnomalies = data.anomalies || [];
-                
+                updatersStatus = data.updaters_status || [];
+                executionLog = data.execution_log || [];
+
                 // KPIs
-                document.getElementById('kpiTotal').textContent = data.total_active || allAnomalies.length;
+                const totalActive = data.total_active || allAnomalies.length;
+                document.getElementById('kpiTotal').textContent = totalActive;
                 document.getElementById('kpiCritical').textContent = data.critical_count || 0;
                 document.getElementById('kpiWarning').textContent = data.warning_count || 0;
                 document.getElementById('kpiExecutedAt').textContent = data.executed_at || 'Hoje';
+                const navAnom = document.getElementById('navAnomCount');
+                if (navAnom) navAnom.textContent = totalActive;
 
+                renderUpdatersSection(data.updaters_synced_at);
+                renderExecutionLog();
                 renderTable();
             } catch (err) {
                 console.error("Erro ao carregar anomalies_data.json:", err);
@@ -701,6 +1564,9 @@
                     </tr>
                 `;
             }
+
+            // Atualiza em segundo plano com dados ao vivo do GitHub Actions
+            refreshLiveGitHubRuns(false);
         }
 
         function formatNumber(val) {
@@ -755,37 +1621,57 @@
 
                 return `
                     <tr>
-                        <td><span class="ticker-badge">${a.ticker}</span></td>
-                        <td><div class="company-name" title="${a.company_name || ''}">${a.company_name || 'N/A'}</div></td>
-                        <td><span class="badge-severity ${a.severity}">${a.severity === 'CRITICAL' ? '🔴 Crítico' : '🟡 Atenção'}</span></td>
-                        <td><span class="category-tag">${a.category}</span></td>
-                        <td class="metric-cell">${a.metric_name}</td>
-                        <td class="metric-cell">${formatNumber(a.previous_value)}</td>
-                        <td class="metric-cell detected">${formatNumber(a.current_value)}</td>
+                        <td><span class="ticker-badge">${escHtml(a.ticker)}</span></td>
+                        <td><div class="company-name" title="${escHtml(a.company_name || '')}">${escHtml(a.company_name || 'N/A')}</div></td>
+                        <td><span class="badge-severity ${escHtml(String(a.severity || '').replace(/[^A-Za-z0-9_-]/g, ''))}">${a.severity === 'CRITICAL' ? '🔴 Crítico' : '🟡 Atenção'}</span></td>
+                        <td><span class="category-tag">${escHtml(a.category)}</span></td>
+                        <td class="metric-cell">${escHtml(a.metric_name)}</td>
+                        <td class="metric-cell">${escHtml(formatNumber(a.previous_value))}</td>
+                        <td class="metric-cell detected">${escHtml(formatNumber(a.current_value))}</td>
                         <td>${varHtml}</td>
-                        <td><div class="diagnosis-text">${a.diagnosis}</div></td>
+                        <td><div class="diagnosis-text">${escHtml(a.diagnosis)}</div></td>
                     </tr>
                 `;
             }).join('');
         }
 
-        // Filtro por Severidade
-        document.querySelectorAll('.filter-pill').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+        // Filtros da Tabela de Execuções (Por Data e Hora)
+        document.querySelectorAll('.log-status-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.log-status-pill').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                logStatusFilter = btn.dataset.logStatus || 'ALL';
+                renderExecutionLog();
+            });
+        });
+
+        document.getElementById('logCategoryFilter').addEventListener('change', (e) => {
+            logCategoryFilter = e.target.value;
+            renderExecutionLog();
+        });
+
+        document.getElementById('logSearchInput').addEventListener('input', (e) => {
+            logSearchTerm = e.target.value.trim();
+            renderExecutionLog();
+        });
+
+        // Filtro por Severidade (Anomalias)
+        document.querySelectorAll('.filter-pill:not(.log-status-pill)').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-pill:not(.log-status-pill)').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentFilter = btn.dataset.filter;
                 renderTable();
             });
         });
 
-        // Filtro por Categoria
+        // Filtro por Categoria (Anomalias)
         document.getElementById('categoryFilter').addEventListener('change', (e) => {
             currentCategory = e.target.value;
             renderTable();
         });
 
-        // Campo de Busca
+        // Campo de Busca (Anomalias)
         document.getElementById('searchInput').addEventListener('input', (e) => {
             searchTerm = e.target.value.trim();
             renderTable();
