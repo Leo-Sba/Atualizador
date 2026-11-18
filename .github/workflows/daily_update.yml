@@ -165,69 +165,11 @@ jobs:
           python run_updater.py --stage 5
 
   # =========================================================================
-  # ESTÁGIO 6: Compilação do Dashboard e Deploy em Produção (Vercel)
+  # ESTÁGIO 6: Rastreador & Máquina de Estados (Entradas > IFR)
   # =========================================================================
-  stage-6-deploy:
-    name: "6. Compilacao do Dashboard & Deploy Vercel"
+  stage-6-ifr:
+    name: "6. Rastreador & Maquina de Estados (Entradas > IFR)"
     needs: stage-5-macro
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    steps:
-      - name: Checkout do Repositório
-        uses: actions/checkout@v4
-
-      - name: Configurar Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-
-      - name: Configurar Node.js (Vercel CLI)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Instalar Dependências Python
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Executar Estágio 6 (Exportar Dados e Compilar dashboard.html)
-        run: |
-          sleep 5
-          python run_updater.py --stage 6
-
-      - name: Preparar Diretório de Deploy
-        run: |
-          mkdir -p deploy_dist
-          cp dashboard.html deploy_dist/index.html
-          [ -f anomalias.html ] && cp anomalias.html deploy_dist/
-          [ -f anomalies_data.json ] && cp anomalies_data.json deploy_dist/
-          [ -f events_data.json ] && cp events_data.json deploy_dist/
-          [ -d events ] && cp -r events deploy_dist/
-          [ -f vercel.json ] && cp vercel.json deploy_dist/
-
-      - name: Publicar em Produção na Vercel
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: |
-          if [ -n "$VERCEL_TOKEN" ]; then
-            echo "Iniciando deploy em producao na Vercel..."
-            cd deploy_dist
-            mkdir -p .vercel
-            echo '{"projectId":"prj_iTbDA9V8SZyxoUIxuNzbpV2SIQoB","orgId":"team_Vq8xybWYkCQy4ZCfUg2rDEfv","projectName":"dashboard-ibov-preco-lucro"}' > .vercel/project.json
-            npx vercel --prod --token="$VERCEL_TOKEN" --yes
-          else
-            echo "::warning::Secret VERCEL_TOKEN nao configurado no repositorio. O deploy automatico na Vercel foi pulado."
-          fi
-
-  # =========================================================================
-  # ESTÁGIO 7 (ÚLTIMA ETAPA): Rastreador & Máquina de Estados (Entradas > IFR)
-  # =========================================================================
-  stage-7-ifr:
-    name: "7. Rastreador & Maquina de Estados (Entradas > IFR)"
-    needs: stage-6-deploy
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -269,4 +211,76 @@ jobs:
             git add entradas_ifr_cache.json
             git diff --quiet && git diff --staged --quiet || git commit -m "chore(ifr): sincronizar entradas_ifr_cache.json [skip ci]"
             git push || true
+          fi
+
+      - name: Upload entradas_ifr_cache.json Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ifr-cache-artifact
+          path: entradas_ifr_cache.json
+          if-no-files-found: ignore
+
+  # =========================================================================
+  # ESTÁGIO 7 (FINAL ABSOLUTO): Compilação do Dashboard e Deploy em Produção (Vercel)
+  # =========================================================================
+  stage-7-deploy:
+    name: "7. Compilacao do Dashboard & Deploy Vercel"
+    needs: stage-6-ifr
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Download ifr-cache-artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ifr-cache-artifact
+        continue-on-error: true
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Configurar Node.js (Vercel CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar Dependências Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Executar Estágio 7 (Exportar Dados e Compilar dashboard.html)
+        run: |
+          sleep 5
+          python run_updater.py --stage 6
+
+      - name: Preparar Diretório de Deploy
+        run: |
+          mkdir -p deploy_dist
+          cp dashboard.html deploy_dist/index.html
+          [ -f anomalias.html ] && cp anomalias.html deploy_dist/
+          [ -f anomalies_data.json ] && cp anomalies_data.json deploy_dist/
+          [ -f events_data.json ] && cp events_data.json deploy_dist/
+          [ -f entradas_ifr_cache.json ] && cp entradas_ifr_cache.json deploy_dist/
+          [ -d events ] && cp -r events deploy_dist/
+          [ -f vercel.json ] && cp vercel.json deploy_dist/
+
+      - name: Publicar em Produção na Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -n "$VERCEL_TOKEN" ]; then
+            echo "Iniciando deploy em producao na Vercel..."
+            cd deploy_dist
+            mkdir -p .vercel
+            echo '{"projectId":"prj_iTbDA9V8SZyxoUIxuNzbpV2SIQoB","orgId":"team_Vq8xybWYkCQy4ZCfUg2rDEfv","projectName":"dashboard-ibov-preco-lucro"}' > .vercel/project.json
+            npx vercel --prod --token="$VERCEL_TOKEN" --yes
+          else
+            echo "::warning::Secret VERCEL_TOKEN nao configurado no repositorio. O deploy automatico na Vercel foi pulado."
           fi
