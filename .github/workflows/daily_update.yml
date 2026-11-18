@@ -1,4 +1,4 @@
-name: Pipeline Diario em Cascata B3 & CVM (6 Estagios)
+name: Pipeline Diario em Cascata B3 & CVM (7 Estagios)
 
 on:
   schedule:
@@ -135,10 +135,10 @@ jobs:
           python run_updater.py --stage 4
 
   # =========================================================================
-  # ESTÁGIO 5 (FIM DA FILA DE DADOS): Coleta Macro & Curva de Juros (BCB/Tesouro)
+  # ESTÁGIO 5: Coleta Macro & Curva de Juros (BCB/Tesouro)
   # =========================================================================
   stage-5-macro:
-    name: "5. Macro & Curva de Juros (Fim da Fila)"
+    name: "5. Macro & Curva de Juros (BCB/Tesouro)"
     needs: stage-4-audit-and-heal
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -165,7 +165,7 @@ jobs:
           python run_updater.py --stage 5
 
   # =========================================================================
-  # ESTÁGIO 6 (FINAL ABSOLUTO): Compilação do Dashboard e Deploy em Produção (Vercel)
+  # ESTÁGIO 6: Compilação do Dashboard e Deploy em Produção (Vercel)
   # =========================================================================
   stage-6-deploy:
     name: "6. Compilacao do Dashboard & Deploy Vercel"
@@ -220,4 +220,53 @@ jobs:
             npx vercel --prod --token="$VERCEL_TOKEN" --yes
           else
             echo "::warning::Secret VERCEL_TOKEN nao configurado no repositorio. O deploy automatico na Vercel foi pulado."
+          fi
+
+  # =========================================================================
+  # ESTÁGIO 7 (ÚLTIMA ETAPA): Rastreador & Máquina de Estados (Entradas > IFR)
+  # =========================================================================
+  stage-7-ifr:
+    name: "7. Rastreador & Maquina de Estados (Entradas > IFR)"
+    needs: stage-6-deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js (v22)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar Dependências Node.js
+        run: |
+          npm ci || npm install
+
+      - name: Validar Motor Contábil
+        run: node --test tests/contabil.test.js
+
+      - name: Executar Rastreador Diário & Máquina de Estados
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+        run: |
+          node processar-ifr.js
+
+      - name: Commit e Push do Cache Sincronizado (Se houver alterações)
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Actions [Rastreador IFR]"
+          if [ -f entradas_ifr_cache.json ]; then
+            git add entradas_ifr_cache.json
+            git diff --quiet && git diff --staged --quiet || git commit -m "chore(ifr): sincronizar entradas_ifr_cache.json [skip ci]"
+            git push || true
           fi
