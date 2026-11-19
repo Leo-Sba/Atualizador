@@ -11545,6 +11545,7 @@ body.theme-light .event-tile-date {
                 getSeries().forEach(pt => {
                     (pt.ev || []).forEach(ev => {
                         const tipo = ev.t || ev.tipo;
+                        if (tipo === 'RENDIMENTO_CDI') return;
                         const ticker = ev.tk || ev.ticker || 'CAIXA';
                         if (tipo === 'COMPRA' || tipo === 'VENDA') {
                             if (seenTradeKey.has(`${pt.d}|${tipo}|${ticker}`)) return;
