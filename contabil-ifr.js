@@ -37,7 +37,7 @@ const TOLERANCIA = 0.01;
 // Ordem de processamento dos lançamentos dentro de um mesmo pregão
 const ORDEM_TIPO = {
   APORTE_INICIAL: 0, APORTE: 1, RETIRADA: 2, EVENTO_SOCIETARIO: 3,
-  PROVENTO: 4, VENDA: 5, COMPRA: 6, ESTORNO: 7
+  RENDIMENTO_CDI: 4, PROVENTO: 5, VENDA: 6, COMPRA: 7, ESTORNO: 8
 };
 
 // ---------------------------------------------------------------------------
@@ -167,6 +167,7 @@ function estadoInicial(capitalInicial = CAPITAL_INICIAL) {
     posicoes: {},              // trade_id -> { ticker, trade_id, quantidade, custo }
     realizado_acum: 0,
     proventos_acum: 0,
+    cdi_acum: 0,
     aportes_acum: 0,           // aportes posteriores ao capital inicial
     retiradas_acum: 0,
     custos_acum: 0,
@@ -195,7 +196,7 @@ function clonar(o) { return JSON.parse(JSON.stringify(o)); }
  *   ibov (number|null), proventos [{ticker, valor_por_acao, tipo}],
  *   eventos [{ticker, multiplicador, descricao}], ledgerAcumulado (lançamentos até o dia anterior)
  */
-function fecharDia({ estadoAnterior, data, lancamentosBase = [], precos = {}, ibov = null, proventos = [], eventos = [], proventosRetroativos = [], ledgerAcumulado = [] }) {
+function fecharDia({ estadoAnterior, data, lancamentosBase = [], precos = {}, ibov = null, proventos = [], eventos = [], proventosRetroativos = [], cdiDia = 0, ledgerAcumulado = [] }) {
   const prev = estadoAnterior;
   const s = clonar(prev);
   const primeiroDia = prev.data === null;
@@ -254,11 +255,23 @@ function fecharDia({ estadoAnterior, data, lancamentosBase = [], precos = {}, ib
     avisos.push(`Provento retroativo de ${pr.ticker} (data-ex ${pr.data_ex}) reconhecido em ${data}`);
   }
 
+  // 2b''. Rendimento de 90% do CDI sobre o saldo em caixa do fechamento anterior (D-1)
+  if (!primeiroDia && prev.caixa > 0 && cdiDia > 0) {
+    const rendCdi = r2(prev.caixa * cdiDia * 0.90);
+    if (rendCdi >= 0.01) {
+      lancDia.push(criarLancamento({
+        id: `${data}_RENDIMENTO_CDI`, data, tipo: 'RENDIMENTO_CDI',
+        valor_caixa: rendCdi,
+        descricao: `Rendimento 90% CDI sobre caixa (R$ ${prev.caixa.toFixed(2)})`
+      }));
+    }
+  }
+
   const todos = [...lancDia, ...lancamentosBase]
     .sort((a, b) => ORDEM_TIPO[a.tipo] - ORDEM_TIPO[b.tipo] || a.id.localeCompare(b.id));
 
   // 2c. Aplicação dos lançamentos
-  let aportesDia = 0, retiradasDia = 0, realizadoDia = 0, entradasCaixa = 0, saidasCaixa = 0;
+  let aportesDia = 0, retiradasDia = 0, realizadoDia = 0, cdiDiaReais = 0, entradasCaixa = 0, saidasCaixa = 0;
   const vendasDia = [];
   for (const l of todos) {
     if (l.valor_caixa > 0) entradasCaixa = r2(entradasCaixa + l.valor_caixa);
@@ -281,6 +294,11 @@ function fecharDia({ estadoAnterior, data, lancamentosBase = [], precos = {}, ib
         break;
       case 'EVENTO_SOCIETARIO':
         eventosDia = r2(eventosDia + l.valor_caixa);
+        break;
+      case 'RENDIMENTO_CDI':
+        s.caixa = r2(s.caixa + l.valor_caixa);
+        s.cdi_acum = r2((s.cdi_acum || 0) + l.valor_caixa);
+        cdiDiaReais = r2(cdiDiaReais + l.valor_caixa);
         break;
       case 'PROVENTO':
         s.caixa = r2(s.caixa + l.valor_caixa);
@@ -386,6 +404,7 @@ function fecharDia({ estadoAnterior, data, lancamentosBase = [], precos = {}, ib
     pnl_nao_realizado: deltaNaoRealizado,
     resultado_realizado: realizadoDia,
     proventos: proventosDia,
+    rendimento_cdi: cdiDiaReais,
     custos: 0,
     impostos: 0,
     aportes: aportesDia,
@@ -453,7 +472,7 @@ function fecharDia({ estadoAnterior, data, lancamentosBase = [], precos = {}, ib
       nav_inicial: s.capital_inicial,
       variacao_total: r2(nav - s.capital_inicial),
       variacao_por_aportes: r2(s.aportes_acum - s.retiradas_acum),
-      variacao_por_resultado: r2(s.realizado_acum + s.nao_realizado + s.proventos_acum - s.custos_acum - s.impostos_acum),
+      variacao_por_resultado: r2(s.realizado_acum + s.nao_realizado + s.proventos_acum + (s.cdi_acum || 0) - s.custos_acum - s.impostos_acum),
       nav_anterior: prev.nav || 0,
       variacao_dia: deltaNav
     },
@@ -482,10 +501,12 @@ function fecharDia({ estadoAnterior, data, lancamentosBase = [], precos = {}, ib
       nao_realizado_dia: deltaNaoRealizado,
       proventos_acum: s.proventos_acum,
       proventos_dia: proventosDia,
+      cdi_acum: s.cdi_acum || 0,
+      cdi_dia: cdiDiaReais,
       custos_acum: s.custos_acum,
       impostos_acum: s.impostos_acum,
-      resultado_liquido: r2(s.realizado_acum + s.nao_realizado + s.proventos_acum - s.custos_acum - s.impostos_acum),
-      resultado_dia: r2(deltaNaoRealizado + realizadoDia + proventosDia),
+      resultado_liquido: r2(s.realizado_acum + s.nao_realizado + s.proventos_acum + (s.cdi_acum || 0) - s.custos_acum - s.impostos_acum),
+      resultado_dia: r2(deltaNaoRealizado + realizadoDia + proventosDia + cdiDiaReais),
       aportes_acum: s.aportes_acum,
       retiradas_acum: s.retiradas_acum
     },
@@ -551,7 +572,7 @@ function fecharDia({ estadoAnterior, data, lancamentosBase = [], precos = {}, ib
  *   ibov { data: valor }, proventos [{ticker, data_ex, valor_por_acao, tipo}],
  *   eventos [{ticker, data, multiplicador, descricao}]
  */
-function reprocessarHistorico({ trades, calendario, precos = {}, ibov = {}, proventos = [], eventos = [], entradasPorDia = {}, proventosRetroativosPorDia = {}, capitalInicial = CAPITAL_INICIAL, aporteMensal = APORTE_MENSAL }) {
+function reprocessarHistorico({ trades, calendario, precos = {}, ibov = {}, proventos = [], eventos = [], cdi = {}, entradasPorDia = {}, proventosRetroativosPorDia = {}, capitalInicial = CAPITAL_INICIAL, aporteMensal = APORTE_MENSAL }) {
   const { lancamentos: base, inconsistencias } = gerarLancamentosBase({ trades, calendario, capitalInicial, aporteMensal });
   const basePorDia = {};
   base.forEach(l => (basePorDia[l.data] = basePorDia[l.data] || []).push(l));
@@ -584,6 +605,7 @@ function reprocessarHistorico({ trades, calendario, precos = {}, ibov = {}, prov
       proventos: fixo ? fixo.proventos : (provPorDia[data] || []),
       eventos: fixo ? (fixo.eventos_societarios || []) : (evPorDia[data] || []),
       proventosRetroativos: fixo ? (fixo.proventos_retroativos || []) : (proventosRetroativosPorDia[data] || []),
+      cdiDia: (fixo && fixo.cdi_dia !== undefined) ? fixo.cdi_dia : (cdi[data] || 0),
       ledgerAcumulado: ledger
     });
     estado = r.estado;
@@ -616,6 +638,7 @@ function resumoParaGrafico(f) {
     real: f.resultados.realizado_acum,
     nreal: f.resultados.nao_realizado,
     prov: f.resultados.proventos_acum,
+    cdi: f.resultados.cdi_acum || 0,
     apt: f.resultados.aportes_acum,
     res_dia: f.resultados.resultado_dia,
     cota: f.rentabilidade.cota,

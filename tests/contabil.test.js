@@ -110,3 +110,19 @@ test('reprocessamento é determinístico (mesmos hashes)', () => {
   const b = rodar([], {}).fechamentos.map(f => f.hash);
   assert.deepStrictEqual(a, b);
 });
+
+test('caixa rende 90% do CDI diário e mantém conciliação', () => {
+  const r = C.reprocessarHistorico({
+    trades: [],
+    calendario: ['2026-01-02', '2026-01-05'],
+    precos: {},
+    cdi: { '2026-01-02': 0.001, '2026-01-05': 0.001 }, // 0.1% a.d. -> 90% = 0.09% -> R$ 45,00 sobre R$ 50.000
+    capitalInicial: 50000,
+    aporteMensal: 0
+  });
+  assert.strictEqual(r.fechamentos[0].resultados.cdi_acum, 0);
+  assert.strictEqual(r.fechamentos[1].resultados.cdi_dia, 45);
+  assert.strictEqual(r.fechamentos[1].resultados.cdi_acum, 45);
+  assert.strictEqual(r.fechamentos[1].patrimonio.nav, 50045);
+  assert.strictEqual(r.fechamentos[1].conciliado, true);
+});

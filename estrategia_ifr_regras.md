@@ -12,6 +12,7 @@
 - **Lote / Quantidade:** Compra fracionada — `Math.floor(3300 / close)`
 - **Liquidação:** `D+0`
 - **Taxas / Corretagem:** Sem taxas (`0`)
+- **Remuneração do Caixa Ocioso:** **90% do CDI diário** (Série 12 BCB SGS) aplicado diariamente sobre o saldo em caixa do fechamento anterior (`D-1`), desde `02/01/2026`.
 - **Trava de Caixa:** Só executa E1, E2 ou E3 se `caixa >= R$ 3.300,00`
 
 ---

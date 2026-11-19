@@ -154,7 +154,7 @@ async function apagarColecao(db, nome) {
       console.log(`${t.id} (${t.status})`); log.forEach(l => console.log(l));
     }
 
-    const r = C.reprocessarHistorico({ trades: Object.values(trades), calendario: dados.calendario, precos: dados.precos, ibov: dados.ibov, proventos: dados.proventos, eventos: dados.eventos });
+    const r = C.reprocessarHistorico({ trades: Object.values(trades), calendario: dados.calendario, precos: dados.precos, ibov: dados.ibov, proventos: dados.proventos, eventos: dados.eventos, cdi: dados.cdi });
     if (r.inconsistencias.length) console.log('\n⚠️ Inconsistências:', r.inconsistencias);
 
     const falhas = r.fechamentos.filter(f => !f.conciliado);

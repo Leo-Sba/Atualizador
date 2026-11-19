@@ -4347,6 +4347,7 @@ body.theme-light .event-tile-date {
                             <option value="COMPRA">Compras</option>
                             <option value="VENDA">Vendas</option>
                             <option value="PROVENTO">Proventos / JCP</option>
+                            <option value="RENDIMENTO_CDI">Rendimento 90% CDI</option>
                             <option value="APORTE">Aportes</option>
                             <option value="EVENTO_SOCIETARIO">Eventos Societários</option>
                         </select>
@@ -11465,7 +11466,7 @@ body.theme-light .event-tile-date {
                     kpiProfit.innerText = formatSignedMoney(res.resultado_liquido);
                     kpiProfit.className = 'ifr-kpi-val ' + (res.resultado_liquido >= 0 ? 'pos' : 'neg');
                 }
-                if (kpiProfitBreak) kpiProfitBreak.innerText = `Realiz: ${formatSignedMoney(res.realizado_acum)} · MtM: ${formatSignedMoney(res.nao_realizado)} · Prov: ${formatMoney(res.proventos_acum)}`;
+                if (kpiProfitBreak) kpiProfitBreak.innerText = `Realiz: ${formatSignedMoney(res.realizado_acum)} · MtM: ${formatSignedMoney(res.nao_realizado)} · Prov: ${formatMoney(res.proventos_acum)} · CDI 90%: ${formatMoney(res.cdi_acum || 0)}`;
                 if (kpiDayRes) kpiDayRes.innerText = `Resultado hoje: ${formatSignedMoney(res.resultado_dia)} (Taxas: ${formatMoney((res.custos_acum || 0) + (res.impostos_acum || 0))})`;
 
                 // 5. Rentabilidade (Cota TWR vs IBOV)

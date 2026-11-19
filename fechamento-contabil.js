@@ -64,7 +64,7 @@ async function calcularFechamentos({ db, pool, trades, modo = 'incremental', dat
   const dados = await carregarDadosMercado(pool, { tickers: tickers.length ? tickers : ['BOVA11'], dataInicio });
 
   if (modo === 'reconstruir') {
-    const r = C.reprocessarHistorico({ trades: listaTrades, calendario: dados.calendario, precos: dados.precos, ibov: dados.ibov, proventos: dados.proventos, eventos: dados.eventos });
+    const r = C.reprocessarHistorico({ trades: listaTrades, calendario: dados.calendario, precos: dados.precos, ibov: dados.ibov, proventos: dados.proventos, eventos: dados.eventos, cdi: dados.cdi });
     return { ...r, novos: r.fechamentos, novosLancamentos: r.ledger, gravados: [] };
   }
 
@@ -90,6 +90,7 @@ async function calcularFechamentos({ db, pool, trades, modo = 'incremental', dat
     trades: listaTrades, calendario, precos: dados.precos, ibov: dados.ibov,
     proventos: dados.proventos.filter(p => C.mapearPregao(p.data_ex, calendario) > ultimo),
     eventos: dados.eventos.filter(e => C.mapearPregao(e.data, calendario) > ultimo),
+    cdi: dados.cdi,
     entradasPorDia, proventosRetroativosPorDia
   });
 
