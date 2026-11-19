@@ -207,6 +207,26 @@ def fetch_and_calculate_ifnc():
     simple_pe = (sum(db_metrics[i["cod"]] for i in pos_items) / len(pos_items)) if pos_items else 0.0
 
     # Obter pontuação recente do IFNC (ou ETF FIND11 / IFNC.SA)
+    # Busca pontuação/cotação oficial do IFNC via ETF FIND11.SA
+    ifnc_close_val = None
+    try:
+        import yfinance as yf
+        dt_obj = datetime.strptime(str(portfolio_date)[:10], "%Y-%m-%d")
+        df_find = yf.download("FIND11.SA", start=(dt_obj - timedelta(days=5)).strftime("%Y-%m-%d"), end=(dt_obj + timedelta(days=2)).strftime("%Y-%m-%d"), progress=False)
+        if not df_find.empty:
+            closes = df_find["Close"]
+            if hasattr(closes, "columns"):
+                closes = closes.iloc[:, 0]
+            closes = closes.dropna()
+            str_dt = str(portfolio_date)[:10]
+            matching = [float(v) for idx, v in closes.items() if idx.strftime("%Y-%m-%d") == str_dt]
+            if matching:
+                ifnc_close_val = round(matching[-1], 2)
+            elif len(closes) > 0:
+                ifnc_close_val = round(float(closes.iloc[-1]), 2)
+    except Exception as e_find:
+        logging.warning(f"Falha ao buscar cotação FIND11.SA: {e_find}")
+
     cur.execute("""
         CREATE TABLE IF NOT EXISTS ifnc_history (
             reference_date DATE PRIMARY KEY,
@@ -241,9 +261,10 @@ def fetch_and_calculate_ifnc():
             is_interpolated BOOLEAN DEFAULT FALSE,
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
         );
-        INSERT INTO ifnc_daily_consolidated (reference_date, pe_ratio, data_source, is_interpolated)
-        VALUES (%s, %s, 'OUR_METHODOLOGY_DAILY', FALSE)
+        INSERT INTO ifnc_daily_consolidated (reference_date, ifnc_close, pe_ratio, data_source, is_interpolated)
+        VALUES (%s, %s, %s, 'OUR_METHODOLOGY_DAILY', FALSE)
         ON CONFLICT (reference_date) DO UPDATE SET
+            ifnc_close = COALESCE(EXCLUDED.ifnc_close, ifnc_daily_consolidated.ifnc_close),
             pe_ratio = EXCLUDED.pe_ratio,
             data_source = EXCLUDED.data_source;
     """, (
@@ -256,6 +277,7 @@ def fetch_and_calculate_ifnc():
         round(ey_weight * 100, 2),
         len(capped_items),
         portfolio_date,
+        ifnc_close_val,
         round(aggregated_pe or weighted_pe, 4)
     ))
 
