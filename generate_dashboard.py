@@ -13494,7 +13494,9 @@ html_final = html_final.replace("__MACRO_PLACEHOLDER__", json.dumps(macro_snapsh
 html_final = html_final.replace("__MACRO_FISCAL_PLACEHOLDER__", json.dumps(macro_fiscal_cache, ensure_ascii=False))
 html_final = html_final.replace("__IFR_PLACEHOLDER__", json.dumps(ifr_cache, ensure_ascii=False))
 
-ibov_val = ibov_info.get("aggregated_pe_all") or ibov_info.get("weighted_pe", 10.16)
+_parsed_data = json.loads(raw_data)
+ibov_pl_series = [v for v in (_parsed_data.get("IBOV", {}).get("pl") or []) if v is not None]
+ibov_val = ibov_pl_series[-1] if ibov_pl_series else (ibov_info.get("aggregated_pe_all") or ibov_info.get("weighted_pe", 10.16))
 html_final = html_final.replace("__IBOV_PE__", f"{float(ibov_val):.2f}")
 
 now_str = datetime.now().strftime("%d/%m/%Y às %H:%M")
