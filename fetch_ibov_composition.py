@@ -224,6 +224,26 @@ def calculate_and_save_ibov_pe():
         pos_weight
     ))
 
+    # Busca pontuação de fechamento do IBOV (^BVSP) para manter ibov_daily_consolidated atualizado
+    ibov_close_val = None
+    try:
+        import yfinance as yf
+        dt_obj = datetime.strptime(str(portfolio_date)[:10], "%Y-%m-%d")
+        df_bvsp = yf.download("^BVSP", start=(dt_obj - timedelta(days=5)).strftime("%Y-%m-%d"), end=(dt_obj + timedelta(days=2)).strftime("%Y-%m-%d"), progress=False)
+        if not df_bvsp.empty:
+            closes = df_bvsp["Close"]
+            if hasattr(closes, "columns"):
+                closes = closes.iloc[:, 0]
+            closes = closes.dropna()
+            str_dt = str(portfolio_date)[:10]
+            matching = [float(v) for idx, v in closes.items() if idx.strftime("%Y-%m-%d") == str_dt]
+            if matching:
+                ibov_close_val = round(matching[-1], 2)
+            elif len(closes) > 0:
+                ibov_close_val = round(float(closes.iloc[-1]), 2)
+    except Exception as e_bvsp:
+        print(f"Aviso: falha ao buscar fechamento ^BVSP: {e_bvsp}")
+
     # 2. Salva na tabela ibov_history com histórico de P/L clássico e com prejuízos
     cur.execute("""
         CREATE TABLE IF NOT EXISTS ibov_history (
@@ -260,9 +280,10 @@ def calculate_and_save_ibov_pe():
             is_interpolated BOOLEAN DEFAULT FALSE,
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
         );
-        INSERT INTO ibov_daily_consolidated (reference_date, pe_ratio, data_source, is_interpolated)
-        VALUES (%s, %s, 'OUR_METHODOLOGY_DAILY', FALSE)
+        INSERT INTO ibov_daily_consolidated (reference_date, ibov_close, pe_ratio, data_source, is_interpolated)
+        VALUES (%s, %s, %s, 'OUR_METHODOLOGY_DAILY', FALSE)
         ON CONFLICT (reference_date) DO UPDATE SET
+            ibov_close = COALESCE(EXCLUDED.ibov_close, ibov_daily_consolidated.ibov_close),
             pe_ratio = EXCLUDED.pe_ratio,
             data_source = EXCLUDED.data_source;
     """, (
@@ -275,6 +296,7 @@ def calculate_and_save_ibov_pe():
         round(avg_earnings_yield * 100, 2),
         round(ey_weight * 100, 2),
         portfolio_date,
+        ibov_close_val,
         round(aggregated_pe, 2)
     ))
 
