@@ -11478,8 +11478,8 @@ body.theme-light .event-tile-date {
                     kpiRent.innerText = formatPct(rent.rent_acum);
                     kpiRent.className = 'ifr-kpi-val ' + (rent.rent_acum >= 0 ? 'pos' : 'neg');
                 }
-                if (kpiRentSub) kpiRentSub.innerText = `Dia: ${formatPct(rent.rent_dia)} · Mês: ${formatPct(rent.rent_mes)} · IBOV: ${formatPct(rent.ibov_acum)}`;
-                if (kpiDdSub) kpiDdSub.innerText = `Max DD: ${formatPct(rent.max_drawdown, false)} (${fmtDateBr(rent.max_drawdown_data)}) · Alpha: ${formatPct(rent.alpha_acum)}`;
+                if (kpiRentSub) kpiRentSub.innerText = `Anualizada: ${formatPct(rent.rent_anualizada || 0)} a.a. · Dia: ${formatPct(rent.rent_dia)} · Mês: ${formatPct(rent.rent_mes)}`;
+                if (kpiDdSub) kpiDdSub.innerText = `IBOV: ${formatPct(rent.ibov_acum)} (${formatPct(rent.ibov_anualizada || 0)} a.a.) · Alpha: ${formatPct(rent.alpha_acum)} · Max DD: ${formatPct(rent.max_drawdown, false)}`;
 
                 // 6. Eficiência & Radar
                 const ef = ult ? ult.eficiencia : { taxa_acerto: cfg.taxa_acerto_pct || 0, vencedoras: cfg.total_gains || 0, perdedoras: cfg.total_stops || 0, profit_factor: 0, retorno_medio_capital_pct: 0 };

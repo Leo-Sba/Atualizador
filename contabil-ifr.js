@@ -183,6 +183,7 @@ function estadoInicial(capitalInicial = CAPITAL_INICIAL) {
     realizado_por_trade: {},   // trade_id -> realizado acumulado
     trades_encerrados: [],     // { trade_id, ticker, realizado, custo, data }
     n_compras: 0, n_vendas: 0, n_proventos: 0,
+    n_pregoes: 0,
     hash: null
   };
 }
@@ -200,6 +201,7 @@ function fecharDia({ estadoAnterior, data, lancamentosBase = [], precos = {}, ib
   const prev = estadoAnterior;
   const s = clonar(prev);
   const primeiroDia = prev.data === null;
+  s.n_pregoes = primeiroDia ? 0 : (prev.n_pregoes || 0) + 1;
   const erros = [];
   const avisos = [];
   const lancDia = [];
@@ -517,11 +519,13 @@ function fecharDia({ estadoAnterior, data, lancamentosBase = [], precos = {}, ib
       rent_mes: pct(s.cota, s.cota_inicio_mes),
       rent_ano: pct(s.cota, s.cota_inicio_ano),
       rent_acum: rentAcum,
+      rent_anualizada: (!primeiroDia && s.n_pregoes > 0 && s.cota > 0) ? r6((Math.pow(s.cota, 252 / s.n_pregoes) - 1) * 100) : 0,
       ibov: s.ibov,
       ibov_dia: (!primeiroDia && prev.ibov && s.ibov) ? pct(s.ibov, prev.ibov) : 0,
       ibov_mes: s.ibov_inicio_mes && s.ibov ? pct(s.ibov, s.ibov_inicio_mes) : null,
       ibov_ano: s.ibov_inicio_ano && s.ibov ? pct(s.ibov, s.ibov_inicio_ano) : null,
       ibov_acum: ibovAcum,
+      ibov_anualizada: (!primeiroDia && s.n_pregoes > 0 && s.ibov_base && s.ibov) ? r6((Math.pow(s.ibov / s.ibov_base, 252 / s.n_pregoes) - 1) * 100) : null,
       supera_ibov: ibovAcum === null ? null : rentAcum > ibovAcum,
       alpha_acum: ibovAcum === null ? null : r6(rentAcum - ibovAcum),
       drawdown_atual: drawdown,
@@ -644,6 +648,7 @@ function resumoParaGrafico(f) {
     cota: f.rentabilidade.cota,
     r_dia: f.rentabilidade.rent_dia,
     r_acum: f.rentabilidade.rent_acum,
+    r_anual: f.rentabilidade.rent_anualizada || 0,
     ibov_acum: f.rentabilidade.ibov_acum,
     dd: f.rentabilidade.drawdown_atual,
     ok: f.conciliado,

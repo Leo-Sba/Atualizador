@@ -125,4 +125,5 @@ test('caixa rende 90% do CDI diário e mantém conciliação', () => {
   assert.strictEqual(r.fechamentos[1].resultados.cdi_acum, 45);
   assert.strictEqual(r.fechamentos[1].patrimonio.nav, 50045);
   assert.strictEqual(r.fechamentos[1].conciliado, true);
+  assert.ok(r.fechamentos[1].rentabilidade.rent_anualizada > 20);
 });
