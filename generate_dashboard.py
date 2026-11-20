@@ -3306,6 +3306,8 @@ body.theme-light .event-tile-date {
 
                     </div>
 
+                    <button class="period-btn active" id="btnToggleChartBubbles" onclick="toggleChartBubbles()" title="Ligar ou desligar balões com o último valor nos gráficos" style="margin-left:8px; border:1px solid var(--border); border-radius:8px; padding:6px 12px;">💬 Balões</button>
+
                 </div>
 
             </div>
@@ -7934,6 +7936,24 @@ body.theme-light .event-tile-date {
 
 
 
+        let showChartBubbles = localStorage.getItem('valor_acoes_chart_bubbles_v1') !== 'false';
+
+        function syncChartBubblesBtn() {
+            const btn = document.getElementById('btnToggleChartBubbles');
+            if (!btn) return;
+            btn.classList.toggle('active', showChartBubbles);
+            btn.innerHTML = showChartBubbles ? '💬 Balões: ON' : '💬 Balões: OFF';
+        }
+
+        function toggleChartBubbles() {
+            showChartBubbles = !showChartBubbles;
+            try { localStorage.setItem('valor_acoes_chart_bubbles_v1', showChartBubbles ? 'true' : 'false'); } catch (_) {}
+            syncChartBubblesBtn();
+            Object.values(charts || {}).forEach(ch => { if (ch && typeof ch.update === 'function') ch.update('none'); });
+        }
+
+        document.addEventListener('DOMContentLoaded', syncChartBubblesBtn);
+
         function createOrUpdateChart(chartId, label, dates, values, color, isPercent = false, prefix = '', allowNegative = false, secondaryLine = null, secondaryLabel = null, secondaryColor = '#f59e0b', showBands = false, meanLineColor = null) {
 
             const ctx = document.getElementById(chartId).getContext('2d');
@@ -7962,11 +7982,87 @@ body.theme-light .event-tile-date {
 
             const isMobile = window.innerWidth < 768;
 
+            const lastPointBubblePlugin = {
+                id: 'lastPointBubble_' + chartId,
+                afterDatasetsDraw(chart) {
+                    if (!showChartBubbles) return;
+                    const ds = chart.data && chart.data.datasets && chart.data.datasets[0];
+                    const meta = chart.getDatasetMeta(0);
+                    if (!ds || !meta || !meta.data || !meta.data.length) return;
+                    let lastIdx = -1;
+                    for (let i = ds.data.length - 1; i >= 0; i--) {
+                        const v = ds.data[i];
+                        if (v !== null && v !== undefined && !isNaN(v)) { lastIdx = i; break; }
+                    }
+                    if (lastIdx < 0 || !meta.data[lastIdx]) return;
+                    const pt = meta.data[lastIdx];
+                    const val = Number(ds.data[lastIdx]);
+                    const area = chart.chartArea;
+                    if (!area) return;
 
+                    let txt;
+                    if (chartId === 'chartPrice' && prefix === '' && !isPercent) {
+                        txt = Math.round(val).toLocaleString('pt-BR') + ' pts';
+                    } else {
+                        const suffix = isPercent ? '%' : ((chartId === 'chartPL' || chartId === 'chartPVP') ? 'x' : '');
+                        txt = `${prefix}${val.toFixed(2).replace('.', ',')}${suffix}`;
+                    }
+
+                    const c = chart.ctx;
+                    const isLight = document.body.classList.contains('theme-light');
+                    c.save();
+
+                    // Ponto destacado na última cotação
+                    c.beginPath();
+                    c.arc(pt.x, pt.y, isMobile ? 3.5 : 4.2, 0, Math.PI * 2);
+                    c.fillStyle = color;
+                    c.fill();
+                    c.lineWidth = 1.5;
+                    c.strokeStyle = '#ffffff';
+                    c.stroke();
+
+                    // Balão com o valor
+                    c.font = `700 ${isMobile ? 10 : 11}px "JetBrains Mono", monospace`;
+                    const padX = 7;
+                    const boxH = isMobile ? 19 : 21;
+                    const boxW = Math.ceil(c.measureText(txt).width) + padX * 2;
+                    let bx = pt.x - boxW - 8;
+                    if (bx < area.left + 4) bx = Math.min(pt.x + 8, area.right - boxW - 4);
+                    let by = pt.y - boxH / 2;
+                    if (by < area.top + 4) by = area.top + 4;
+                    if (by + boxH > area.bottom - 4) by = area.bottom - boxH - 4;
+
+                    const r = 6;
+                    c.beginPath();
+                    c.moveTo(bx + r, by);
+                    c.lineTo(bx + boxW - r, by);
+                    c.quadraticCurveTo(bx + boxW, by, bx + boxW, by + r);
+                    c.lineTo(bx + boxW, by + boxH - r);
+                    c.quadraticCurveTo(bx + boxW, by + boxH, bx + boxW - r, by + boxH);
+                    c.lineTo(bx + r, by + boxH);
+                    c.quadraticCurveTo(bx, by + boxH, bx, by + boxH - r);
+                    c.lineTo(bx, by + r);
+                    c.quadraticCurveTo(bx, by, bx + r, by);
+                    c.closePath();
+
+                    c.fillStyle = isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(15, 23, 42, 0.92)';
+                    c.fill();
+                    c.lineWidth = 1.4;
+                    c.strokeStyle = color;
+                    c.stroke();
+
+                    c.fillStyle = isLight ? '#0f172a' : '#f8fafc';
+                    c.textAlign = 'center';
+                    c.textBaseline = 'middle';
+                    c.fillText(txt, bx + boxW / 2, by + boxH / 2 + 0.5);
+                    c.restore();
+                }
+            };
 
             charts[chartId] = new Chart(ctx, {
 
                 type: 'line',
+                plugins: [lastPointBubblePlugin],
 
                 data: {
 
