@@ -3228,6 +3228,9 @@ body.theme-light .event-tile-date {
                 🎓 <span>APRENDA A INVESTIR</span>
                 <span class="sector-count-badge" id="badgeLearnProgress">0/6</span>
             </button>
+            <button class="app-tab-btn" id="btnTabCycles" onclick="switchAppTab('cycles')">
+                🔄 <span>Ciclos Econômicos</span>
+            </button>
 
             <!-- Alternador Global de Tema (Botão Único: 🌙 Escuro / ☀️ Claro) -->
             <div class="app-tab-theme-toggle" style="display: inline-flex; align-items: center; gap: 6px;">
@@ -4584,6 +4587,115 @@ body.theme-light .event-tile-date {
             <!-- Disclaimer Educacional -->
             <div class="learn-disclaimer">
                 ⚖️ <strong>Aviso Educacional:</strong> Todo o conteúdo deste tutorial é estritamente educacional e baseado em dados históricos públicos (B3 / CVM). Preços estimados dependem do Lucro por Ação utilizado e não representam garantias, previsões ou recomendações de compra ou venda de valores mobiliários.
+            </div>
+        </div>
+
+        <!-- ABA 7: CICLOS ECONÔMICOS (FED & SELIC NA B3) -->
+        <div id="tabCyclesContent" style="display: none;">
+            <style>
+                .cycles-wrap { max-width: 1080px; margin: 0 auto; padding: 8px 0 28px; }
+                .cycles-head { margin-bottom: 18px; }
+                .cycles-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; padding: 4px 10px; border-radius: 99px; border: 1px solid var(--border); color: var(--text-muted); background: rgba(255,255,255,0.03); }
+                .cycles-title { font-size: 1.55rem; font-weight: 800; margin: 10px 0 4px; color: var(--text-main); letter-spacing: -0.02em; }
+                .cycles-sub { color: var(--text-muted); font-size: 0.95rem; margin: 0; }
+                .cycles-sec-title { font-size: 1.05rem; font-weight: 700; margin: 22px 0 10px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+                .cycles-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; }
+                .cycles-card p { margin: 0 0 8px; color: var(--text-main); font-size: 0.93rem; line-height: 1.55; }
+                .cycles-card p:last-child { margin-bottom: 0; }
+                .cycles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+                @media (max-width: 768px) { .cycles-grid { grid-template-columns: 1fr; } }
+                .cycles-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+                .cycles-tabs button { flex: 1 1 140px; padding: 9px 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.02); color: var(--text-main); border-radius: 9px; cursor: pointer; font: inherit; font-size: 0.88rem; font-weight: 600; transition: all 0.2s ease; }
+                .cycles-tabs button:hover { border-color: var(--accent-blue); }
+                .cycles-tabs button.on { border-color: var(--accent-blue); background: rgba(56, 189, 248, 0.12); color: var(--accent-blue); }
+                .cycles-buy h3 { color: var(--accent-green); margin: 0 0 10px; font-size: 0.98rem; }
+                .cycles-sell h3 { color: var(--accent-red); margin: 0 0 10px; font-size: 0.98rem; }
+                .cycles-list { list-style: none; padding: 0; margin: 0; }
+                .cycles-item { margin: 0 0 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+                .cycles-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+                .cycles-item b { display: block; color: var(--text-main); font-size: 0.92rem; }
+                .cycles-item span.m { display: block; color: var(--text-muted); font-size: 0.84rem; margin: 3px 0 6px; line-height: 1.45; }
+                .cycles-chip { display: inline-flex; align-items: center; gap: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; font-weight: 700; padding: 3px 9px; margin: 3px 5px 0 0; border-radius: 99px; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); }
+                .cycles-chip-link { cursor: pointer; color: var(--accent-blue); border-color: rgba(56, 189, 248, 0.45); background: rgba(56, 189, 248, 0.08); transition: all 0.18s ease; text-decoration: none; }
+                .cycles-chip-link:hover { background: var(--accent-blue); color: #090a0f; transform: translateY(-1px); }
+                .cycles-big { font-family: 'JetBrains Mono', monospace; font-size: 1.55rem; font-weight: 800; margin: 6px 0 4px; color: var(--text-main); }
+                .cycles-sel-row { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
+                .cycles-sel-row label { flex: 1 1 210px; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+                .cycles-sel-row select { width: 100%; margin-top: 5px; padding: 9px 10px; border-radius: 9px; border: 1px solid var(--border); background: var(--bg); color: var(--text-main); font: inherit; }
+                .cycles-note { background: var(--bg); border: 1px solid var(--border); border-radius: 9px; padding: 11px 13px; font-size: 0.9rem; color: var(--text-main); }
+                .cycles-warn { border-left: 3px solid var(--accent-orange); font-size: 0.86rem; color: var(--text-muted); }
+                #cyclesChart { width: 100%; height: auto; display: block; margin-bottom: 10px; }
+                .cycles-range { width: 100%; accent-color: var(--accent-blue); cursor: pointer; margin: 6px 0 10px; }
+            </style>
+
+            <div class="cycles-wrap">
+                <div class="cycles-head">
+                    <span class="cycles-tag">Educacional · Não é recomendação</span>
+                    <h2 class="cycles-title">🔄 Ciclo Econômico do Fed e Setores na B3</h2>
+                    <p class="cycles-sub">Como a política monetária dos EUA e a Selic movem a rotação setorial. Clique em qualquer ticker destacado (<span style="color:var(--accent-blue);">↗</span>) para abrir o resumo fundamentalista em <strong>/detalhes</strong>.</p>
+                </div>
+
+                <div class="cycles-sec-title">📖 Como funciona</div>
+                <div class="cycles-card">
+                    <p>O Fed controla a taxa de juros dos EUA (<em>Fed Funds</em>). Juros baixos barateiam o crédito e empurram o capital para ativos de risco; juros altos fazem o contrário. A economia passa por quatro fases, e cada uma favorece setores diferentes (a chamada <strong>rotação setorial</strong>).</p>
+                    <p>Para a B3 o canal principal é: <strong>Fed → dólar e juros globais → fluxo de capital estrangeiro → Ibovespa</strong>. Fed cortando e dólar fraco costumam ajudar emergentes; Fed apertando e dólar forte pressionam.</p>
+                </div>
+
+                <div class="cycles-sec-title">📈 Gráfico Interativo do Ciclo</div>
+                <div class="cycles-card">
+                    <svg id="cyclesChart" viewBox="0 0 800 340" role="img" aria-label="Curva do ciclo econômico com as quatro fases"></svg>
+                    <label for="cyclesSlider" style="font-size:0.86rem; color:var(--text-muted); font-weight:600;">Arraste para percorrer o ciclo:</label>
+                    <input id="cyclesSlider" class="cycles-range" type="range" min="0" max="100" value="12">
+                    <label style="display:inline-flex; align-items:center; gap:7px; font-size:0.86rem; color:var(--text-muted); cursor:pointer;">
+                        <input id="cyclesFedToggle" type="checkbox" checked style="accent-color:var(--accent-orange);"> Mostrar juros do Fed (defasados em relação à atividade)
+                    </label>
+                    <div class="cycles-tabs" id="cyclesPhaseTabs"></div>
+                </div>
+
+                <div class="cycles-card" id="cyclesPhaseInfo"></div>
+                <div class="cycles-grid" id="cyclesPhaseLists"></div>
+
+                <div class="cycles-sec-title">⚖️ Selic e Fed juntos</div>
+                <div class="cycles-grid">
+                    <div class="cycles-card" style="margin-bottom:0;">
+                        <span class="cycles-tag">Fed · EUA</span>
+                        <p class="cycles-big" id="cyclesFedRateVal">3,75% – 4,00%</p>
+                        <p style="color:var(--text-muted); font-size:0.86rem;">Taxa básica americana (Fed Funds). Inflação global e atividade ditam o ritmo de cortes ou altas.</p>
+                    </div>
+                    <div class="cycles-card" style="margin-bottom:0;">
+                        <span class="cycles-tag">Selic · Brasil</span>
+                        <p class="cycles-big" id="cyclesSelicRateVal">13,75% a.a.</p>
+                        <p style="color:var(--text-muted); font-size:0.86rem;" id="cyclesSelicSubText">Taxa básica brasileira sincronizada com o painel Macro.</p>
+                    </div>
+                </div>
+
+                <div class="cycles-card" style="margin-top:14px;">
+                    <p>O diferencial entre as duas taxas sustenta o <em>carry trade</em>: investidores tomam dinheiro em dólar barato e aplicam em reais, o que tende a segurar o câmbio. Se o Fed aperta enquanto o BC brasileiro corta, esse diferencial encolhe e o real pode enfraquecer, pressionando a inflação e limitando novos cortes da Selic.</p>
+                    <p><strong>Regra prática:</strong> a Selic manda no mercado doméstico (bancos, construtoras, varejo, FIIs, renda fixa). O Fed manda no dólar, no fluxo estrangeiro e nas commodities. Escolha abaixo a direção de cada uma:</p>
+                    <div class="cycles-sel-row">
+                        <label>Fed (EUA)
+                            <select id="cyclesSelFed">
+                                <option value="c">Cortando</option>
+                                <option value="n" selected>Neutro / pausa</option>
+                                <option value="t">Apertando</option>
+                            </select>
+                        </label>
+                        <label>Selic (Brasil)
+                            <select id="cyclesSelSelic">
+                                <option value="c">Cortando</option>
+                                <option value="n" selected>Neutra / pausa</option>
+                                <option value="t">Subindo</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="cycles-note" id="cyclesComboNote"></div>
+                    <div class="cycles-grid" id="cyclesComboLists" style="margin-top:14px;"></div>
+                </div>
+
+                <div class="cycles-sec-title">⚠️ Ressalvas importantes</div>
+                <div class="cycles-card cycles-warn">
+                    <p>O ciclo do Brasil tem lógica própria (Selic, inflação, fiscal, política). O Fed influencia, mas não manda. Os tickers exibidos são exemplos setoriais para estudo fundamentalista na plataforma e não constituem recomendação de compra ou venda.</p>
+                </div>
             </div>
         </div>
 
@@ -9302,7 +9414,8 @@ body.theme-light .event-tile-date {
             events: '/eventos',
             macro: '/macro',
             ifr: '/ifr',
-            learn: '/aprenda'
+            learn: '/aprenda',
+            cycles: '/ciclos'
         };
         const PATH_TO_TAB = {
             '/detalhes': 'detail',
@@ -9312,7 +9425,8 @@ body.theme-light .event-tile-date {
             '/macro': 'macro',
             '/ifr': 'ifr',
             '/aprenda': 'learn',
-            '/tutorial': 'learn'
+            '/tutorial': 'learn',
+            '/ciclos': 'cycles'
         };
 
         function resolveTabFromUrl() {
@@ -9343,6 +9457,8 @@ body.theme-light .event-tile-date {
             const secIfr = document.getElementById('tabIfrContent');
             const btnLearn = document.getElementById('btnTabLearn');
             const secLearn = document.getElementById('tabLearnContent');
+            const btnCycles = document.getElementById('btnTabCycles');
+            const secCycles = document.getElementById('tabCyclesContent');
 
             if (btnDetail) btnDetail.classList.remove('active');
             if (btnHeatmap) btnHeatmap.classList.remove('active');
@@ -9356,6 +9472,8 @@ body.theme-light .event-tile-date {
             if (secIfr) secIfr.style.display = 'none';
             if (btnLearn) btnLearn.classList.remove('active');
             if (secLearn) secLearn.style.display = 'none';
+            if (btnCycles) btnCycles.classList.remove('active');
+            if (secCycles) secCycles.style.display = 'none';
 
             if (tab === 'detail') {
                 if (btnDetail) btnDetail.classList.add('active');
@@ -9389,6 +9507,12 @@ body.theme-light .event-tile-date {
                 if (typeof TutorialModule !== 'undefined' && TutorialModule.onOpenLearnTab) {
                     TutorialModule.onOpenLearnTab();
                 }
+            } else if (tab === 'cycles') {
+                if (btnCycles) btnCycles.classList.add('active');
+                if (secCycles) secCycles.style.display = 'block';
+                if (typeof CyclesModule !== 'undefined' && CyclesModule.init) {
+                    CyclesModule.init();
+                }
             } else {
                 if (btnHeatmap) btnHeatmap.classList.add('active');
                 if (secHeatmap) secHeatmap.style.display = 'block';
@@ -9398,6 +9522,242 @@ body.theme-light .event-tile-date {
                 }
             }
         }
+
+        function openTickerFromCycles(ticker) {
+            if (!ticker || !DATA[ticker]) return;
+            currentTicker = ticker;
+            const searchInput = document.getElementById('tickerSearch');
+            if (searchInput) {
+                const name = DATA[ticker].company_name || '';
+                searchInput.value = name ? `${ticker} - ${name}` : ticker;
+            }
+            if (typeof updateDashboard === 'function') updateDashboard();
+            switchAppTab('detail');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        const CyclesModule = (function() {
+            let initialized = false;
+            const I = (n, m, t) => ({ n, m, t });
+            const PH = [
+                { n: "Recuperação", s: "Fed corta juros / afrouxa", c: "#10b981", a: 0, b: 25,
+                  d: "Fundo da recessão passou. O Fed mantém juros baixos ou corta, o crédito volta e os lucros começam a se recuperar. Historicamente é a fase de melhor retorno em ações: o mercado sobe antes de a economia melhorar.",
+                  buy: [
+                      I("Bancos e financeiras", "Crédito volta a crescer, a inadimplência cai e o spread melhora com a economia reanimando.", "ITUB4,BBDC4,BBAS3,SANB11"),
+                      I("Varejo e consumo discricionário", "Juro menor e emprego em alta aumentam compras a prazo. Varejistas têm dívida cara e ganham muito com a queda do custo financeiro.", "LREN3,MGLU3"),
+                      I("Construção e imobiliário", "Financiamento mais barato destrava lançamentos e vendas. É o setor mais sensível ao juro.", "CYRE3,MRVE3,EZTC3,DIRR3"),
+                      I("Small caps e tecnologia", "O capital volta para risco. Empresas de crescimento valem mais quando a taxa de desconto cai.", "TOTS3,LWSA3,SMLL11"),
+                      I("Renda fixa prefixada e IPCA+ longa", "Travar a taxa antes de ela cair gera ganho de marcação a mercado.", "Tesouro Prefixado,Tesouro IPCA+ longo")
+                  ],
+                  sell: [
+                      I("Defensivos já caros", "Elétricas e saneamento perdem atratividade relativa quando o apetite por risco volta.", "TAEE11,SBSP3,CPLE6"),
+                      I("Dólar e ouro como proteção", "A demanda por proteção diminui com a economia melhorando.", "GOLD11"),
+                      I("Pós-fixados", "Rendem menos conforme a Selic cai.", "Tesouro Selic,CDB")
+                  ]
+                },
+                { n: "Expansão", s: "Fed neutro, juros estáveis", c: "#38bdf8", a: 25, b: 50,
+                  d: "Economia crescendo, emprego forte, lucros em alta. O Fed começa a sinalizar normalização. Cíclicos e commodities lideram a bolsa.",
+                  buy: [
+                      I("Industriais e bens de capital", "Demanda por máquinas, motores e infraestrutura sobe com investimento e produção.", "WEGE3,ROMI3,RAIL3,EMBR3"),
+                      I("Materiais básicos", "Crescimento global puxa a demanda por minério, aço e celulose, e as margens se expandem.", "VALE3,SUZB3,GGBR4,CMIN3"),
+                      I("Petróleo e energia", "Atividade forte aumenta o consumo e sustenta o preço do barril.", "PETR4,PRIO3,RECV3"),
+                      I("Exportadoras e tecnologia", "Lucros crescentes e receita em dólar ajudam as margens.", "KLBN11,TOTS3")
+                  ],
+                  sell: [
+                      I("Defensivos de baixo crescimento", "Ficam para trás quando cíclicos sobem mais rápido.", "ABEV3,ASAI3"),
+                      I("Prefixados longos", "Com a economia aquecida, a inflação e os juros tendem a subir, e os títulos perdem valor.", "Tesouro Prefixado longo")
+                  ]
+                },
+                { n: "Fim de ciclo", s: "Fed aperta / juros altos", c: "#f59e0b", a: 50, b: 75,
+                  d: "Inflação pressiona, o Fed sobe juros e o dólar tende a se fortalecer. Valuations ficam esticados e a volatilidade aumenta. É hora de reduzir risco e proteger a carteira.",
+                  buy: [
+                      I("Petróleo e commodities", "Historicamente são o melhor hedge contra inflação, e a receita é em dólar.", "PETR4,PRIO3,VALE3"),
+                      I("Bancos com bom spread", "Juro alto alarga a margem financeira, desde que a inadimplência esteja controlada.", "ITUB4,BBAS3"),
+                      I("Pós-fixados", "Rendem mais com Selic alta e não oscilam com a curva de juros.", "Tesouro Selic,CDB,LCI/LCA"),
+                      I("Dólar e ouro", "Proteção contra volatilidade e saída de capital dos emergentes.", "GOLD11,IVVB11"),
+                      I("Consumo básico e saúde, aos poucos", "Rotação gradual para negócios previsíveis antes da desaceleração.", "ABEV3,RADL3,RDOR3")
+                  ],
+                  sell: [
+                      I("Small caps e crescimento endividado", "Dívida cara e taxa de desconto alta corroem lucro e valuation.", "SMLL11,LWSA3"),
+                      I("Construção e imobiliário", "Financiamento caro reduz vendas e eleva o distrato.", "CYRE3,MRVE3,EZTC3"),
+                      I("Varejo", "Juro alto encarece o crédito ao consumidor e comprime a margem.", "MGLU3,LREN3"),
+                      I("Prefixados longos", "Perdem valor de mercado quando os juros sobem.", "Tesouro Prefixado longo")
+                  ]
+                },
+                { n: "Recessão", s: "Fed começa a cortar", c: "#ef4444", a: 75, b: 100,
+                  d: "Lucros caem, desemprego sobe e o Fed corta juros em resposta. O mercado costuma tocar o fundo antes da economia. Prevalece a defesa, e os primeiros cortes favorecem quem paga dividendos.",
+                  buy: [
+                      I("Utilities: energia e saneamento", "Receita regulada e previsível, pouco ligada ao PIB. Se beneficiam da queda de juros.", "TAEE11,SBSP3,CPLE6,EQTL3"),
+                      I("Saúde e consumo básico", "Demanda estável mesmo com desemprego em alta.", "RADL3,RDOR3,ABEV3,ASAI3"),
+                      I("Renda fixa longa", "Com cortes de juros à frente, prefixados e IPCA+ longos ganham valor.", "Tesouro IPCA+,Tesouro Prefixado"),
+                      I("Dólar e ouro", "Refúgio durante estresse financeiro.", "GOLD11,IVVB11"),
+                      I("Dividendos consistentes", "Caixa recorrente ajuda a atravessar a queda de lucros.", "BBSE3,ITSA4,TAEE11")
+                  ],
+                  sell: [
+                      I("Cíclicas: siderurgia e mineração", "Demanda e preço de commodities caem junto com o PIB.", "CSNA3,USIM5,GGBR4"),
+                      I("Construção e varejo", "Desemprego derruba vendas e o crédito encurta.", "CYRE3,MRVE3,MGLU3"),
+                      I("Small caps alavancadas", "Risco de refinanciamento e queda de receita.", "SMLL11"),
+                      I("Bancos com carteira frágil", "Inadimplência sobe e exige mais provisões.", "BPAN4,BMGB4")
+                  ]
+                }
+            ];
+
+            function renderChip(raw) {
+                const tk = raw.trim();
+                if (typeof DATA !== 'undefined' && DATA[tk]) {
+                    return `<button type="button" class="cycles-chip cycles-chip-link" onclick="openTickerFromCycles('${tk}')" title="Ver resumo fundamentalista de ${tk} em /detalhes">${tk} ↗</button>`;
+                }
+                return `<span class="cycles-chip">${tk}</span>`;
+            }
+
+            const renderList = arr => arr.map(x =>
+                `<li class="cycles-item"><b>${x.n}</b><span class="m">${x.m}</span><div>${x.t.split(',').map(renderChip).join('')}</div></li>`
+            ).join('');
+
+            const FM = {
+                c: { b: [I("Mineração e commodities", "Dólar mais fraco e crédito global barato sustentam preços de minério e metais.", "VALE3,CMIN3,CSNA3"), I("Crescimento e small caps", "O dinheiro estrangeiro volta para emergentes e para ativos de maior risco.", "TOTS3,SMLL11")], s: [I("Dólar e ouro como proteção", "Perdem força se o apetite por risco melhora.", "GOLD11")] },
+                n: { b: [I("Exportadoras, com cautela", "Receita em dólar protege, mas sem direção clara do câmbio.", "SUZB3,KLBN11")], s: [I("Apostas fortes em dólar", "Sem sinal do Fed, o câmbio tende a oscilar sem tendência.", "IVVB11")] },
+                t: { b: [I("Dólar e ouro", "Dólar global forte e aversão a risco aumentam a procura por proteção.", "GOLD11,IVVB11"), I("Exportadoras com receita em dólar", "O real mais fraco aumenta a receita convertida em reais.", "SUZB3,KLBN11,PRIO3")], s: [I("Small caps e crescimento alavancado", "O capital sai de emergentes e a taxa de desconto sobe.", "SMLL11,LWSA3")] }
+            };
+            const SM = {
+                c: { b: [I("Construtoras e varejo", "Juro menor barateia financiamento e crédito ao consumidor, e reduz o custo da dívida.", "MRVE3,CYRE3,LREN3,MGLU3"), I("FIIs de tijolo", "Taxa de desconto menor valoriza os imóveis e as cotas.", "HGLG11,XPLG11,KNRI11"), I("Prefixados e IPCA+ longos", "Ganho de marcação a mercado com a queda das taxas.", "Tesouro Prefixado,Tesouro IPCA+")], s: [I("Pós-fixados", "O CDI cai junto com a Selic.", "Tesouro Selic,CDB")] },
+                n: { b: [I("Pós-fixados", "Rendimento alto e estável, sem risco de marcação a mercado.", "Tesouro Selic,CDB"), I("Bancos e pagadoras de dividendos", "Spread alto e fluxo de caixa previsível.", "ITUB4,BBAS3,TAEE11")], s: [I("Prefixados longos sem sinal de corte", "Sem perspectiva de queda de juros, o ganho não se materializa.", "Tesouro Prefixado")] },
+                t: { b: [I("Pós-fixados", "Rendem mais a cada alta.", "Tesouro Selic,CDB"), I("Bancos com spread", "Margem financeira maior, se a inadimplência não subir.", "BBAS3,ITUB4")], s: [I("Construtoras, varejo e small caps", "Crédito caro derruba vendas e eleva a despesa financeira.", "CYRE3,MGLU3,SMLL11"), I("Prefixados longos", "Perdem valor de mercado quando os juros sobem.", "Tesouro Prefixado")] }
+            };
+            const CN = {
+                cc: "Melhor cenário para a bolsa: juros caindo lá fora e aqui. Real tende a se sustentar e o múltiplo das ações sobe.",
+                tc: "Risco: o diferencial de juros encolhe, o real pode enfraquecer e a inflação limita cortes da Selic.",
+                ct: "Diferencial alto atrai carry trade e o real tende a se fortalecer, mas o juro doméstico pesa na bolsa.",
+                tt: "Pior cenário para ativos de risco. Pós-fixados, dólar e ouro protegem."
+            };
+
+            function draw(cur) {
+                const svg = document.getElementById('cyclesChart');
+                const sl = document.getElementById('cyclesSlider');
+                const ft = document.getElementById('cyclesFedToggle');
+                if (!svg || !sl || !ft) return;
+
+                const W = 800, H = 340, L = 40, R = 20, T = 20, B = 50, pw = W - L - R, ph = H - T - B;
+                const X = v => L + v / 100 * pw;
+                const Yv = v => T + (1 - v) * ph;
+                const g = (x, m, s) => Math.exp(-((x - m) ** 2) / (2 * s * s));
+                const act = x => g(x, 50, 20);
+                const fed = x => g(x, 62, 17) * 0.85;
+                const path = f => {
+                    let d = '';
+                    for (let x = 0; x <= 100; x += 1) {
+                        d += (x ? 'L' : 'M') + X(x).toFixed(1) + ',' + Yv(f(x) * 0.9 + 0.05).toFixed(1);
+                    }
+                    return d;
+                };
+
+                let h = '';
+                PH.forEach((p, i) => {
+                    h += `<rect data-i="${i}" x="${X(p.a)}" y="${T}" width="${X(p.b) - X(p.a)}" height="${ph}" fill="${p.c}" opacity="${i === cur ? 0.20 : 0.06}" style="cursor:pointer"/>`;
+                    h += `<text x="${(X(p.a) + X(p.b)) / 2}" y="${H - 28}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text-main)">${p.n}</text>`;
+                    h += `<text x="${(X(p.a) + X(p.b)) / 2}" y="${H - 10}" text-anchor="middle" font-size="11" fill="var(--text-muted)">${p.s}</text>`;
+                });
+                h += `<path d="${path(act)}" fill="none" stroke="var(--accent-blue)" stroke-width="3"/>`;
+                if (ft.checked) {
+                    h += `<path d="${path(fed)}" fill="none" stroke="var(--accent-orange)" stroke-width="2.5" stroke-dasharray="6 4"/>`;
+                }
+                const v = +sl.value;
+                h += `<line x1="${X(v)}" x2="${X(v)}" y1="${T}" y2="${T + ph}" stroke="var(--text-main)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+                h += `<circle cx="${X(v)}" cy="${Yv(act(v) * 0.9 + 0.05)}" r="7" fill="var(--accent-blue)" stroke="var(--card-bg)" stroke-width="2"/>`;
+                h += `<text x="${L + 8}" y="${T + 16}" font-size="12" font-weight="600" fill="var(--accent-blue)">— Atividade econômica</text>`;
+                if (ft.checked) {
+                    h += `<text x="${L + 8}" y="${T + 33}" font-size="12" font-weight="600" fill="var(--accent-orange)">- - Juros do Fed</text>`;
+                }
+                svg.innerHTML = h;
+                svg.querySelectorAll('rect').forEach(r => {
+                    r.onclick = () => {
+                        const idx = Number(r.dataset.i);
+                        sl.value = (PH[idx].a + PH[idx].b) / 2;
+                        upd();
+                    };
+                });
+            }
+
+            function upd() {
+                const sl = document.getElementById('cyclesSlider');
+                if (!sl) return;
+                const v = +sl.value;
+                let cur = PH.findIndex(p => v >= p.a && v < p.b);
+                if (cur < 0) cur = 3;
+                document.querySelectorAll('#cyclesPhaseTabs button').forEach((b, i) => b.classList.toggle('on', i === cur));
+                const p = PH[cur];
+                const infoEl = document.getElementById('cyclesPhaseInfo');
+                if (infoEl) {
+                    infoEl.innerHTML = `<h3 style="font-size:1.12rem; margin:0 0 6px; color:var(--text-main);">${p.n} <span class="cycles-tag">${p.s}</span></h3><p>${p.d}</p>`;
+                }
+                const listsEl = document.getElementById('cyclesPhaseLists');
+                if (listsEl) {
+                    listsEl.innerHTML =
+                        `<div class="cycles-card cycles-buy" style="margin-bottom:0;"><h3>▲ Tende a favorecer (comprar / aumentar)</h3><ul class="cycles-list">${renderList(p.buy)}</ul></div>` +
+                        `<div class="cycles-card cycles-sell" style="margin-bottom:0;"><h3>▼ Tende a prejudicar (vender / reduzir)</h3><ul class="cycles-list">${renderList(p.sell)}</ul></div>`;
+                }
+                draw(cur);
+            }
+
+            function cmb() {
+                const sf = document.getElementById('cyclesSelFed');
+                const ss = document.getElementById('cyclesSelSelic');
+                if (!sf || !ss) return;
+                const f = sf.value, s = ss.value, k = f + s;
+                const noteEl = document.getElementById('cyclesComboNote');
+                if (noteEl) {
+                    noteEl.textContent = CN[k] || 'Cenário de transição: sem direção clara em uma das duas taxas. Aguarde o próximo sinal e priorize a carteira diversificada.';
+                }
+                const listsEl = document.getElementById('cyclesComboLists');
+                if (listsEl) {
+                    listsEl.innerHTML =
+                        `<div class="cycles-card cycles-buy" style="margin-bottom:0;"><h3>▲ Tende a favorecer</h3><ul class="cycles-list">${renderList(SM[s].b.concat(FM[f].b))}</ul></div>` +
+                        `<div class="cycles-card cycles-sell" style="margin-bottom:0;"><h3>▼ Tende a prejudicar</h3><ul class="cycles-list">${renderList(SM[s].s.concat(FM[f].s))}</ul></div>`;
+                }
+            }
+
+            function syncLiveMacroRates() {
+                try {
+                    const selicObj = (typeof MACRO_DATA !== 'undefined' && MACRO_DATA && MACRO_DATA.indicators && MACRO_DATA.indicators.selic) ? MACRO_DATA.indicators.selic : null;
+                    if (selicObj && selicObj.valor !== undefined && selicObj.valor !== null) {
+                        const selicEl = document.getElementById('cyclesSelicRateVal');
+                        if (selicEl) selicEl.textContent = `${Number(selicObj.valor).toFixed(2).replace('.', ',')}% ao ano`;
+                        const subEl = document.getElementById('cyclesSelicSubText');
+                        if (subEl && selicObj.data) subEl.textContent = `Taxa básica atualizada via Macro (${selicObj.data}).`;
+                    }
+                } catch (_) {}
+            }
+
+            function init() {
+                if (!initialized) {
+                    initialized = true;
+                    const tabsEl = document.getElementById('cyclesPhaseTabs');
+                    const sl = document.getElementById('cyclesSlider');
+                    const ft = document.getElementById('cyclesFedToggle');
+                    const sf = document.getElementById('cyclesSelFed');
+                    const ss = document.getElementById('cyclesSelSelic');
+                    if (tabsEl) {
+                        tabsEl.innerHTML = PH.map((p, i) => `<button type="button" data-i="${i}">${p.n}</button>`).join('');
+                        tabsEl.querySelectorAll('button').forEach(b => {
+                            b.onclick = () => {
+                                const p = PH[Number(b.dataset.i)];
+                                if (sl) sl.value = (p.a + p.b) / 2;
+                                upd();
+                            };
+                        });
+                    }
+                    if (sl) sl.oninput = upd;
+                    if (ft) ft.onchange = upd;
+                    if (sf) sf.onchange = cmb;
+                    if (ss) ss.onchange = cmb;
+                    syncLiveMacroRates();
+                    cmb();
+                }
+                upd();
+            }
+
+            return { init };
+        })();
 
         function getHeatmapClassForPL(pl) {
             if (pl === null || pl === undefined || isNaN(pl)) return 'color-pl-nd';
