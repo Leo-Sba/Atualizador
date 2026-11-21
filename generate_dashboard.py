@@ -4652,6 +4652,15 @@ body.theme-light .event-tile-date {
                     <div class="cycles-tabs" id="cyclesPhaseTabs"></div>
                 </div>
 
+                <div class="cycles-card" id="cyclesAiBanner" style="border-color: var(--accent-blue); background: rgba(56, 189, 248, 0.06);">
+                    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
+                        <span class="cycles-tag" style="color:var(--accent-blue); border-color:rgba(56,189,248,0.45);">🤖 Diagnóstico Atual do Brasil</span>
+                        <span id="cyclesAiSource" style="font-size:11.5px; color:var(--text-muted);">--</span>
+                    </div>
+                    <div style="font-size:1.05rem; font-weight:700; color:var(--text-main);" id="cyclesAiTitle">Analisando ciclo atual...</div>
+                    <p id="cyclesAiJust" style="color:var(--text-muted); font-size:0.88rem; margin-top:4px;"></p>
+                </div>
+
                 <div class="cycles-card" id="cyclesPhaseInfo"></div>
                 <div class="cycles-grid" id="cyclesPhaseLists"></div>
 
@@ -9716,6 +9725,8 @@ body.theme-light .event-tile-date {
                 }
             }
 
+            let aiPhaseIdx = -1;
+
             function syncLiveMacroRates() {
                 try {
                     const selicObj = (typeof MACRO_DATA !== 'undefined' && MACRO_DATA && MACRO_DATA.indicators && MACRO_DATA.indicators.selic) ? MACRO_DATA.indicators.selic : null;
@@ -9725,6 +9736,29 @@ body.theme-light .event-tile-date {
                         const subEl = document.getElementById('cyclesSelicSubText');
                         if (subEl && selicObj.data) subEl.textContent = `Taxa básica atualizada via Macro (${selicObj.data}).`;
                     }
+
+                    const cb = (typeof MACRO_DATA !== 'undefined' && MACRO_DATA && MACRO_DATA.ciclo_brasil) ? MACRO_DATA.ciclo_brasil : null;
+                    const aiFase = (cb && cb.fase) ? cb.fase : 'Fim de ciclo';
+                    const aiSlider = (cb && cb.slider !== undefined) ? Number(cb.slider) : 62;
+                    const aiJust = (cb && cb.justificativa) ? cb.justificativa : 'Selic em patamar contracionista (13,75% a.a.) mantém postura defensiva e seletiva.';
+                    const aiFonte = (cb && cb.fonte) ? cb.fonte : 'Modelo Macro Automático';
+
+                    aiPhaseIdx = PH.findIndex(p => p.n.toLowerCase() === aiFase.toLowerCase());
+                    if (aiPhaseIdx < 0) aiPhaseIdx = 2;
+
+                    const sl = document.getElementById('cyclesSlider');
+                    if (sl) sl.value = aiSlider;
+
+                    const tEl = document.getElementById('cyclesAiTitle');
+                    const jEl = document.getElementById('cyclesAiJust');
+                    const sEl = document.getElementById('cyclesAiSource');
+                    if (tEl) tEl.innerHTML = `Fase identificada: <span style="color:var(--accent-blue);">${PH[aiPhaseIdx].n}</span>`;
+                    if (jEl) jEl.textContent = aiJust;
+                    if (sEl) sEl.textContent = aiFonte;
+
+                    document.querySelectorAll('#cyclesPhaseTabs button').forEach((b, i) => {
+                        b.innerHTML = i === aiPhaseIdx ? `${PH[i].n} <span style="font-size:11px; color:var(--accent-blue);">● Brasil</span>` : PH[i].n;
+                    });
                 } catch (_) {}
             }
 

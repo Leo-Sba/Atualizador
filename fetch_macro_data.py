@@ -338,6 +338,76 @@ def compute_content_hash(snapshot):
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
+def classify_brazil_cycle_ai(indicators, focus, curva):
+    """Classifica a fase do ciclo econômico no Brasil usando Gemini Free Tier (com fallback determinístico)."""
+    selic = (indicators or {}).get("selic", {}).get("valor")
+    ipca = (indicators or {}).get("ipca_12m", {}).get("valor")
+    focus_ipca = (focus or {}).get("ipca_atual", {}).get("valor")
+    focus_pib = (focus or {}).get("pib_atual", {}).get("valor")
+
+    valid_phases = {
+        "Recuperação": 12,
+        "Expansão": 38,
+        "Fim de ciclo": 62,
+        "Recessão": 88,
+    }
+
+    api_key = os.getenv("GEMINI_API_KEY", "").strip()
+    if api_key:
+        try:
+            prompt = (
+                "Você é um economista-chefe analisando o ciclo econômico atual do Brasil.\n"
+                f"Dados atuais: Selic={selic}% a.a., IPCA 12m={ipca}%, Focus IPCA={focus_ipca}%, Focus PIB={focus_pib}%.\n"
+                "Classifique em EXATAMENTE UMA das 4 fases: 'Recuperação', 'Expansão', 'Fim de ciclo' ou 'Recessão'.\n"
+                "Responda APENAS JSON válido no formato: "
+                '{"fase":"Fim de ciclo","slider":62,"justificativa":"frase curta de até 160 caracteres explicando o porquê"}'
+            )
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+            body = json.dumps({
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {"temperature": 0.2, "responseMimeType": "application/json"},
+            }).encode("utf-8")
+            req = urllib.request.Request(url, data=body, headers={"Content-Type": "application/json"}, method="POST")
+            with urllib.request.urlopen(req, timeout=12) as resp:
+                raw = json.loads(resp.read().decode("utf-8"))
+                txt = raw["candidates"][0]["content"]["parts"][0]["text"]
+                parsed = json.loads(txt)
+                fase = parsed.get("fase")
+                if fase in valid_phases:
+                    slider = int(parsed.get("slider", valid_phases[fase]))
+                    slider = max(0, min(100, slider))
+                    return {
+                        "fase": fase,
+                        "slider": slider,
+                        "justificativa": str(parsed.get("justificativa", "")).strip()[:220],
+                        "fonte": "Gemini IA (Free)",
+                    }
+        except Exception as e:
+            logging.warning(f"Fallback na classificação de ciclo via Gemini: {e}")
+
+    s_val = float(selic) if selic is not None else 13.75
+    i_val = float(ipca) if ipca is not None else 4.5
+    if s_val >= 12.0 and i_val >= 4.2:
+        fase = "Fim de ciclo"
+        just = f"Selic em patamar contracionista ({s_val:.2f}% a.a.) com IPCA em {i_val:.2f}% exige cautela e proteção."
+    elif s_val >= 12.0 and i_val < 4.2:
+        fase = "Recessão"
+        just = f"Juros altos ({s_val:.2f}% a.a.) e inflação cedendo ({i_val:.2f}%) abrem espaço para futuros cortes."
+    elif s_val < 10.5 and i_val < 4.5:
+        fase = "Recuperação"
+        just = f"Juros mais baixos ({s_val:.2f}% a.a.) e inflação controlada ({i_val:.2f}%) favorecem retomada do crédito."
+    else:
+        fase = "Expansão"
+        just = f"Atividade em expansão com Selic em {s_val:.2f}% a.a. e IPCA em {i_val:.2f}%."
+
+    return {
+        "fase": fase,
+        "slider": valid_phases[fase],
+        "justificativa": just,
+        "fonte": "Modelo Macro Automático",
+    }
+
+
 def run_macro_collection(write_flag_file=False):
     today_brt = dt.datetime.now(BRT).date()
     conn = get_db_connection()
@@ -350,6 +420,7 @@ def run_macro_collection(write_flag_file=False):
     indicators, copom_meetings = build_copom_and_indicators(today_brt, existing_snapshot)
     focus = fetch_focus_snapshot(today_brt, existing_snapshot)
     curva = fetch_tesouro_curve(today_brt, existing_snapshot)
+    ciclo_brasil = classify_brazil_cycle_ai(indicators, focus, curva)
 
     snapshot = {
         "atualizado_em": dt.datetime.now(BRT).isoformat(timespec="seconds"),
@@ -358,6 +429,7 @@ def run_macro_collection(write_flag_file=False):
         "fomc_dates": FOMC_DATES,
         "focus": focus,
         "curva": curva,
+        "ciclo_brasil": ciclo_brasil,
     }
 
     new_hash = compute_content_hash(snapshot)
